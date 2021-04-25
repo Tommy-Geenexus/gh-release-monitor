@@ -1,0 +1,31 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues></ManuallySuppressedIssues>
+  <CurrentIssues>
+    <ID>LongMethod:AddGitHubRepositoryDialog.kt$@Composable fun AddGitHubRepositoryDialog( viewModel: AddRepositoryViewModel, onDismiss: () -&gt; Unit, onConfirm: (repositoryOwner: String, repositoryName: String) -&gt; Unit )</ID>
+    <ID>LongMethod:GitHubRepositoryItem.kt$@ExperimentalCoilApi @ExperimentalMaterialApi @Composable fun GitHubRepositoryItem( swipeableState: SwipeableState&lt;Float&gt; = rememberSwipeableState(initialValue = 0f), gitHubRepository: GitHubRepository = GitHubRepository(), onGitHubUserAvatarSelected: (String) -&gt; Unit = {}, onGitHubRepositoryReleaseSelected: (String) -&gt; Unit = {}, onDeleteGitHubRepository: (GitHubRepository) -&gt; Unit = {} )</ID>
+    <ID>LongMethod:GitHubRepositoryReleaseRepository.kt$GitHubRepositoryReleaseRepository$suspend fun getGitHubRepositoriesOrNull( gitHubRepositories: List&lt;GitHubRepository&gt;, accessToken: String ): List&lt;GitHubRepository&gt;?</ID>
+    <ID>LongMethod:MainScreen.kt$@ExperimentalCoilApi @ExperimentalAnimationApi @ExperimentalMaterialApi @Composable fun MainScreen( mainViewModel: MainViewModel, addRepositoryViewModel: AddRepositoryViewModel, onNavigateToSettings: () -&gt; Unit )</ID>
+    <ID>LongMethod:MainScreen.kt$@ExperimentalCoilApi @ExperimentalAnimationApi @ExperimentalMaterialApi @Composable fun MainScreen( scaffoldState: ScaffoldState = rememberScaffoldState(), swipeRefreshState: SwipeRefreshState = rememberSwipeRefreshState(isRefreshing = false), gitHubRepositories: LazyPagingItems&lt;GitHubRepository&gt;? = null, defaultSortOrder: SortOrder = SortOrder.Asc.RepositoryOwner, onAddGitHubRepository: () -&gt; Unit = {}, onApplySortOrder: (SortOrder) -&gt; Unit = {}, onShowSettings: () -&gt; Unit = {}, onUserAvatarSelected: (String) -&gt; Unit = {}, onReleaseSelected: (String) -&gt; Unit = {}, onRefresh: () -&gt; Unit = {}, onDelete: (GitHubRepository) -&gt; Unit = {} )</ID>
+    <ID>LongMethod:NavGraph.kt$@ExperimentalCoilApi @ExperimentalComposeUiApi @ExperimentalCoroutinesApi @ExperimentalAnimationApi @ExperimentalMaterialApi @Composable fun NavGraph( navController: NavHostController, startDestination: String = NavDestinations.ROUTE_LOGIN )</ID>
+    <ID>LongMethod:SettingsScreen.kt$@ExperimentalComposeUiApi @ExperimentalCoroutinesApi @ExperimentalMaterialApi @ExperimentalAnimationApi @Composable fun SettingsScreen( viewModel: SettingsViewModel, onNavigateToLogin: () -&gt; Unit, onNavigateUp: () -&gt; Unit )</ID>
+    <ID>LongMethod:SortOrderDialog.kt$@Composable fun SortOrderDialog( defaultSortOrder: SortOrder, onDismiss: () -&gt; Unit, onConfirm: (SortOrder) -&gt; Unit )</ID>
+    <ID>LongParameterList:AddGitHubRepositoryDialog.kt$( helperText: String, errorText: String, textColor: Color = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium), errorTextColor: Color = MaterialTheme.colors.error, isError: Boolean = false, charCnt: Int = 0, maxCharCnt: Int = Integer.MAX_VALUE )</ID>
+    <ID>LongParameterList:MainScreen.kt$( scaffoldState: ScaffoldState = rememberScaffoldState(), swipeRefreshState: SwipeRefreshState = rememberSwipeRefreshState(isRefreshing = false), gitHubRepositories: LazyPagingItems&lt;GitHubRepository&gt;? = null, defaultSortOrder: SortOrder = SortOrder.Asc.RepositoryOwner, onAddGitHubRepository: () -&gt; Unit = {}, onApplySortOrder: (SortOrder) -&gt; Unit = {}, onShowSettings: () -&gt; Unit = {}, onUserAvatarSelected: (String) -&gt; Unit = {}, onReleaseSelected: (String) -&gt; Unit = {}, onRefresh: () -&gt; Unit = {}, onDelete: (GitHubRepository) -&gt; Unit = {} )</ID>
+    <ID>LongParameterList:SettingsScreen.kt$( scaffoldState: ScaffoldState = rememberScaffoldState(), dataStore: DataStore&lt;Preferences&gt; = mockDataStore, monitorIntervalPreferenceRequest: PreferenceRequest&lt;String&gt; = emptyPreferenceRequest, monitorIntervalEntries: Map&lt;String, String&gt; = mapOf(), monitorIntervalDisplayName: String = String.Empty, onGitHubRepositoriesImport: () -&gt; Unit = {}, onGitHubRepositoriesExport: () -&gt; Unit = {}, onUserSignOutRequested: () -&gt; Unit = {}, onNavigateUp: () -&gt; Unit = {} )</ID>
+    <ID>LongParameterList:SettingsViewModel.kt$SettingsViewModel$( savedStateHandle: SavedStateHandle, private val gitHubAuthenticationRepository: GitHubAuthenticationRepository, private val gitHubReleaseMonitorRepository: GitHubReleaseMonitorRepository, private val gitHubRepositoryJsonRepository: GitHubRepositoryJsonRepository, private val gitHubRepositoryRepository: GitHubRepositoryRepository, private val settingsRepository: SettingsRepository, private val userRepository: UserRepository )</ID>
+    <ID>MagicNumber:Color.kt$0xFF212121</ID>
+    <ID>MagicNumber:Color.kt$0xFF4CAF50</ID>
+    <ID>MagicNumber:Color.kt$0xFFA5D6A7</ID>
+    <ID>MagicNumber:GitHubRepositoryItem.kt$36f</ID>
+    <ID>MagicNumber:RateLimit.kt$RateLimit$5000</ID>
+    <ID>MagicNumber:SettingsRepository.kt$SettingsRepository$15</ID>
+    <ID>MagicNumber:SettingsRepository.kt$SettingsRepository$16</ID>
+    <ID>MagicNumber:SettingsRepository.kt$SettingsRepository$30</ID>
+    <ID>MagicNumber:SettingsRepository.kt$SettingsRepository$4</ID>
+    <ID>MagicNumber:SettingsRepository.kt$SettingsRepository$8</ID>
+    <ID>SpreadOperator:GitHubRepositoryReleaseWorker.kt$GitHubRepositoryReleaseWorker$(*results.toTypedArray())</ID>
+    <ID>SpreadOperator:MainViewModel.kt$MainViewModel$(*repositories.toTypedArray())</ID>
+    <ID>SpreadOperator:SettingsViewModel.kt$SettingsViewModel$(*gitHubRepositories)</ID>
+  </CurrentIssues>
+</SmellBaseline>

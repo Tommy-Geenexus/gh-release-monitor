@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "767708433900",
+    "project_id": "githubreleasemonitor-b2f05",
+    "storage_bucket": "githubreleasemonitor-b2f05.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:767708433900:android:278b2d54fcea98e9b8c4c9",
+        "android_client_info": {
+          "package_name": "com.tomg.githubreleasemonitor"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "767708433900-fkieab49e7s8an603m19vbv7pr7vev7t.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.tomg.githubreleasemonitor",
+            "certificate_hash": "a197b514a724c3a2925e3f0cf0817a98cf6c8b98"
+          }
+        },
+        {
+          "client_id": "767708433900-l91t4n286qpj3a2qnvctaigi7qs1setg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC5SJetqSeOVOV1CwAgvXw1AK8tC8nf6HQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "767708433900-l91t4n286qpj3a2qnvctaigi7qs1setg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

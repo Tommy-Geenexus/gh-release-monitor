@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<resources>
+    <string name="_import">Import</string>
+
+    <string name="account">Account</string>
+
+    <string name="add">Add</string>
+    <string name="add_repo">Add GitHub repository</string>
+
+    <string name="app_name">GitHubReleaseMonitor</string>
+
+    <string name="day">%d day</string>
+
+    <string name="export">Export</string>
+    <string name="export_failed">Failed to export GitHub repositories</string>
+    <string name="export_repos">Export GitHub repositories</string>
+    <string name="export_successful">Successfully exported GitHub repositories</string>
+
+    <string name="git_owner">Owner*</string>
+    <string name="git_repo">Name*</string>
+
+    <string name="hour">%d hour</string>
+
+    <string name="hours">%d hours</string>
+
+    <string name="import_failed">Failed to import GitHub repositories</string>
+    <string name="import_repos">Import GitHub repositories</string>
+    <string name="import_successful">Successfully imported GitHub repositories</string>
+
+    <string name="invalid">Invalid</string>
+
+    <string name="latest">Latest</string>
+
+    <string name="manage">Manage</string>
+
+    <string name="minutes">%d minutes </string>
+
+    <string name="monitor_interval">Monitor Interval</string>
+
+    <string name="repo_name">Repository name</string>
+    <string name="repo_owner">Repository owner</string>
+
+    <string name="repository_add_failed">Failed to add GitHub repository</string>
+    <string name="repository_added">Successfully added GitHub repository</string>
+    <string name="repository_delete_failed">Failed to delete GitHub repository</string>
+    <string name="repository_deleted">Successfully deleted GitHub repository</string>
+    <string name="repository_no_update">No new releases for GitHub repositories found</string>
+    <string name="repository_not_found">GitHub repository not found</string>
+    <string name="repository_update_failed">Failed to update GitHub repositories</string>
+    <string name="repository_updated">Successfully updated GitHub repositories</string>
+    <string name="repository_updates_available">GitHub repository updates available</string>
+    <string name="repository_updates_count">There are %d GitHub repository updates available</string>
+
+    <string name="required">*Required</string>
+
+    <string name="service">Service</string>
+
+    <string name="settings">Settings</string>
+
+    <string name="sign_in">Sign in with GitHub</string>
+    <string name="sign_out">Sign out</string>
+    <string name="sign_out_failed">Failed to sign out</string>
+    <string name="sign_out_github">Sign out of GitHub</string>
+
+    <string name="sort_order">Sort order</string>
+</resources>
