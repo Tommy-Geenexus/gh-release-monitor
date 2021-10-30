@@ -1,22 +1,22 @@
 ext {
-    apollo_version = "2.5.9"
-    compose_version = "1.1.0-alpha02"
-    dagger_version = "2.38.1"
-    detekt_version = "1.18.0"
+    apollo_version = "2.5.10"
+    compose_version = "1.1.0-beta01"
+    dagger_version = "2.40"
+    detekt_version = "1.18.1"
     gms_version = "4.3.5"
     gradle_versions_version = "0.39.0"
-    kotlin_version = "1.5.21"
-    ktlint_version = "10.1.0"
-    wire_version = "3.7.0"
+    kotlin_version = "1.5.31"
+    ktlint_version = "10.2.0"
+    wire_version = "4.0.0-alpha.15"
 
-    def accompanist_version = "0.17.0"
-    def activity_compose_version = "1.3.1"
+    def accompanist_version = "0.20.0"
+    def activity_compose_version = "1.4.0"
     def appcompat_version = "1.3.1"
-    def coil_version = "1.3.2"
-    def core_splash_version = "1.0.0-alpha01"
-    def core_version = "1.6.0"
-    def coroutines_gms_version = "1.5.1"
-    def coroutines_test_version = "1.5.1"
+    def coil_version = "1.4.0"
+    def core_splash_version = "1.0.0-alpha02"
+    def core_version = "1.7.0"
+    def coroutines_gms_version = "1.5.2"
+    def coroutines_test_version = "1.5.2"
     def dagger_extensions_version = "1.0.0"
     def dagger_navigation_version = "1.0.0-alpha03"
     def datastore_version = "1.0.0"
@@ -24,22 +24,22 @@ ext {
     def firebase_auth_version = "21.0.1"
     def junit_version = "4.13.2"
     def junit_ext_version = "1.1.3"
-    def lifecycle_runtime_version = "2.4.0-alpha03"
+    def lifecycle_runtime_version = "2.4.0"
     def material_version = "1.4.0"
     def moshi_version = "1.12.0"
-    def navigation_compose_version = "2.4.0-alpha07"
+    def navigation_compose_version = "2.4.0-beta01"
     def orbit_version = "4.2.0"
     def paging_version = "3.0.1"
-    def paging_compose_version = "1.0.0-alpha12"
+    def paging_compose_version = "1.0.0-alpha14"
     def preferences_version = "0.1.1"
-    def room_version = "2.4.0-alpha04"
-    def strikt_version = "0.31.0"
+    def room_version = "2.4.0-beta01"
+    def strikt_version = "0.32.0"
     def test_version = "1.4.0"
     def timber_version = "5.0.1"
     def timeago_version = "4.0.3"
     def tink_version = "1.6.1"
-    def turbine_version = "0.6.0"
-    def work_version = "2.5.0"
+    def turbine_version = "0.7.0"
+    def work_version = "2.7.0"
 
     android_test_dependencies = [
             "coroutines": "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutines_test_version",
@@ -88,6 +88,7 @@ ext {
             "preferences"               : "com.github.Sh4dowSoul.ComposePreferences:compose-preferences:$preferences_version",
             "room_runtime"              : "androidx.room:room-runtime:$room_version",
             "room_ktx"                  : "androidx.room:room-ktx:$room_version",
+            "room_paging"               : "androidx.room:room-paging:$room_version",
             "timber"                    : "com.jakewharton.timber:timber:$timber_version",
             "timeago"                   : "com.github.marlonlom:timeago:$timeago_version",
             "tink"                      : "com.google.crypto.tink:tink-android:$tink_version",

@@ -34,16 +34,16 @@ import com.tomg.githubreleasemonitor.theme.GithubReleaseMonitorTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
+@ExperimentalCoilApi
+@ExperimentalComposeUiApi
+@ExperimentalCoroutinesApi
+@ExperimentalAnimationApi
+@ExperimentalMaterialApi
 @AndroidEntryPoint
 class GitHubReleaseMonitorActivity : AppCompatActivity() {
 
     val viewModel: GitHubReleaseMonitorViewModel by viewModels()
 
-    @ExperimentalCoilApi
-    @ExperimentalComposeUiApi
-    @ExperimentalCoroutinesApi
-    @ExperimentalAnimationApi
-    @ExperimentalMaterialApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         installSplashScreen()

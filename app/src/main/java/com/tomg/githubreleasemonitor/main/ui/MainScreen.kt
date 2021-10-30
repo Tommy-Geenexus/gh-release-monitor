@@ -172,7 +172,7 @@ fun MainScreen(
         },
         onRefresh = {
             swipeRefreshState.isRefreshing = true
-            mainViewModel.updateRepositories(gitHubRepositories.snapshot().items)
+            mainViewModel.updateRepositories(gitHubRepositories.itemSnapshotList.items)
         },
         onDelete = { gitHubRepository ->
             mainViewModel.deleteRepository(gitHubRepository)

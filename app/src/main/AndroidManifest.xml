@@ -8,12 +8,12 @@
     <application
         android:name=".GitHubReleaseMonitorApplication"
         android:allowBackup="true"
+        android:fullBackupContent="@xml/backup_descriptor"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.GithubReleaseMonitor.Launcher"
-        android:fullBackupContent="@xml/backup_descriptor">
+        android:theme="@style/Theme.GithubReleaseMonitor.Launcher">
         <activity
             android:name=".GitHubReleaseMonitorActivity"
             android:exported="true">
@@ -23,8 +23,14 @@
             </intent-filter>
         </activity>
         <provider
-            android:name="androidx.work.impl.WorkManagerInitializer"
-            android:authorities="${applicationId}.workmanager-init"
-            tools:node="remove" />
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            android:exported="false"
+            tools:node="merge">
+            <meta-data
+                android:name="androidx.work.WorkManagerInitializer"
+                android:value="androidx.startup"
+                tools:node="remove" />
+        </provider>
     </application>
 </manifest>

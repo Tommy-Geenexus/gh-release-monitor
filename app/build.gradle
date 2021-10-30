@@ -18,7 +18,6 @@ apply from: "../dependencies.gradle"
 
 android {
     compileSdkVersion 31
-    buildToolsVersion "30.0.3"
 
     defaultConfig {
         applicationId "com.tomg.githubreleasemonitor"
@@ -34,7 +33,8 @@ android {
         release {
             minifyEnabled true
             shrinkResources true
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), "proguard-rules.pro"
+            proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"),
+                    "proguard-rules.pro"
         }
     }
     compileOptions {
@@ -42,7 +42,7 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = "1.8"
         useIR = true
     }
     buildFeatures {
@@ -51,14 +51,11 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion compose_version
     }
-    sourceSets {
-        main.java.srcDirs += "$buildDir/generated/source/wire"
-    }
 }
 
 tasks.named("dependencyUpdates").configure {
     def isNonStable = { String version ->
-        def stableKeyword = ['RELEASE', 'FINAL', 'GA'].any { keyword ->
+        def stableKeyword = ["RELEASE", "FINAL", "GA"].any { keyword ->
             version.toUpperCase().contains(keyword)
         }
         def regex = /^[0-9,.v-]+(-r)?$/
