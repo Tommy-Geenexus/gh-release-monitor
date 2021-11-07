@@ -78,16 +78,16 @@ fun NavGraph(
         }
         composable(
             route = NavDestinations.ROUTE_MAIN,
-            enterTransition = { _, _ ->
+            enterTransition = {
                 materialSharedAxisZForward
             },
-            exitTransition = { _, _ ->
+            exitTransition = {
                 materialSharedAxisZBackward
             },
-            popEnterTransition = { _, _ ->
+            popEnterTransition = {
                 materialSharedAxisZForward
             },
-            popExitTransition = { _, _ ->
+            popExitTransition = {
                 materialSharedAxisZBackward
             }
         ) {
@@ -103,16 +103,16 @@ fun NavGraph(
         }
         composable(
             route = NavDestinations.ROUTE_SETTINGS,
-            enterTransition = { _, _ ->
+            enterTransition = {
                 materialSharedAxisZForward
             },
-            exitTransition = { _, _ ->
+            exitTransition = {
                 materialSharedAxisZBackward
             },
-            popEnterTransition = { _, _ ->
+            popEnterTransition = {
                 materialSharedAxisZForward
             },
-            popExitTransition = { _, _ ->
+            popExitTransition = {
                 materialSharedAxisZBackward
             }
         ) {
