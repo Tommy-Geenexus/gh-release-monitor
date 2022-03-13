@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021, Tom Geiselmann (tomgapplicationsdevelopment@gmail.com)
+ * Copyright (c) 2020-2022, Tom Geiselmann (tomgapplicationsdevelopment@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
  * and associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -18,10 +18,26 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.tomg.githubreleasemonitor.theme
+package com.tomg.githubreleasemonitor.settings
 
-import androidx.compose.ui.graphics.Color
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.emptyPreferences
+import androidx.datastore.preferences.core.stringPreferencesKey
+import com.tomg.githubreleasemonitor.Empty
+import de.schnettler.datastore.manager.PreferenceRequest
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 
-val grey900 = Color(0xFF212121)
-val green200 = Color(0xFFA5D6A7)
-val green500 = Color(0xFF4CAF50)
+internal val mockDataStore = object : DataStore<Preferences> {
+
+    override val data: Flow<Preferences> = flowOf()
+
+    override suspend fun updateData(transform: suspend (t: Preferences) -> Preferences) =
+        emptyPreferences()
+}
+
+internal val emptyPreferenceRequest = PreferenceRequest(
+    key = stringPreferencesKey(String.Empty),
+    defaultValue = String.Empty
+)

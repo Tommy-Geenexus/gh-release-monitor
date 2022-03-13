@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021, Tom Geiselmann (tomgapplicationsdevelopment@gmail.com)
+ * Copyright (c) 2020-2022, Tom Geiselmann (tomgapplicationsdevelopment@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
  * and associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -28,51 +28,48 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.ContentAlpha
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
-import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Login
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.google.accompanist.insets.LocalWindowInsets
+import com.google.accompanist.insets.rememberInsetsPaddingValues
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.OAuthProvider
-import com.tomg.githubreleasemonitor.CollectInLaunchedEffect
 import com.tomg.githubreleasemonitor.R
 import com.tomg.githubreleasemonitor.login.business.LoginSideEffect
-import com.tomg.githubreleasemonitor.login.business.LoginState
 import com.tomg.githubreleasemonitor.login.business.LoginViewModel
-import com.tomg.githubreleasemonitor.rememberSideEffects
-import com.tomg.githubreleasemonitor.rememberState
+import org.orbitmvi.orbit.compose.collectAsState
+import org.orbitmvi.orbit.compose.collectSideEffect
 
 @Composable
 fun LoginScreen(
     viewModel: LoginViewModel,
     onNavigateToMain: () -> Unit
 ) {
-    val sideEffects = rememberSideEffects(viewModel.container.sideEffectFlow)
-    CollectInLaunchedEffect(sideEffects) { sideEffect ->
+    viewModel.collectSideEffect { sideEffect ->
         when (sideEffect) {
             LoginSideEffect.UserLoggedIn -> {
                 onNavigateToMain()
             }
         }
     }
-    val state by rememberState(viewModel.container.stateFlow).collectAsState(initial = LoginState())
+    val state by viewModel.collectAsState()
     val context = LocalContext.current as Activity
     LoginScreen(
         signInEnabled = !state.isAuthenticating,
@@ -96,17 +93,16 @@ fun LoginScreen(
     ) {
         Text(
             text = stringResource(id = R.string.app_name),
-            color = MaterialTheme.colors.secondary,
-            fontFamily = FontFamily.Monospace,
-            fontWeight = FontWeight.Bold,
-            style = MaterialTheme.typography.h6
+            color = MaterialTheme.colorScheme.primary,
+            style = MaterialTheme.typography.bodyLarge
         )
         Image(
             painter = painterResource(id = R.drawable.ic_logo),
             contentDescription = null,
             modifier = Modifier
                 .padding(all = 16.dp)
-                .size(108.dp)
+                .size(108.dp),
+            colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.primary)
         )
     }
     Row(
@@ -117,26 +113,31 @@ fun LoginScreen(
         verticalAlignment = Alignment.Bottom
     ) {
         if (signInEnabled) {
-            TextButton(onClick = onLoginRequested) {
+            TextButton(
+                onClick = onLoginRequested,
+                colors = ButtonDefaults.textButtonColors(
+                    contentColor = MaterialTheme.colorScheme.onSurface
+                )
+            ) {
                 Icon(
                     imageVector = Icons.Outlined.Login,
-                    contentDescription = null,
-                    tint = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium)
+                    contentDescription = null
                 )
                 Text(
                     text = stringResource(id = R.string.sign_in),
                     modifier = Modifier.padding(all = 8.dp),
-                    color = MaterialTheme.colors.onSurface,
-                    textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.button
+                    color = MaterialTheme.colorScheme.onSurface,
+                    textAlign = TextAlign.Center
                 )
             }
         } else {
+            val insetsPadding = rememberInsetsPaddingValues(
+                insets = LocalWindowInsets.current.navigationBars
+            )
             CircularProgressIndicator(
                 modifier = Modifier
-                    .padding(bottom = 16.dp)
+                    .padding(bottom = 16.dp + insetsPadding.calculateBottomPadding())
                     .size(24.dp),
-                color = MaterialTheme.colors.secondary,
                 strokeWidth = 2.dp
             )
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021, Tom Geiselmann (tomgapplicationsdevelopment@gmail.com)
+ * Copyright (c) 2020-2022, Tom Geiselmann (tomgapplicationsdevelopment@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
  * and associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -21,48 +21,23 @@
 package com.tomg.githubreleasemonitor.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.darkColors
-import androidx.compose.material.lightColors
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.dynamicDarkColorScheme
+import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
-
-private val DarkColorPalette = darkColors(
-    primary = grey900,
-    primaryVariant = Color.Black,
-    secondary = green200,
-    onSecondary = Color.Black,
-    onPrimary = Color.White,
-    onSurface = Color.White,
-)
-
-private val LightColorPalette = lightColors(
-    primary = Color.White,
-    primaryVariant = Color.White,
-    secondary = green500,
-    secondaryVariant = green500,
-    background = Color.White,
-    surface = Color.White,
-    onPrimary = Color.Black,
-    onSecondary = Color.White,
-    onBackground = Color.Black,
-    onSurface = Color.Black,
-)
+import androidx.compose.ui.platform.LocalContext
 
 @Composable
 fun GithubReleaseMonitorTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
-    val colors = if (darkTheme) {
-        DarkColorPalette
-    } else {
-        LightColorPalette
-    }
     MaterialTheme(
-        colors = colors,
-        typography = typography,
-        shapes = shapes,
+        colorScheme = if (darkTheme) {
+            dynamicDarkColorScheme(LocalContext.current)
+        } else {
+            dynamicLightColorScheme(LocalContext.current)
+        },
         content = content
     )
 }

@@ -2,7 +2,8 @@ import io.gitlab.arturbosch.detekt.Detekt
 
 plugins {
     id "com.android.application"
-    id "com.apollographql.apollo"
+    id "com.apollographql.apollo3"
+    id "com.diffplug.spotless"
     id "com.github.ben-manes.versions"
     id "com.google.gms.google-services"
     id "com.squareup.wire"
@@ -17,12 +18,12 @@ plugins {
 apply from: "../dependencies.gradle"
 
 android {
-    compileSdkVersion 31
+    compileSdkVersion 32
 
     defaultConfig {
         applicationId "com.tomg.githubreleasemonitor"
-        minSdkVersion 27
-        targetSdkVersion 31
+        minSdkVersion 31
+        targetSdkVersion 32
         versionCode 1
         versionName "1.0.0"
 
@@ -37,19 +38,23 @@ android {
                     "proguard-rules.pro"
         }
     }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
     kotlinOptions {
         jvmTarget = "1.8"
         useIR = true
     }
+
     buildFeatures {
         compose true
     }
+
     composeOptions {
-        kotlinCompilerExtensionVersion compose_compiler_version
+        kotlinCompilerExtensionVersion compose_version
     }
 }
 
@@ -71,7 +76,7 @@ tasks.withType(Detekt).configureEach {
 }
 
 apollo {
-    generateKotlinModels.set(true)
+    packageNamesFromFilePaths()
 }
 
 detekt {
@@ -83,6 +88,16 @@ ktlint {
     filter {
         exclude { element -> element.file.path.contains("generated/") }
         include("**/kotlin/**")
+    }
+}
+
+spotless {
+    kotlin {
+        target("src/*/java/**/*.kt")
+        //noinspection GroovyImplicitNullArgumentCall
+        ktlint()
+        endWithNewline()
+        licenseHeaderFile rootProject.file("spotless/copyright.txt")
     }
 }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021, Tom Geiselmann (tomgapplicationsdevelopment@gmail.com)
+ * Copyright (c) 2020-2022, Tom Geiselmann (tomgapplicationsdevelopment@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
  * and associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -25,16 +25,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.AlertDialog
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.ContentAlpha
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Text
-import androidx.compose.material.TextButton
 import androidx.compose.material.TextFieldDefaults
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -43,9 +40,8 @@ import androidx.compose.ui.unit.dp
 import com.tomg.githubreleasemonitor.R
 import com.tomg.githubreleasemonitor.main.MAX_CHAR_OWNER
 import com.tomg.githubreleasemonitor.main.MAX_CHAR_REPO
-import com.tomg.githubreleasemonitor.main.business.AddRepositoryState
 import com.tomg.githubreleasemonitor.main.business.AddRepositoryViewModel
-import com.tomg.githubreleasemonitor.rememberState
+import org.orbitmvi.orbit.compose.collectAsState
 
 @Composable
 fun AddGitHubRepositoryDialog(
@@ -53,9 +49,7 @@ fun AddGitHubRepositoryDialog(
     onDismiss: () -> Unit,
     onConfirm: (repositoryOwner: String, repositoryName: String) -> Unit
 ) {
-    val state by rememberState(viewModel.container.stateFlow).collectAsState(
-        initial = AddRepositoryState()
-    )
+    val state by viewModel.collectAsState()
     AlertDialog(
         onDismissRequest = {
             onDismiss()
@@ -65,11 +59,9 @@ fun AddGitHubRepositoryDialog(
             TextButton(
                 onClick = {
                     onConfirm(state.repositoryOwner, state.repositoryName)
+                    viewModel.clearRepositoryOwnerAndName()
                 },
-                enabled = state.isValidOwner && state.isValidRepositoryName,
-                colors = ButtonDefaults.textButtonColors(
-                    contentColor = MaterialTheme.colors.onSurface
-                )
+                enabled = state.isValidOwner && state.isValidRepositoryName
             ) {
                 Text(text = stringResource(id = R.string.add))
             }
@@ -79,10 +71,7 @@ fun AddGitHubRepositoryDialog(
                 onClick = {
                     onDismiss()
                     viewModel.clearRepositoryOwnerAndName()
-                },
-                colors = ButtonDefaults.textButtonColors(
-                    contentColor = MaterialTheme.colors.onSurface
-                )
+                }
             ) {
                 Text(text = stringResource(id = android.R.string.cancel))
             }
@@ -91,8 +80,8 @@ fun AddGitHubRepositoryDialog(
             Column {
                 Text(
                     text = stringResource(id = R.string.add_repo),
-                    style = MaterialTheme.typography.h6,
-                    color = MaterialTheme.colors.onSurface
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 OutlinedTextField(
                     value = state.repositoryOwner,
@@ -100,15 +89,18 @@ fun AddGitHubRepositoryDialog(
                         viewModel.updateRepositoryOwner(value.trim())
                     },
                     modifier = Modifier.padding(top = 24.dp),
+                    textStyle = MaterialTheme.typography.bodyLarge,
                     label = {
                         Text(text = stringResource(id = R.string.git_owner))
                     },
                     isError = !state.isValidOwner,
                     singleLine = true,
                     colors = TextFieldDefaults.outlinedTextFieldColors(
-                        cursorColor = MaterialTheme.colors.secondary,
-                        focusedBorderColor = MaterialTheme.colors.secondary,
-                        focusedLabelColor = MaterialTheme.colors.secondary,
+                        textColor = MaterialTheme.colorScheme.onSurface,
+                        cursorColor = MaterialTheme.colorScheme.primary,
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                        focusedLabelColor = MaterialTheme.colorScheme.secondary
                     )
                 )
                 TextFieldBottomIndicator(
@@ -130,9 +122,11 @@ fun AddGitHubRepositoryDialog(
                     isError = !state.isValidRepositoryName,
                     singleLine = true,
                     colors = TextFieldDefaults.outlinedTextFieldColors(
-                        cursorColor = MaterialTheme.colors.secondary,
-                        focusedBorderColor = MaterialTheme.colors.secondary,
-                        focusedLabelColor = MaterialTheme.colors.secondary,
+                        textColor = MaterialTheme.colorScheme.onSurface,
+                        cursorColor = MaterialTheme.colorScheme.primary,
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                        focusedLabelColor = MaterialTheme.colorScheme.secondary
                     )
                 )
                 TextFieldBottomIndicator(
@@ -152,8 +146,8 @@ fun AddGitHubRepositoryDialog(
 fun TextFieldBottomIndicator(
     helperText: String,
     errorText: String,
-    textColor: Color = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium),
-    errorTextColor: Color = MaterialTheme.colors.error,
+    textColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
+    errorTextColor: Color = MaterialTheme.colorScheme.error,
     isError: Boolean = false,
     charCnt: Int = 0,
     maxCharCnt: Int = Integer.MAX_VALUE
@@ -172,7 +166,7 @@ fun TextFieldBottomIndicator(
             Text(
                 text = if (isError) errorText else helperText,
                 color = if (isError) errorTextColor else textColor,
-                style = MaterialTheme.typography.caption.copy(color = textColor)
+                style = MaterialTheme.typography.bodySmall
             )
         }
         Row(
@@ -185,7 +179,7 @@ fun TextFieldBottomIndicator(
             Text(
                 text = "$charCnt/$maxCharCnt",
                 color = textColor,
-                style = MaterialTheme.typography.caption.copy(color = textColor)
+                style = MaterialTheme.typography.bodySmall
             )
         }
     }

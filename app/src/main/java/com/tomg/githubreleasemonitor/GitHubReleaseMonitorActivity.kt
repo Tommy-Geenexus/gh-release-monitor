@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021, Tom Geiselmann (tomgapplicationsdevelopment@gmail.com)
+ * Copyright (c) 2020-2022, Tom Geiselmann (tomgapplicationsdevelopment@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
  * and associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -25,20 +25,27 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.ExperimentalComposeUiApi
-import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.compose.ui.graphics.Color
+import androidx.core.view.WindowCompat
 import coil.annotation.ExperimentalCoilApi
+import com.google.accompanist.insets.ProvideWindowInsets
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.tomg.githubreleasemonitor.theme.GithubReleaseMonitorTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
+@ExperimentalMaterialApi
+@ExperimentalMaterial3Api
 @ExperimentalCoilApi
 @ExperimentalComposeUiApi
 @ExperimentalCoroutinesApi
 @ExperimentalAnimationApi
-@ExperimentalMaterialApi
 @AndroidEntryPoint
 class GitHubReleaseMonitorActivity : AppCompatActivity() {
 
@@ -46,10 +53,22 @@ class GitHubReleaseMonitorActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        installSplashScreen()
+        setTheme(R.style.Theme_MaterialComponents_DayNight_NoActionBar)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent {
+            val systemUiController = rememberSystemUiController()
+            val useDarkIcons = !isSystemInDarkTheme()
+            SideEffect {
+                systemUiController.setSystemBarsColor(
+                    color = Color.Transparent,
+                    darkIcons = useDarkIcons,
+                    isNavigationBarContrastEnforced = false
+                )
+            }
             GithubReleaseMonitorTheme {
-                NavGraph(rememberAnimatedNavController())
+                ProvideWindowInsets {
+                    NavGraph(rememberAnimatedNavController())
+                }
             }
         }
         viewModel.startGitHubRepositoryReleaseMonitor()

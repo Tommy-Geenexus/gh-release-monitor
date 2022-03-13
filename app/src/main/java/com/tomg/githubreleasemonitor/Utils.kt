@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021, Tom Geiselmann (tomgapplicationsdevelopment@gmail.com)
+ * Copyright (c) 2020-2022, Tom Geiselmann (tomgapplicationsdevelopment@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
  * and associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -20,56 +20,7 @@
 
 package com.tomg.githubreleasemonitor
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
-import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.flowWithLifecycle
-import kotlin.coroutines.CoroutineContext
-import kotlin.coroutines.EmptyCoroutineContext
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.withContext
-
 const val TOP_LEVEL_PACKAGE_NAME = "com.tomg.githubreleasemonitor."
 const val MIME_TYPE_JSON = "application/json"
 
 val String.Companion.Empty get() = ""
-
-@Composable
-fun <S> rememberSideEffects(sideEffectFlow: Flow<S>): Flow<S> {
-    val lifecycleOwner = LocalLifecycleOwner.current
-    return remember(sideEffectFlow, lifecycleOwner) {
-        sideEffectFlow.flowWithLifecycle(
-            lifecycle = lifecycleOwner.lifecycle,
-            minActiveState = Lifecycle.State.STARTED
-        )
-    }
-}
-
-@Composable
-fun <S> rememberState(state: Flow<S>): Flow<S> {
-    val lifecycleOwner = LocalLifecycleOwner.current
-    return remember(state, lifecycleOwner) {
-        state.flowWithLifecycle(
-            lifecycle = lifecycleOwner.lifecycle,
-            minActiveState = Lifecycle.State.STARTED
-        )
-    }
-}
-
-@Composable
-inline fun <S> CollectInLaunchedEffect(
-    flow: Flow<S>,
-    context: CoroutineContext = EmptyCoroutineContext,
-    crossinline block: suspend (S) -> Unit
-) {
-    LaunchedEffect(flow) {
-        withContext(context) {
-            flow.collect { sideEffect ->
-                block(sideEffect)
-            }
-        }
-    }
-}

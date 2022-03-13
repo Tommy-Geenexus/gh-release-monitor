@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021, Tom Geiselmann (tomgapplicationsdevelopment@gmail.com)
+ * Copyright (c) 2020-2022, Tom Geiselmann (tomgapplicationsdevelopment@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
  * and associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -21,17 +21,15 @@
 package com.tomg.githubreleasemonitor.settings.ui
 
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.ContentAlpha
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Logout
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.tomg.githubreleasemonitor.R
-import de.schnettler.datastore.compose.model.Preference
+import de.schnettler.datastore.compose.material3.model.Preference
 
 @Composable
 fun settingsAccountItem(
@@ -47,8 +45,7 @@ fun settingsAccountItem(
                 Icon(
                     imageVector = Icons.Outlined.Logout,
                     contentDescription = null,
-                    modifier = Modifier.padding(8.dp),
-                    tint = MaterialTheme.colors.onPrimary.copy(alpha = ContentAlpha.medium)
+                    modifier = Modifier.padding(8.dp)
                 )
             },
             onClick = onUserSignOutRequested

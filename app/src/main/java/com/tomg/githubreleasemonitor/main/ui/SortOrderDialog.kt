@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021, Tom Geiselmann (tomgapplicationsdevelopment@gmail.com)
+ * Copyright (c) 2020-2022, Tom Geiselmann (tomgapplicationsdevelopment@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
  * and associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -24,17 +24,15 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.AlertDialog
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.ContentAlpha
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.RadioButton
-import androidx.compose.material.RadioButtonDefaults
-import androidx.compose.material.Text
-import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.SortByAlpha
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.RadioButtonDefaults
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -48,6 +46,7 @@ import androidx.compose.ui.unit.dp
 import com.tomg.githubreleasemonitor.R
 import com.tomg.githubreleasemonitor.main.SortOrder
 
+@ExperimentalMaterial3Api
 @Composable
 fun SortOrderDialog(
     defaultSortOrder: SortOrder,
@@ -61,10 +60,7 @@ fun SortOrderDialog(
             TextButton(
                 onClick = {
                     onConfirm(sortOrder)
-                },
-                colors = ButtonDefaults.textButtonColors(
-                    contentColor = MaterialTheme.colors.onSurface
-                )
+                }
             ) {
                 Text(text = stringResource(id = android.R.string.ok))
             }
@@ -73,27 +69,20 @@ fun SortOrderDialog(
             TextButton(
                 onClick = {
                     onDismiss()
-                },
-                colors = ButtonDefaults.textButtonColors(
-                    contentColor = MaterialTheme.colors.onSurface
-                )
+                }
             ) {
                 Text(text = stringResource(id = android.R.string.cancel))
             }
         },
         title = {
-            Text(
-                text = stringResource(id = R.string.sort_order),
-                color = MaterialTheme.colors.onSurface,
-                style = MaterialTheme.typography.h6
-            )
+            Text(text = stringResource(id = R.string.sort_order))
         },
         text = {
             Column {
                 val sortOrders = listOf(
                     stringResource(id = R.string.repo_owner) to SortOrder.Asc.RepositoryOwner,
-                    stringResource(id = R.string.repo_owner) to SortOrder.Asc.RepositoryName,
-                    stringResource(id = R.string.repo_name) to SortOrder.Desc.RepositoryOwner,
+                    stringResource(id = R.string.repo_name) to SortOrder.Asc.RepositoryName,
+                    stringResource(id = R.string.repo_owner) to SortOrder.Desc.RepositoryOwner,
                     stringResource(id = R.string.repo_name) to SortOrder.Desc.RepositoryName
                 )
                 val lastSortOrder = sortOrders.last().second
@@ -110,19 +99,13 @@ fun SortOrderDialog(
                             Icon(
                                 imageVector = Icons.Outlined.SortByAlpha,
                                 contentDescription = null,
-                                modifier = Modifier.padding(start = 24.dp),
-                                tint = MaterialTheme.colors.onSurface.copy(
-                                    alpha = ContentAlpha.medium
-                                )
+                                modifier = Modifier.padding(start = 24.dp)
                             )
                         } else {
                             Icon(
                                 painter = painterResource(id = R.drawable.ic_sort_by_alpha_reverse),
                                 contentDescription = null,
-                                modifier = Modifier.padding(start = 24.dp),
-                                tint = MaterialTheme.colors.onSurface.copy(
-                                    alpha = ContentAlpha.medium
-                                )
+                                modifier = Modifier.padding(start = 24.dp)
                             )
                         }
                         Text(
@@ -130,12 +113,11 @@ fun SortOrderDialog(
                             modifier = Modifier.padding(
                                 start = 16.dp,
                                 end = 16.dp
-                            ),
-                            style = MaterialTheme.typography.body1,
+                            )
                         )
                     }
                     if (order != lastSortOrder) {
-                        Spacer(modifier = Modifier.padding(bottom = 24.dp))
+                        Spacer(modifier = Modifier.padding(bottom = 8.dp))
                     }
                 }
             }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021, Tom Geiselmann (tomgapplicationsdevelopment@gmail.com)
+ * Copyright (c) 2020-2022, Tom Geiselmann (tomgapplicationsdevelopment@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
  * and associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -20,7 +20,6 @@
 
 package com.tomg.githubreleasemonitor.main.ui
 
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -38,33 +37,34 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
-import androidx.compose.material.ContentAlpha
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
 import androidx.compose.material.SwipeableState
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.LocalOffer
 import androidx.compose.material.rememberSwipeableState
 import androidx.compose.material.swipeable
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.lerp
-import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
@@ -80,9 +80,11 @@ import com.tomg.githubreleasemonitor.R
 import com.tomg.githubreleasemonitor.main.data.GitHubRepository
 import java.time.ZonedDateTime
 import kotlin.math.roundToInt
+import kotlinx.coroutines.launch
 
-@ExperimentalCoilApi
 @ExperimentalMaterialApi
+@ExperimentalMaterial3Api
+@ExperimentalCoilApi
 @Composable
 fun GitHubRepositoryItem(
     swipeableState: SwipeableState<Float> = rememberSwipeableState(initialValue = 0f),
@@ -112,8 +114,8 @@ fun GitHubRepositoryItem(
             .fillMaxSize()
             .background(
                 color = lerp(
-                    start = MaterialTheme.colors.surface,
-                    stop = MaterialTheme.colors.error,
+                    start = MaterialTheme.colorScheme.surface,
+                    stop = MaterialTheme.colorScheme.error,
                     fraction = fraction
                 )
             ),
@@ -124,8 +126,12 @@ fun GitHubRepositoryItem(
                 .align(Alignment.Center)
                 .fillMaxSize()
         ) {
+            val scope = rememberCoroutineScope()
             IconButton(
                 onClick = {
+                    scope.launch {
+                        swipeableState.snapTo(0f)
+                    }
                     onDeleteGitHubRepository(gitHubRepository)
                 },
                 modifier = Modifier.padding(start = 16.dp)
@@ -133,11 +139,11 @@ fun GitHubRepositoryItem(
                 Icon(
                     imageVector = Icons.Outlined.Delete,
                     contentDescription = null,
-                    tint = MaterialTheme.colors.onSecondary
+                    tint = MaterialTheme.colorScheme.onSecondary
                 )
             }
         }
-        Card(
+        ElevatedCard(
             modifier = Modifier
                 .offset {
                     if (swipeableState.overflow.value == 0f) {
@@ -151,22 +157,15 @@ fun GitHubRepositoryItem(
                 }
                 .clickable {
                     onGitHubRepositoryReleaseSelected(gitHubRepository.latestReleaseHtmlUrl)
-                }
+                },
+            shape = RoundedCornerShape(0.dp),
+            elevation = CardDefaults.outlinedCardElevation()
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                val context = LocalContext.current
-                val colors = MaterialTheme.colors
-                val alpha = ContentAlpha.medium
                 val painter = rememberImagePainter(
                     data = gitHubRepository.authorAvatarUrl,
                     builder = {
-                        val drawable = AppCompatResources.getDrawable(
-                            context,
-                            R.drawable.ic_broken_image
-                        )?.apply {
-                            setTint(colors.onPrimary.copy(alpha = alpha).toArgb())
-                        }
-                        error(drawable)
+                        error(R.drawable.ic_broken_image)
                     }
                 )
                 Image(
@@ -195,13 +194,13 @@ fun GitHubRepositoryItem(
                         text = gitHubRepository.owner,
                         overflow = TextOverflow.Ellipsis,
                         maxLines = 1,
-                        style = MaterialTheme.typography.subtitle1
+                        style = MaterialTheme.typography.bodyLarge
                     )
                     Text(
                         text = gitHubRepository.name,
                         overflow = TextOverflow.Ellipsis,
                         maxLines = 1,
-                        style = MaterialTheme.typography.h6
+                        style = MaterialTheme.typography.bodyLarge
                     )
                     Row(
                         modifier = Modifier
@@ -212,8 +211,7 @@ fun GitHubRepositoryItem(
                         Icon(
                             imageVector = Icons.Outlined.LocalOffer,
                             contentDescription = null,
-                            modifier = Modifier.size(18.dp),
-                            tint = MaterialTheme.colors.secondary
+                            modifier = Modifier.size(18.dp)
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Column(
@@ -226,7 +224,7 @@ fun GitHubRepositoryItem(
                                 text = gitHubRepository.latestReleaseName,
                                 overflow = TextOverflow.Ellipsis,
                                 maxLines = 1,
-                                style = MaterialTheme.typography.subtitle2
+                                style = MaterialTheme.typography.bodyMedium
                             )
                             Text(
                                 text = TimeAgo.using(
@@ -237,7 +235,7 @@ fun GitHubRepositoryItem(
                                 ),
                                 overflow = TextOverflow.Ellipsis,
                                 maxLines = 1,
-                                style = MaterialTheme.typography.caption
+                                style = MaterialTheme.typography.bodyMedium
                             )
                         }
                         Row(
@@ -248,24 +246,20 @@ fun GitHubRepositoryItem(
                         ) {
                             Spacer(modifier = Modifier.width(8.dp))
                             Surface(
-                                shape = RoundedCornerShape(percent = 50),
+                                shape = RoundedCornerShape(8.dp),
                                 border = BorderStroke(
                                     width = 1.dp,
-                                    color = MaterialTheme.colors.secondary
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
                             ) {
                                 Text(
                                     text = stringResource(id = R.string.latest),
-                                    modifier = Modifier.padding(
-                                        start = 8.dp,
-                                        top = 4.dp,
-                                        end = 8.dp,
-                                        bottom = 4.dp
-                                    ),
-                                    color = MaterialTheme.colors.secondary,
+                                    modifier = Modifier.padding(all = 4.dp),
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    textAlign = TextAlign.End,
                                     overflow = TextOverflow.Ellipsis,
                                     maxLines = 1,
-                                    style = MaterialTheme.typography.caption
+                                    style = MaterialTheme.typography.labelLarge
                                 )
                             }
                         }

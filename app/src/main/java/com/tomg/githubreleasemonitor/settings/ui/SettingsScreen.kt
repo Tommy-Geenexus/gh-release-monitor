@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021, Tom Geiselmann (tomgapplicationsdevelopment@gmail.com)
+ * Copyright (c) 2020-2022, Tom Geiselmann (tomgapplicationsdevelopment@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
  * and associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -23,42 +23,51 @@ package com.tomg.githubreleasemonitor.settings.ui
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Scaffold
-import androidx.compose.material.ScaffoldState
-import androidx.compose.material.rememberScaffoldState
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.ArrowBack
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SmallTopAppBar
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.emptyPreferences
-import androidx.datastore.preferences.core.stringPreferencesKey
-import com.tomg.githubreleasemonitor.CollectInLaunchedEffect
+import com.google.accompanist.insets.LocalWindowInsets
+import com.google.accompanist.insets.rememberInsetsPaddingValues
 import com.tomg.githubreleasemonitor.Empty
 import com.tomg.githubreleasemonitor.MIME_TYPE_JSON
 import com.tomg.githubreleasemonitor.R
-import com.tomg.githubreleasemonitor.rememberSideEffects
-import com.tomg.githubreleasemonitor.rememberState
 import com.tomg.githubreleasemonitor.settings.business.SettingsSideEffect
-import com.tomg.githubreleasemonitor.settings.business.SettingsState
 import com.tomg.githubreleasemonitor.settings.business.SettingsViewModel
-import de.schnettler.datastore.compose.ui.PreferenceScreen
+import com.tomg.githubreleasemonitor.settings.emptyPreferenceRequest
+import com.tomg.githubreleasemonitor.settings.mockDataStore
+import de.schnettler.datastore.compose.material3.PreferenceScreen
 import de.schnettler.datastore.manager.PreferenceRequest
 import java.time.LocalDateTime
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.launch
+import org.orbitmvi.orbit.compose.collectAsState
+import org.orbitmvi.orbit.compose.collectSideEffect
 
+@ExperimentalMaterial3Api
 @ExperimentalComposeUiApi
 @ExperimentalCoroutinesApi
-@ExperimentalMaterialApi
 @ExperimentalAnimationApi
 @Composable
 fun SettingsScreen(
@@ -73,7 +82,7 @@ fun SettingsScreen(
         }
     )
     val exportGitHubRepositories = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.CreateDocument(),
+        contract = ActivityResultContracts.CreateDocument(MIME_TYPE_JSON),
         onResult = { uri ->
             viewModel.exportGitHubRepositories(uri)
         }
@@ -82,40 +91,48 @@ fun SettingsScreen(
     val exportSuccessful = stringResource(id = R.string.export_successful)
     val importFailed = stringResource(id = R.string.import_failed)
     val importSuccessful = stringResource(id = R.string.import_successful)
-    val sideEffects = rememberSideEffects(viewModel.container.sideEffectFlow)
     val signOutFailed = stringResource(id = R.string.sign_out_failed)
-    val scaffoldState = rememberScaffoldState()
-    CollectInLaunchedEffect(sideEffects) { sideEffect ->
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
+    viewModel.collectSideEffect { sideEffect ->
         when (sideEffect) {
             SettingsSideEffect.Export.Failure -> {
-                scaffoldState.snackbarHostState.showSnackbar(message = exportFailed)
+                scope.launch {
+                    snackbarHostState.showSnackbar(message = exportFailed)
+                }
             }
             SettingsSideEffect.Export.Success -> {
-                scaffoldState.snackbarHostState.showSnackbar(message = exportSuccessful)
+                scope.launch {
+                    snackbarHostState.showSnackbar(message = exportSuccessful)
+                }
             }
             SettingsSideEffect.Import.Failure -> {
-                scaffoldState.snackbarHostState.showSnackbar(message = importFailed)
+                scope.launch {
+                    snackbarHostState.showSnackbar(message = importFailed)
+                }
             }
             SettingsSideEffect.Import.Success -> {
-                scaffoldState.snackbarHostState.showSnackbar(message = importSuccessful)
+                scope.launch {
+                    snackbarHostState.showSnackbar(message = importSuccessful)
+                }
             }
             SettingsSideEffect.UserSignOut.Failure -> {
-                scaffoldState.snackbarHostState.showSnackbar(message = signOutFailed)
+                scope.launch {
+                    snackbarHostState.showSnackbar(message = signOutFailed)
+                }
             }
             SettingsSideEffect.UserSignOut.Success -> {
                 onNavigateToLogin()
             }
         }
     }
-    CollectInLaunchedEffect(viewModel.getMonitorInterval()) { monitorInterval ->
-        viewModel.updateMonitorInterval(monitorInterval)
+    val monitorIntervalFlow = viewModel.getMonitorInterval()
+    LaunchedEffect(monitorIntervalFlow) {
+        monitorIntervalFlow.collect { monitorInterval ->
+            viewModel.updateMonitorInterval(monitorInterval)
+        }
     }
-    val state by rememberState(viewModel.container.stateFlow).collectAsState(
-        initial = SettingsState(
-            monitorInterval = viewModel.monitorIntervalDefaultValue,
-            monitorIntervalEntries = viewModel.monitorIntervalEntries
-        )
-    )
+    val state by viewModel.collectAsState()
     val displayName = stringResource(R.string.app_name) +
         "_" +
         LocalDateTime.now().toString() +
@@ -133,7 +150,7 @@ fun SettingsScreen(
         )
     }
     SettingScreen(
-        scaffoldState = scaffoldState,
+        snackbarHostState = snackbarHostState,
         dataStore = viewModel.dataStore,
         monitorIntervalPreferenceRequest = PreferenceRequest(
             key = viewModel.monitorIntervalKey,
@@ -154,13 +171,13 @@ fun SettingsScreen(
     )
 }
 
+@ExperimentalMaterial3Api
 @ExperimentalComposeUiApi
 @ExperimentalCoroutinesApi
-@ExperimentalMaterialApi
 @ExperimentalAnimationApi
 @Composable
 fun SettingScreen(
-    scaffoldState: ScaffoldState = rememberScaffoldState(),
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     dataStore: DataStore<Preferences> = mockDataStore,
     monitorIntervalPreferenceRequest: PreferenceRequest<String> = emptyPreferenceRequest,
     monitorIntervalEntries: Map<String, String> = mapOf(),
@@ -171,10 +188,26 @@ fun SettingScreen(
     onNavigateUp: () -> Unit = {}
 ) {
     Scaffold(
-        scaffoldState = scaffoldState,
         topBar = {
-            SettingsTopBar(onNavigateUp = onNavigateUp)
-        }
+            val insetsPadding = rememberInsetsPaddingValues(
+                insets = LocalWindowInsets.current.statusBars
+            )
+            SmallTopAppBar(
+                modifier = Modifier.padding(top = insetsPadding.calculateTopPadding()),
+                title = { Text(text = stringResource(id = R.string.settings)) },
+                navigationIcon = {
+                    IconButton(onClick = onNavigateUp) {
+                        Icon(
+                            imageVector = Icons.Outlined.ArrowBack,
+                            contentDescription = null
+                        )
+                    }
+                }
+            )
+        },
+        snackbarHost = {
+            SnackbarHost(snackbarHostState)
+        },
     ) {
         PreferenceScreen(
             items = listOf(
@@ -194,25 +227,12 @@ fun SettingScreen(
     }
 }
 
+@ExperimentalMaterial3Api
 @ExperimentalComposeUiApi
 @ExperimentalCoroutinesApi
 @ExperimentalAnimationApi
-@ExperimentalMaterialApi
 @Preview(name = "Settings Screen")
 @Composable
 fun SettingsScreen() {
     SettingScreen()
 }
-
-val mockDataStore = object : DataStore<Preferences> {
-
-    override val data: Flow<Preferences> = flowOf()
-
-    override suspend fun updateData(transform: suspend (t: Preferences) -> Preferences) =
-        emptyPreferences()
-}
-
-val emptyPreferenceRequest = PreferenceRequest(
-    key = stringPreferencesKey(String.Empty),
-    defaultValue = String.Empty
-)

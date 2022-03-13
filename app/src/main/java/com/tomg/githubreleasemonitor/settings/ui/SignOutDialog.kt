@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021, Tom Geiselmann (tomgapplicationsdevelopment@gmail.com)
+ * Copyright (c) 2020-2022, Tom Geiselmann (tomgapplicationsdevelopment@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
  * and associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -20,11 +20,9 @@
 
 package com.tomg.githubreleasemonitor.settings.ui
 
-import androidx.compose.material.AlertDialog
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
-import androidx.compose.material.TextButton
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.tomg.githubreleasemonitor.R
@@ -37,31 +35,17 @@ fun SignOutDialog(
     AlertDialog(
         onDismissRequest = onDismiss,
         confirmButton = {
-            TextButton(
-                onClick = onConfirm,
-                colors = ButtonDefaults.textButtonColors(
-                    contentColor = MaterialTheme.colors.onSurface
-                )
-            ) {
+            TextButton(onClick = onConfirm) {
                 Text(text = stringResource(id = R.string.sign_out))
             }
         },
         dismissButton = {
-            TextButton(
-                onClick = onDismiss,
-                colors = ButtonDefaults.textButtonColors(
-                    contentColor = MaterialTheme.colors.onSurface
-                )
-            ) {
+            TextButton(onClick = onDismiss) {
                 Text(text = stringResource(id = android.R.string.cancel))
             }
         },
         title = {
-            Text(
-                text = stringResource(id = R.string.sign_out),
-                style = MaterialTheme.typography.h6,
-                color = MaterialTheme.colors.onSurface
-            )
+            Text(text = stringResource(id = R.string.sign_out))
         }
     )
 }

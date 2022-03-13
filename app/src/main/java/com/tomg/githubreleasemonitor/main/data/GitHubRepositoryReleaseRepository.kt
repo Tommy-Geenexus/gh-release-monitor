@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021, Tom Geiselmann (tomgapplicationsdevelopment@gmail.com)
+ * Copyright (c) 2020-2022, Tom Geiselmann (tomgapplicationsdevelopment@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
  * and associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -20,8 +20,6 @@
 
 package com.tomg.githubreleasemonitor.main.data
 
-import com.apollographql.apollo.coroutines.await
-import com.apollographql.apollo.request.RequestHeaders
 import com.tomg.githubreleasemonitor.GitHubRepositoriesQuery
 import com.tomg.githubreleasemonitor.GitHubRepositoryQuery
 import com.tomg.githubreleasemonitor.di.DispatcherIo
@@ -56,15 +54,8 @@ class GitHubRepositoryReleaseRepository @Inject constructor(
                             repositoryName = repositoryName
                         )
                     )
-                    .toBuilder()
-                    .requestHeaders(
-                        RequestHeaders
-                            .builder()
-                            .addHeader("Authorization", "bearer $accessToken")
-                            .build()
-                    )
-                    .build()
-                    .await()
+                    .addHttpHeader("Authorization", "bearer $accessToken")
+                    .execute()
                 val data = response.data
                 val gitHubRateLimit = data?.rateLimit
                 if (gitHubRateLimit != null) {
@@ -112,15 +103,8 @@ class GitHubRepositoryReleaseRepository @Inject constructor(
                 }
                 val response = apolloClient
                     .query(GitHubRepositoriesQuery(ids))
-                    .toBuilder()
-                    .requestHeaders(
-                        RequestHeaders
-                            .builder()
-                            .addHeader("Authorization", "bearer $accessToken")
-                            .build()
-                    )
-                    .build()
-                    .await()
+                    .addHttpHeader("Authorization", "bearer $accessToken")
+                    .execute()
                 val data = response.data
                 val gitHubRateLimit = data?.rateLimit
                 if (gitHubRateLimit != null) {
@@ -134,7 +118,7 @@ class GitHubRepositoryReleaseRepository @Inject constructor(
                 }
                 gitHubRepositories
                     .mapIndexed { index: Int, gitHubRepository: GitHubRepository ->
-                        val latestRelease = data?.nodes?.get(index)?.asRepository?.latestRelease
+                        val latestRelease = data?.nodes?.get(index)?.onRepository?.latestRelease
                         val timestamp = (latestRelease?.publishedAt as? String)
                         val result = timestamp?.compareToTimestamp(
                             timestamp = gitHubRepository.latestReleaseTimestamp

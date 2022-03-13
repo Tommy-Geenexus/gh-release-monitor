@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="_import">Import</string>
 
     <string name="account">Account</string>
@@ -9,7 +9,7 @@
 
     <string name="app_name">GitHubReleaseMonitor</string>
 
-    <string name="day">%d day</string>
+    <string name="day" tools:ignore="PluralsCandidate">%d day</string>
 
     <string name="export">Export</string>
     <string name="export_failed">Failed to export GitHub repositories</string>
@@ -19,9 +19,9 @@
     <string name="git_owner">Owner*</string>
     <string name="git_repo">Name*</string>
 
-    <string name="hour">%d hour</string>
+    <string name="hour" tools:ignore="PluralsCandidate">%d hour</string>
 
-    <string name="hours">%d hours</string>
+    <string name="hours" tools:ignore="PluralsCandidate">%d hours</string>
 
     <string name="import_failed">Failed to import GitHub repositories</string>
     <string name="import_repos">Import GitHub repositories</string>
@@ -33,7 +33,7 @@
 
     <string name="manage">Manage</string>
 
-    <string name="minutes">%d minutes </string>
+    <string name="minutes" tools:ignore="PluralsCandidate">%d minutes </string>
 
     <string name="monitor_interval">Monitor Interval</string>
 

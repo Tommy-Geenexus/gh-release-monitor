@@ -1,40 +1,41 @@
 ext {
-    apollo_version = "2.5.11"
-    compose_version = "1.1.0-rc01"
-    compose_compiler_version = "1.1.0-rc02"
-    dagger_version = "2.40.5"
-    detekt_version = "1.18.1"
+    apollo_version = "3.1.0"
+    compose_version = "1.1.1"
+    dagger_version = "2.41"
+    detekt_version = "1.19.0"
     gms_version = "4.3.5"
-    gradle_versions_version = "0.39.0"
+    gradle_versions_version = "0.42.0"
     kotlin_version = "1.6.10"
-    ktlint_version = "10.2.0"
-    wire_version = "4.0.1"
+    ktlint_version = "10.2.1"
+    spotless_version = "6.3.0"
+    wire_version = "4.2.0"
 
-    def accompanist_version = "0.21.5-rc"
+    def accompanist_version = "0.23.1"
     def activity_compose_version = "1.4.0"
-    def appcompat_version = "1.4.0"
+    def appcompat_version = "1.4.1"
     def coil_version = "1.4.0"
-    def core_splash_version = "1.0.0-alpha02"
+    def core_splash_version = "1.0.0-beta01"
     def core_version = "1.7.0"
-    def coroutines_gms_version = "1.5.2"
-    def coroutines_test_version = "1.5.2"
+    def coroutines_gms_version = "1.6.0"
+    def coroutines_test_version = "1.6.0"
     def dagger_extensions_version = "1.0.0"
-    def dagger_navigation_version = "1.0.0-rc01"
+    def dagger_navigation_version = "1.0.0"
     def datastore_version = "1.0.0"
     def espresso_version = "3.4.0"
-    def firebase_auth_version = "21.0.1"
+    def firebase_auth_version = "21.0.2"
     def junit_version = "4.13.2"
     def junit_ext_version = "1.1.3"
-    def lifecycle_runtime_version = "2.4.0"
-    def material_version = "1.4.0"
+    def lifecycle_runtime_version = "2.4.1"
+    def material_version = "1.5.0"
+    def material3_version = "1.0.0-alpha07"
     def moshi_version = "1.13.0"
-    def navigation_compose_version = "2.4.0-rc01"
-    def orbit_version = "4.3.0"
-    def paging_version = "3.1.0"
+    def navigation_compose_version = "2.5.0-alpha03"
+    def orbit_version = "4.3.2"
+    def paging_version = "3.1.1"
     def paging_compose_version = "1.0.0-alpha14"
-    def preferences_version = "0.1.1"
-    def room_version = "2.4.0"
-    def strikt_version = "0.33.0"
+    def preferences_version = "0.1.4"
+    def room_version = "2.4.2"
+    def strikt_version = "0.34.1"
     def test_version = "1.4.0"
     def timber_version = "5.0.1"
     def timeago_version = "4.0.3"
@@ -56,15 +57,17 @@ ext {
     ]
 
     implementation_dependencies = [
+            "accompanist_insets"        : "com.google.accompanist:accompanist-insets:$accompanist_version",
+            "accompanist_insets_ui"     : "com.google.accompanist:accompanist-insets-ui:$accompanist_version",
             "accompanist_swiperefresh"  : "com.google.accompanist:accompanist-swiperefresh:$accompanist_version",
+            "accompanist_sysui"         : "com.google.accompanist:accompanist-systemuicontroller:$accompanist_version",
             "activity_compose"          : "androidx.activity:activity-compose:$activity_compose_version",
             "animation"                 : "androidx.compose.animation:animation:$compose_version",
             "appcompat"                 : "androidx.appcompat:appcompat:$appcompat_version",
-            "apollo_runtime"            : "com.apollographql.apollo:apollo-runtime:$apollo_version",
-            "apollo_coroutines"         : "com.apollographql.apollo:apollo-coroutines-support:$apollo_version",
-            "apollo_android"            : "com.apollographql.apollo:apollo-android-support:$apollo_version",
+            "apollo_runtime"            : "com.apollographql.apollo3:apollo-runtime:$apollo_version",
             "coil"                      : "io.coil-kt:coil-compose:$coil_version",
             "compose_material"          : "androidx.compose.material:material:$compose_version",
+            "compose_material3"         : "androidx.compose.material3:material3:$material3_version",
             "compose_ui"                : "androidx.compose.ui:ui:$compose_version",
             "compose_ui_tooling"        : "androidx.compose.ui:ui-tooling:$compose_version",
             "core"                      : "androidx.core:core-ktx:$core_version",
@@ -83,10 +86,11 @@ ext {
             "navigation_compose"        : "androidx.navigation:navigation-compose:$navigation_compose_version",
             "navigation_animation"      : "com.google.accompanist:accompanist-navigation-animation:$accompanist_version",
             "orbit"                     : "org.orbit-mvi:orbit-viewmodel:$orbit_version",
+            "orbit_compose"             : "org.orbit-mvi:orbit-compose:$orbit_version",
             "paging_compose"            : "androidx.paging:paging-compose:$paging_compose_version",
             "paging_runtime"            : "androidx.paging:paging-runtime-ktx:$paging_version",
             "placeholder"               : "com.google.accompanist:accompanist-placeholder-material:$accompanist_version",
-            "preferences"               : "com.github.Sh4dowSoul.ComposePreferences:compose-preferences:$preferences_version",
+            "preferences"               : "com.github.Sh4dowSoul:ComposePreferences:$preferences_version",
             "room_runtime"              : "androidx.room:room-runtime:$room_version",
             "room_ktx"                  : "androidx.room:room-ktx:$room_version",
             "room_paging"               : "androidx.room:room-paging:$room_version",

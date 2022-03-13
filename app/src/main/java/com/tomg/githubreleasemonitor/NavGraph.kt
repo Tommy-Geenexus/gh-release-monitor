@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021, Tom Geiselmann (tomgapplicationsdevelopment@gmail.com)
+ * Copyright (c) 2020-2022, Tom Geiselmann (tomgapplicationsdevelopment@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
  * and associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -30,6 +30,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -46,11 +47,12 @@ import com.tomg.githubreleasemonitor.settings.business.SettingsViewModel
 import com.tomg.githubreleasemonitor.settings.ui.SettingsScreen
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
+@ExperimentalMaterialApi
+@ExperimentalMaterial3Api
 @ExperimentalCoilApi
 @ExperimentalComposeUiApi
 @ExperimentalCoroutinesApi
 @ExperimentalAnimationApi
-@ExperimentalMaterialApi
 @Composable
 fun NavGraph(
     navController: NavHostController,
