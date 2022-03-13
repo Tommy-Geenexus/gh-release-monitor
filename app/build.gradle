@@ -85,6 +85,7 @@ detekt {
 
 ktlint {
     android.set(true)
+    disabledRules.set(["import-ordering"])
     filter {
         exclude { element -> element.file.path.contains("generated/") }
         include("**/kotlin/**")
