@@ -1,4 +1,4 @@
-name: Detekt
+name: Spotless
 on:
   push:
     branches:
@@ -15,5 +15,5 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: 11
-      - name: Run detekt
-        run: ./gradlew detekt
+      - name: Run spotless
+        run: ./gradlew spotlessKotlinCheck
