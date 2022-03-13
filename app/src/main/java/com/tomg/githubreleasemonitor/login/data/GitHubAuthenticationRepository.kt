@@ -29,12 +29,12 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.tomg.githubreleasemonitor.UserProto
 import com.tomg.githubreleasemonitor.di.DispatcherIo
-import javax.inject.Inject
-import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import timber.log.Timber
+import javax.inject.Inject
+import javax.inject.Singleton
 
 @Singleton
 class GitHubAuthenticationRepository @Inject constructor(

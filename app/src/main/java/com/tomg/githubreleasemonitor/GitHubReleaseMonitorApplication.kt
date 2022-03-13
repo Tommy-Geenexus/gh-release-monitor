@@ -25,8 +25,8 @@ import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
 import com.tomg.githubreleasemonitor.main.data.GitHubDatabase
 import dagger.hilt.android.HiltAndroidApp
-import javax.inject.Inject
 import timber.log.Timber
+import javax.inject.Inject
 
 @HiltAndroidApp
 class GitHubReleaseMonitorApplication :
@@ -35,6 +35,7 @@ class GitHubReleaseMonitorApplication :
 
     @Inject
     lateinit var gitHubDatabase: GitHubDatabase
+
     @Inject
     lateinit var workerFactory: HiltWorkerFactory
 

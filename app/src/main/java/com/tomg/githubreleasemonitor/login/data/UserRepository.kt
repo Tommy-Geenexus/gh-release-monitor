@@ -24,13 +24,13 @@ import androidx.datastore.core.DataStore
 import com.tomg.githubreleasemonitor.Empty
 import com.tomg.githubreleasemonitor.UserProto
 import com.tomg.githubreleasemonitor.di.DispatcherIo
-import javax.inject.Inject
-import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
+import javax.inject.Inject
+import javax.inject.Singleton
 
 @Singleton
 class UserRepository @Inject constructor(

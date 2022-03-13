@@ -27,13 +27,13 @@ import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.tomg.githubreleasemonitor.R
 import dagger.hilt.android.qualifiers.ApplicationContext
-import java.time.Duration
-import javax.inject.Inject
-import javax.inject.Singleton
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import timber.log.Timber
+import java.time.Duration
+import javax.inject.Inject
+import javax.inject.Singleton
 
 @Singleton
 class SettingsRepository @Inject constructor(

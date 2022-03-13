@@ -26,11 +26,11 @@ import com.tomg.githubreleasemonitor.Empty
 import com.tomg.githubreleasemonitor.main.MAX_CHAR_OWNER
 import com.tomg.githubreleasemonitor.main.MAX_CHAR_REPO
 import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.syntax.simple.intent
 import org.orbitmvi.orbit.syntax.simple.reduce
 import org.orbitmvi.orbit.viewmodel.container
+import javax.inject.Inject
 
 @HiltViewModel
 class AddRepositoryViewModel @Inject constructor(

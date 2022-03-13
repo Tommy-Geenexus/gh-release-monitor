@@ -78,9 +78,9 @@ import com.google.accompanist.placeholder.material.placeholder
 import com.google.accompanist.placeholder.material.shimmer
 import com.tomg.githubreleasemonitor.R
 import com.tomg.githubreleasemonitor.main.data.GitHubRepository
+import kotlinx.coroutines.launch
 import java.time.ZonedDateTime
 import kotlin.math.roundToInt
-import kotlinx.coroutines.launch
 
 @ExperimentalMaterialApi
 @ExperimentalMaterial3Api

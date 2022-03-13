@@ -27,14 +27,14 @@ import com.squareup.moshi.JsonAdapter
 import com.tomg.githubreleasemonitor.di.DispatcherIo
 import com.tomg.githubreleasemonitor.main.data.GitHubRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
-import javax.inject.Inject
-import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import okio.buffer
 import okio.sink
 import okio.source
 import timber.log.Timber
+import javax.inject.Inject
+import javax.inject.Singleton
 
 @Singleton
 class GitHubRepositoryJsonRepository @Inject constructor(

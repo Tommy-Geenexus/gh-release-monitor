@@ -23,12 +23,12 @@ package com.tomg.githubreleasemonitor.main.data
 import com.tomg.githubreleasemonitor.GitHubRepositoriesQuery
 import com.tomg.githubreleasemonitor.GitHubRepositoryQuery
 import com.tomg.githubreleasemonitor.di.DispatcherIo
-import java.time.ZonedDateTime
-import javax.inject.Inject
-import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import timber.log.Timber
+import java.time.ZonedDateTime
+import javax.inject.Inject
+import javax.inject.Singleton
 
 @Singleton
 class GitHubRepositoryReleaseRepository @Inject constructor(

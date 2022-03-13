@@ -23,9 +23,9 @@ package com.tomg.githubreleasemonitor.main.data
 import androidx.paging.PagingSource
 import androidx.sqlite.db.SimpleSQLiteQuery
 import com.tomg.githubreleasemonitor.main.SortOrder
+import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
-import timber.log.Timber
 
 @Singleton
 class GitHubRepositoryRepository @Inject constructor(
