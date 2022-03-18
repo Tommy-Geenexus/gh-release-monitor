@@ -206,7 +206,13 @@ fun SettingScreen(
             )
         },
         snackbarHost = {
-            SnackbarHost(snackbarHostState)
+            val insetsPadding = rememberInsetsPaddingValues(
+                insets = LocalWindowInsets.current.navigationBars
+            )
+            SnackbarHost(
+                hostState = snackbarHostState,
+                modifier = Modifier.padding(bottom = insetsPadding.calculateBottomPadding())
+            )
         },
     ) {
         PreferenceScreen(
