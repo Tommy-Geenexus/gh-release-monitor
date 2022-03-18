@@ -220,12 +220,14 @@ fun GitHubRepositoryItem(
                                 fill = false
                             )
                         ) {
-                            Text(
-                                text = gitHubRepository.latestReleaseName,
-                                overflow = TextOverflow.Ellipsis,
-                                maxLines = 1,
-                                style = MaterialTheme.typography.bodyMedium
-                            )
+                            if (gitHubRepository.latestReleaseName.isNotEmpty()) {
+                                Text(
+                                    text = gitHubRepository.latestReleaseName,
+                                    overflow = TextOverflow.Ellipsis,
+                                    maxLines = 1,
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                            }
                             Text(
                                 text = TimeAgo.using(
                                     time = ZonedDateTime
@@ -259,7 +261,7 @@ fun GitHubRepositoryItem(
                                     textAlign = TextAlign.End,
                                     overflow = TextOverflow.Ellipsis,
                                     maxLines = 1,
-                                    style = MaterialTheme.typography.labelLarge
+                                    style = MaterialTheme.typography.labelMedium
                                 )
                             }
                         }

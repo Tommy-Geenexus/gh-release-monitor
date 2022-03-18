@@ -109,26 +109,31 @@ fun MainScreen(
     mainViewModel.collectSideEffect { sideEffect ->
         when (sideEffect) {
             MainSideEffect.GitHubRepository.Add.Failure -> {
+                swipeRefreshState.isRefreshing = false
                 scope.launch {
                     snackbarHostState.showSnackbar(message = repositoryAddFailed)
                 }
             }
             MainSideEffect.GitHubRepository.Add.Success -> {
+                swipeRefreshState.isRefreshing = false
                 scope.launch {
                     snackbarHostState.showSnackbar(message = repositoryAdded)
                 }
             }
             MainSideEffect.GitHubRepository.Add.NotFound -> {
+                swipeRefreshState.isRefreshing = false
                 scope.launch {
                     snackbarHostState.showSnackbar(message = repositoryNotFound)
                 }
             }
             MainSideEffect.GitHubRepository.Delete.Failure -> {
+                swipeRefreshState.isRefreshing = false
                 scope.launch {
                     snackbarHostState.showSnackbar(message = repositoryDeleteFailed)
                 }
             }
             MainSideEffect.GitHubRepository.Delete.Success -> {
+                swipeRefreshState.isRefreshing = false
                 scope.launch {
                     snackbarHostState.showSnackbar(message = repositoryDeleted)
                 }
@@ -169,6 +174,7 @@ fun MainScreen(
             },
             onConfirm = { repositoryOwner: String, repositoryName: String ->
                 showDialog = false
+                swipeRefreshState.isRefreshing = true
                 mainViewModel.addRepository(repositoryOwner, repositoryName)
             }
         )
@@ -196,6 +202,7 @@ fun MainScreen(
             mainViewModel.updateRepositories(gitHubRepositories.itemSnapshotList.items)
         },
         onDelete = { gitHubRepository ->
+            swipeRefreshState.isRefreshing = true
             mainViewModel.deleteRepository(gitHubRepository)
         }
     )
