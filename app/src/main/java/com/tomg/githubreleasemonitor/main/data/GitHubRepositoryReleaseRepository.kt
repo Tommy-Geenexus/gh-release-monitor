@@ -67,16 +67,27 @@ class GitHubRepositoryReleaseRepository @Inject constructor(
                 if (!response.hasErrors()) {
                     val id = data?.repository?.id
                     val release = data?.repository?.latestRelease
-                    if (id != null && release != null) {
+                    val authorAvatarUrl = (release?.author?.avatarUrl as? String).orEmpty()
+                    val authorHtmlUrl = (release?.author?.url as? String).orEmpty()
+                    val latestReleaseHtmlUrl = (release?.url as? String).orEmpty()
+                    val latestReleaseName = release?.name.orEmpty()
+                    val latestReleaseTimestamp = (release?.publishedAt as? String).orEmpty()
+                    if (id != null &&
+                        authorAvatarUrl.isNotEmpty() &&
+                        authorHtmlUrl.isNotEmpty() &&
+                        latestReleaseHtmlUrl.isNotEmpty() &&
+                        latestReleaseName.isNotEmpty() &&
+                        latestReleaseTimestamp.isNotEmpty()
+                    ) {
                         return@runCatching GitHubRepository(
                             id = id,
                             owner = repositoryOwner,
                             name = repositoryName,
-                            authorAvatarUrl = (release.author?.avatarUrl as? String).orEmpty(),
-                            authorHtmlUrl = (release.author?.url as? String).orEmpty(),
-                            latestReleaseHtmlUrl = (release.url as? String).orEmpty(),
-                            latestReleaseName = release.name.orEmpty(),
-                            latestReleaseTimestamp = (release.publishedAt as? String).orEmpty()
+                            authorAvatarUrl = authorAvatarUrl,
+                            authorHtmlUrl = authorHtmlUrl,
+                            latestReleaseHtmlUrl = latestReleaseHtmlUrl,
+                            latestReleaseName = latestReleaseName,
+                            latestReleaseTimestamp = latestReleaseTimestamp
                         )
                     }
                 }
@@ -116,47 +127,50 @@ class GitHubRepositoryReleaseRepository @Inject constructor(
                 if (response.hasErrors()) {
                     return@runCatching null
                 }
-                gitHubRepositories
-                    .mapIndexed { index: Int, gitHubRepository: GitHubRepository ->
-                        val latestRelease = data?.nodes?.get(index)?.onRepository?.latestRelease
-                        val timestamp = (latestRelease?.publishedAt as? String)
-                        val result = timestamp?.compareToTimestamp(
-                            timestamp = gitHubRepository.latestReleaseTimestamp
-                        )
-                        runCatching {
-                            ZonedDateTime
-                                .parse(timestamp)
-                                .compareTo(
-                                    ZonedDateTime.parse(gitHubRepository.latestReleaseTimestamp)
-                                )
-                        }.getOrElse { exception ->
-                            Timber.e(exception)
-                            null
-                        }
-                        when {
-                            result == 0 -> gitHubRepository
-                            result != null && result > 0 -> {
-                                gitHubRepository.copy(latestReleaseTimestamp = timestamp)
-                            }
-                            else -> null
-                        }
+                gitHubRepositories.mapIndexed { index: Int, gitHubRepository: GitHubRepository ->
+                    val repository = data?.nodes?.get(index)?.onRepository
+                    val repositoryOwner = repository?.owner?.login.orEmpty()
+                    val repositoryName = repository?.name.orEmpty()
+                    val release = repository?.latestRelease
+                    val authorAvatarUrl = (release?.author?.avatarUrl as? String).orEmpty()
+                    val authorHtmlUrl = (release?.author?.url as? String).orEmpty()
+                    val latestReleaseHtmlUrl = (release?.url as? String).orEmpty()
+                    val latestReleaseName = release?.name.orEmpty()
+                    val latestReleaseTimestamp = (release?.publishedAt as? String).orEmpty()
+                    val result = runCatching {
+                        ZonedDateTime
+                            .parse(latestReleaseTimestamp)
+                            .compareTo(ZonedDateTime.parse(gitHubRepository.latestReleaseTimestamp))
+                    }.getOrElse { exception ->
+                        Timber.e(exception)
+                        -1
                     }
-                    .filterNotNull()
+                    if (result > 0 &&
+                        repositoryOwner.isNotEmpty() &&
+                        repositoryName.isNotEmpty() &&
+                        authorAvatarUrl.isNotEmpty() &&
+                        authorHtmlUrl.isNotEmpty() &&
+                        latestReleaseHtmlUrl.isNotEmpty() &&
+                        latestReleaseName.isNotEmpty() &&
+                        latestReleaseTimestamp.isNotEmpty()
+                    ) {
+                        gitHubRepository.copy(
+                            owner = repositoryOwner,
+                            name = repositoryName,
+                            authorAvatarUrl = authorAvatarUrl,
+                            authorHtmlUrl = authorHtmlUrl,
+                            latestReleaseHtmlUrl = latestReleaseHtmlUrl,
+                            latestReleaseName = latestReleaseName,
+                            latestReleaseTimestamp = latestReleaseTimestamp
+                        )
+                    } else {
+                        gitHubRepository
+                    }
+                }
             }.getOrElse { exception ->
                 Timber.e(exception)
                 null
             }
-        }
-    }
-
-    private fun String.compareToTimestamp(timestamp: String): Int? {
-        return runCatching {
-            ZonedDateTime
-                .parse(this)
-                .compareTo(ZonedDateTime.parse(timestamp))
-        }.getOrElse { exception ->
-            Timber.e(exception)
-            null
         }
     }
 }

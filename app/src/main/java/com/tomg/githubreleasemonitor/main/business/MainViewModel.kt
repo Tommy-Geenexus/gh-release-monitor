@@ -124,10 +124,9 @@ class MainViewModel @Inject constructor(
             null
         }
         val update = gitHubRepositories != repositories
-        val success = if (repositories != null && update) {
-            gitHubRepositoryRepository.updateRepositories(*repositories.toTypedArray())
-        } else {
-            false
+        var success = repositories != null && update
+        if (success && repositories != null) {
+            success = gitHubRepositoryRepository.updateRepositories(*repositories.toTypedArray())
         }
         postSideEffect(
             if (update) {

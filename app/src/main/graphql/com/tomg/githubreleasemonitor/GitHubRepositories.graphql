@@ -26,6 +26,10 @@ query GitHubRepositories($ids: [ID!]!) {
     nodes(ids: $ids) {
         ... on Repository {
             id
+            name
+            owner {
+                login
+            }
             latestRelease {
                 author {
                     avatarUrl
