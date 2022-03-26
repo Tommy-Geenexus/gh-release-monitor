@@ -59,7 +59,6 @@ ext {
     implementation_dependencies = [
             "accompanist_insets"        : "com.google.accompanist:accompanist-insets:$accompanist_version",
             "accompanist_insets_ui"     : "com.google.accompanist:accompanist-insets-ui:$accompanist_version",
-            "accompanist_swiperefresh"  : "com.google.accompanist:accompanist-swiperefresh:$accompanist_version",
             "accompanist_sysui"         : "com.google.accompanist:accompanist-systemuicontroller:$accompanist_version",
             "activity_compose"          : "androidx.activity:activity-compose:$activity_compose_version",
             "animation"                 : "androidx.compose.animation:animation:$compose_version",

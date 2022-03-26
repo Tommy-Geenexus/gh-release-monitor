@@ -22,8 +22,10 @@ package com.tomg.githubreleasemonitor.main.ui
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -41,7 +43,7 @@ import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SmallTopAppBar
 import androidx.compose.material3.SnackbarHost
@@ -68,10 +70,6 @@ import androidx.paging.compose.items
 import coil.annotation.ExperimentalCoilApi
 import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.rememberInsetsPaddingValues
-import com.google.accompanist.swiperefresh.SwipeRefresh
-import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
-import com.google.accompanist.swiperefresh.SwipeRefreshState
-import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.tomg.githubreleasemonitor.R
 import com.tomg.githubreleasemonitor.main.SortOrder
 import com.tomg.githubreleasemonitor.main.business.AddRepositoryViewModel
@@ -102,56 +100,47 @@ fun MainScreen(
     val repositoryUpdateFailed = stringResource(id = R.string.repository_update_failed)
     val repositoryUpdated = stringResource(id = R.string.repository_updated)
     val repositoryNoUpdate = stringResource(id = R.string.repository_no_update)
-    val swipeRefreshState = rememberSwipeRefreshState(isRefreshing = false)
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
     mainViewModel.collectSideEffect { sideEffect ->
         when (sideEffect) {
             MainSideEffect.GitHubRepository.Add.Failure -> {
-                swipeRefreshState.isRefreshing = false
                 scope.launch {
                     snackbarHostState.showSnackbar(message = repositoryAddFailed)
                 }
             }
             MainSideEffect.GitHubRepository.Add.Success -> {
-                swipeRefreshState.isRefreshing = false
                 scope.launch {
                     snackbarHostState.showSnackbar(message = repositoryAdded)
                 }
             }
             MainSideEffect.GitHubRepository.Add.NotFound -> {
-                swipeRefreshState.isRefreshing = false
                 scope.launch {
                     snackbarHostState.showSnackbar(message = repositoryNotFound)
                 }
             }
             MainSideEffect.GitHubRepository.Delete.Failure -> {
-                swipeRefreshState.isRefreshing = false
                 scope.launch {
                     snackbarHostState.showSnackbar(message = repositoryDeleteFailed)
                 }
             }
             MainSideEffect.GitHubRepository.Delete.Success -> {
-                swipeRefreshState.isRefreshing = false
                 scope.launch {
                     snackbarHostState.showSnackbar(message = repositoryDeleted)
                 }
             }
             MainSideEffect.GitHubRepository.Update.Failure -> {
-                swipeRefreshState.isRefreshing = false
                 scope.launch {
                     snackbarHostState.showSnackbar(message = repositoryUpdateFailed)
                 }
             }
             MainSideEffect.GitHubRepository.Update.Latest -> {
-                swipeRefreshState.isRefreshing = false
                 scope.launch {
                     snackbarHostState.showSnackbar(message = repositoryNoUpdate)
                 }
             }
             MainSideEffect.GitHubRepository.Update.Success -> {
-                swipeRefreshState.isRefreshing = false
                 scope.launch {
                     snackbarHostState.showSnackbar(message = repositoryUpdated)
                 }
@@ -174,16 +163,15 @@ fun MainScreen(
             },
             onConfirm = { repositoryOwner: String, repositoryName: String ->
                 showDialog = false
-                swipeRefreshState.isRefreshing = true
                 mainViewModel.addRepository(repositoryOwner, repositoryName)
             }
         )
     }
     MainScreen(
         snackbarHostState = snackbarHostState,
-        swipeRefreshState = swipeRefreshState,
         gitHubRepositories = gitHubRepositories,
         defaultSortOrder = state.sortOrder,
+        isLoading = state.isLoading,
         onAddGitHubRepository = {
             showDialog = true
         },
@@ -198,11 +186,9 @@ fun MainScreen(
             mainViewModel.showGitHubRepositoryRelease(releaseUrl)
         },
         onRefresh = {
-            swipeRefreshState.isRefreshing = true
             mainViewModel.updateRepositories(gitHubRepositories.itemSnapshotList.items)
         },
         onDelete = { gitHubRepository ->
-            swipeRefreshState.isRefreshing = true
             mainViewModel.deleteRepository(gitHubRepository)
         }
     )
@@ -215,9 +201,9 @@ fun MainScreen(
 @Composable
 fun MainScreen(
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
-    swipeRefreshState: SwipeRefreshState = rememberSwipeRefreshState(isRefreshing = false),
     gitHubRepositories: LazyPagingItems<GitHubRepository>? = null,
     defaultSortOrder: SortOrder = SortOrder.Asc.RepositoryOwner,
+    isLoading: Boolean = false,
     onAddGitHubRepository: () -> Unit = {},
     onApplySortOrder: (SortOrder) -> Unit = {},
     onShowSettings: () -> Unit = {},
@@ -269,23 +255,12 @@ fun MainScreen(
         },
         floatingActionButtonPosition = FabPosition.End
     ) { innerPadding ->
-        SwipeRefresh(
-            state = swipeRefreshState,
-            onRefresh = {
-                swipeRefreshState.isRefreshing = true
-                onRefresh()
-            },
-            indicator = { state, trigger ->
-                SwipeRefreshIndicator(
-                    state = state,
-                    refreshTriggerDistance = trigger,
-                    backgroundColor = MaterialTheme.colorScheme.secondaryContainer,
-                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer
-                )
+        Column {
+            if (isLoading) {
+                LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
             }
-        ) {
             if (gitHubRepositories == null) {
-                return@SwipeRefresh
+                return@Scaffold
             }
             LazyColumn(
                 modifier = Modifier.padding(bottom = innerPadding.calculateBottomPadding())
@@ -305,10 +280,7 @@ fun MainScreen(
                         // Ignore
                     }
                     LoadState.Loading -> item {
-                        Spinner(
-                            modifier = Modifier.fillMaxSize(),
-                            progressModifier = Modifier.padding(all = 16.dp)
-                        )
+                        Spinner(modifier = Modifier.fillMaxSize())
                     }
                     is LoadState.Error -> item {
                         Refresh {
@@ -321,10 +293,7 @@ fun MainScreen(
                         // Ignore
                     }
                     LoadState.Loading -> item {
-                        Spinner(
-                            modifier = Modifier.fillMaxSize(),
-                            progressModifier = Modifier.padding(all = 16.dp)
-                        )
+                        Spinner(modifier = Modifier.fillMaxSize())
                     }
                     is LoadState.Error -> item {
                         Refresh {
@@ -337,10 +306,7 @@ fun MainScreen(
                         // Ignore
                     }
                     LoadState.Loading -> item {
-                        Spinner(
-                            modifier = Modifier.fillMaxSize(),
-                            progressModifier = Modifier.padding(all = 16.dp)
-                        )
+                        Spinner(modifier = Modifier.fillMaxSize())
                     }
                     is LoadState.Error -> item {
                         Refresh {
@@ -366,7 +332,7 @@ fun MainScreenPreview() {
 @Composable
 fun Spinner(
     modifier: Modifier = Modifier,
-    progressModifier: Modifier = Modifier,
+    progressModifier: Modifier = Modifier.padding(all = 16.dp),
     alignment: Alignment = Alignment.Center
 ) {
     Box(

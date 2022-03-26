@@ -74,6 +74,9 @@ class MainViewModel @Inject constructor(
         repositoryOwner: String,
         repositoryName: String
     ) = intent {
+        reduce {
+            state.copy(isLoading = true)
+        }
         val accessToken = userRepository.getUser().firstOrNull()?.access_token
         val repository = if (accessToken != null && accessToken.isNotEmpty()) {
             gitHubRepositoryReleaseRepository.getGitHubRepositoryOrNull(
@@ -89,6 +92,9 @@ class MainViewModel @Inject constructor(
         } else {
             false
         }
+        reduce {
+            state.copy(isLoading = false)
+        }
         postSideEffect(
             if (repository != null) {
                 if (success) {
@@ -103,7 +109,13 @@ class MainViewModel @Inject constructor(
     }
 
     fun deleteRepository(gitHubRepository: GitHubRepository) = intent {
+        reduce {
+            state.copy(isLoading = true)
+        }
         val success = gitHubRepositoryRepository.deleteRepository(gitHubRepository)
+        reduce {
+            state.copy(isLoading = false)
+        }
         postSideEffect(
             if (success) {
                 MainSideEffect.GitHubRepository.Delete.Success
@@ -114,6 +126,9 @@ class MainViewModel @Inject constructor(
     }
 
     fun updateRepositories(gitHubRepositories: List<GitHubRepository>) = intent {
+        reduce {
+            state.copy(isLoading = true)
+        }
         val accessToken = userRepository.getUser().firstOrNull()?.access_token
         val repositories = if (accessToken != null && accessToken.isNotEmpty()) {
             gitHubRepositoryReleaseRepository.getGitHubRepositoriesOrNull(
@@ -127,6 +142,9 @@ class MainViewModel @Inject constructor(
         var success = repositories != null && update
         if (success && repositories != null) {
             success = gitHubRepositoryRepository.updateRepositories(*repositories.toTypedArray())
+        }
+        reduce {
+            state.copy(isLoading = false)
         }
         postSideEffect(
             if (update) {
