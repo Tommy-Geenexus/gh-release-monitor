@@ -25,10 +25,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -89,19 +88,11 @@ fun AddGitHubRepositoryDialog(
                         viewModel.updateRepositoryOwner(value.trim())
                     },
                     modifier = Modifier.padding(top = 24.dp),
-                    textStyle = MaterialTheme.typography.bodyLarge,
                     label = {
                         Text(text = stringResource(id = R.string.git_owner))
                     },
                     isError = !state.isValidOwner,
-                    singleLine = true,
-                    colors = TextFieldDefaults.outlinedTextFieldColors(
-                        textColor = MaterialTheme.colorScheme.onSurface,
-                        cursorColor = MaterialTheme.colorScheme.primary,
-                        focusedBorderColor = MaterialTheme.colorScheme.primary,
-                        unfocusedBorderColor = MaterialTheme.colorScheme.outline,
-                        focusedLabelColor = MaterialTheme.colorScheme.secondary
-                    )
+                    singleLine = true
                 )
                 TextFieldBottomIndicator(
                     helperText = stringResource(id = R.string.required),
@@ -120,14 +111,7 @@ fun AddGitHubRepositoryDialog(
                         Text(text = stringResource(id = R.string.git_repo))
                     },
                     isError = !state.isValidRepositoryName,
-                    singleLine = true,
-                    colors = TextFieldDefaults.outlinedTextFieldColors(
-                        textColor = MaterialTheme.colorScheme.onSurface,
-                        cursorColor = MaterialTheme.colorScheme.primary,
-                        focusedBorderColor = MaterialTheme.colorScheme.primary,
-                        unfocusedBorderColor = MaterialTheme.colorScheme.outline,
-                        focusedLabelColor = MaterialTheme.colorScheme.secondary
-                    )
+                    singleLine = true
                 )
                 TextFieldBottomIndicator(
                     helperText = stringResource(id = R.string.required),
