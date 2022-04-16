@@ -1,21 +1,19 @@
 import io.gitlab.arturbosch.detekt.Detekt
 
 plugins {
-    id "com.android.application"
-    id "com.apollographql.apollo3"
-    id "com.diffplug.spotless"
-    id "com.github.ben-manes.versions"
-    id "com.google.gms.google-services"
-    id "com.squareup.wire"
-    id "dagger.hilt.android.plugin"
-    id "io.gitlab.arturbosch.detekt"
-    id "kotlin-android"
-    id "kotlin-parcelize"
-    id "org.jetbrains.kotlin.kapt"
-    id "org.jlleitschuh.gradle.ktlint"
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.apollo)
+    alias(libs.plugins.dagger.hilt.android)
+    alias(libs.plugins.detekt)
+    alias(libs.plugins.google.services)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.kapt)
+    alias(libs.plugins.kotlin.parcelize)
+    alias(libs.plugins.ktlint)
+    alias(libs.plugins.spotless)
+    alias(libs.plugins.versions)
+    alias(libs.plugins.wire)
 }
-
-apply from: "../dependencies.gradle"
 
 android {
     compileSdkVersion 32
@@ -26,8 +24,6 @@ android {
         targetSdkVersion 32
         versionCode 1
         versionName "1.0.0"
-
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -54,7 +50,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion compose_version
+        kotlinCompilerExtensionVersion "1.1.1"
     }
 }
 
@@ -88,13 +84,13 @@ ktlint {
     disabledRules.set(["import-ordering"])
     filter {
         exclude { element -> element.file.path.contains("generated/") }
-        include("**/kotlin/**")
+        include("**/*.kt")
     }
 }
 
 spotless {
     kotlin {
-        target("src/*/java/**/*.kt")
+        target("**/*.kt")
         //noinspection GroovyImplicitNullArgumentCall
         ktlint()
         endWithNewline()
@@ -107,15 +103,14 @@ wire {
         android = true
     }
     sourcePath {
-        srcDir "src/main/protos"
+        srcDir "src/main/proto"
     }
 }
 
 dependencies {
-    androidTestImplementation android_test_dependencies.values()
-    api api_dependencies.values()
-    implementation implementation_dependencies.values()
-    kapt kapt_dependencies.values()
-    runtimeOnly runtime_only_dependencies.values()
-    testImplementation test_dependencies.values()
+    api libs.wire.runtime
+    debugImplementation libs.leakcanary
+    implementation libs.bundles.implementation
+    kapt libs.bundles.kapt
+    runtimeOnly libs.kotlin.reflect
 }
