@@ -25,7 +25,10 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
@@ -47,8 +50,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.google.accompanist.insets.LocalWindowInsets
-import com.google.accompanist.insets.rememberInsetsPaddingValues
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.OAuthProvider
 import com.tomg.githubreleasemonitor.R
@@ -131,9 +132,7 @@ fun LoginScreen(
                 )
             }
         } else {
-            val insetsPadding = rememberInsetsPaddingValues(
-                insets = LocalWindowInsets.current.navigationBars
-            )
+            val insetsPadding = WindowInsets.navigationBars.asPaddingValues()
             CircularProgressIndicator(
                 modifier = Modifier
                     .padding(bottom = 16.dp + insetsPadding.calculateBottomPadding())

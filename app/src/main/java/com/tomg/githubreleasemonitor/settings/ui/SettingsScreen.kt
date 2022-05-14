@@ -23,7 +23,11 @@ package com.tomg.githubreleasemonitor.settings.ui
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -48,8 +52,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
-import com.google.accompanist.insets.LocalWindowInsets
-import com.google.accompanist.insets.rememberInsetsPaddingValues
 import com.tomg.githubreleasemonitor.Empty
 import com.tomg.githubreleasemonitor.MIME_TYPE_JSON
 import com.tomg.githubreleasemonitor.R
@@ -189,9 +191,7 @@ fun SettingScreen(
 ) {
     Scaffold(
         topBar = {
-            val insetsPadding = rememberInsetsPaddingValues(
-                insets = LocalWindowInsets.current.statusBars
-            )
+            val insetsPadding = WindowInsets.statusBars.asPaddingValues()
             SmallTopAppBar(
                 modifier = Modifier.padding(top = insetsPadding.calculateTopPadding()),
                 title = { Text(text = stringResource(id = R.string.settings)) },
@@ -206,15 +206,13 @@ fun SettingScreen(
             )
         },
         snackbarHost = {
-            val insetsPadding = rememberInsetsPaddingValues(
-                insets = LocalWindowInsets.current.navigationBars
-            )
+            val insetsPadding = WindowInsets.navigationBars.asPaddingValues()
             SnackbarHost(
                 hostState = snackbarHostState,
                 modifier = Modifier.padding(bottom = insetsPadding.calculateBottomPadding())
             )
         },
-    ) {
+    ) { innerPadding ->
         PreferenceScreen(
             items = listOf(
                 settingsServiceItem(
@@ -228,7 +226,11 @@ fun SettingScreen(
                 ),
                 settingsAccountItem(onUserSignOutRequested = onUserSignOutRequested)
             ),
-            dataStore = dataStore
+            dataStore = dataStore,
+            modifier = Modifier.padding(
+                top = innerPadding.calculateTopPadding(),
+                bottom = innerPadding.calculateBottomPadding()
+            )
         )
     }
 }

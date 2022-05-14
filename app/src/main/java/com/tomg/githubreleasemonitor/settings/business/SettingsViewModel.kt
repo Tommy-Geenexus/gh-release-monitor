@@ -102,7 +102,7 @@ class SettingsViewModel @Inject constructor(
     fun exportGitHubRepositories(uri: Uri?) = intent {
         if (uri != null && uri != Uri.EMPTY) {
             gitHubRepositoryRepository.getRepositories().collect { gitHubRepositories ->
-                val success = if (!gitHubRepositories.isNullOrEmpty()) {
+                val success = if (gitHubRepositories.isNotEmpty()) {
                     val json = gitHubRepositoryJsonRepository.toJson(gitHubRepositories)
                     if (!json.isNullOrEmpty()) {
                         gitHubRepositoryJsonRepository.exportTo(uri, json)

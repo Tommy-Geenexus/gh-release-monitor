@@ -62,7 +62,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -70,8 +72,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import coil.annotation.ExperimentalCoilApi
-import coil.compose.ImagePainter
-import coil.compose.rememberImagePainter
+import coil.compose.AsyncImagePainter
+import coil.compose.rememberAsyncImagePainter
+import coil.imageLoader
 import com.github.marlonlom.utilities.timeago.TimeAgo
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.placeholder
@@ -162,11 +165,10 @@ fun GitHubRepositoryItem(
             elevation = CardDefaults.outlinedCardElevation()
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                val painter = rememberImagePainter(
-                    data = gitHubRepository.authorAvatarUrl,
-                    builder = {
-                        error(R.drawable.ic_broken_image)
-                    }
+                val painter = rememberAsyncImagePainter(
+                    model = gitHubRepository.authorAvatarUrl,
+                    imageLoader = LocalContext.current.imageLoader,
+                    error = painterResource(id = R.drawable.ic_broken_image)
                 )
                 Image(
                     painter = painter,
@@ -176,7 +178,7 @@ fun GitHubRepositoryItem(
                         .size(48.dp)
                         .clip(CircleShape)
                         .placeholder(
-                            visible = painter.state is ImagePainter.State.Loading,
+                            visible = painter.state is AsyncImagePainter.State.Loading,
                             highlight = PlaceholderHighlight.shimmer()
                         )
                         .clickable {

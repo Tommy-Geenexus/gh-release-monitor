@@ -24,12 +24,16 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
@@ -69,8 +73,6 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
 import coil.annotation.ExperimentalCoilApi
-import com.google.accompanist.insets.LocalWindowInsets
-import com.google.accompanist.insets.rememberInsetsPaddingValues
 import com.tomg.githubreleasemonitor.R
 import com.tomg.githubreleasemonitor.main.SortOrder
 import com.tomg.githubreleasemonitor.main.business.AddRepositoryViewModel
@@ -215,9 +217,7 @@ fun MainScreen(
 ) {
     Scaffold(
         topBar = {
-            val insetsPadding = rememberInsetsPaddingValues(
-                insets = LocalWindowInsets.current.statusBars
-            )
+            val insetsPadding = WindowInsets.statusBars.asPaddingValues()
             SmallTopAppBar(
                 modifier = Modifier.padding(top = insetsPadding.calculateTopPadding()),
                 title = {
@@ -237,9 +237,7 @@ fun MainScreen(
             SnackbarHost(snackbarHostState)
         },
         floatingActionButton = {
-            val insetsPadding = rememberInsetsPaddingValues(
-                insets = LocalWindowInsets.current.navigationBars
-            )
+            val insetsPadding = WindowInsets.navigationBars.asPaddingValues()
             FloatingActionButton(
                 modifier = Modifier.padding(
                     end = insetsPadding.calculateEndPadding(LocalLayoutDirection.current)
@@ -264,7 +262,10 @@ fun MainScreen(
                 return@Scaffold
             }
             LazyColumn(
-                modifier = Modifier.padding(bottom = innerPadding.calculateBottomPadding())
+                modifier = Modifier.padding(
+                    top = innerPadding.calculateTopPadding(),
+                    bottom = innerPadding.calculateBottomPadding()
+                )
             ) {
                 items(items = gitHubRepositories) { gitHubRepository ->
                     if (gitHubRepository != null) {
@@ -384,9 +385,7 @@ fun BottomBar(
             }
         )
     }
-    val insetsPadding = rememberInsetsPaddingValues(
-        insets = LocalWindowInsets.current.navigationBars
-    )
+    val insetsPadding = WindowInsets.navigationBars.asPaddingValues()
     BottomAppBar(
         modifier = Modifier.height(64.dp + insetsPadding.calculateBottomPadding()),
         contentPadding = insetsPadding,

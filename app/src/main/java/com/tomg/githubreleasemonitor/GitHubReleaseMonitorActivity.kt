@@ -33,7 +33,6 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.graphics.Color
 import androidx.core.view.WindowCompat
 import coil.annotation.ExperimentalCoilApi
-import com.google.accompanist.insets.ProvideWindowInsets
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.tomg.githubreleasemonitor.theme.GithubReleaseMonitorTheme
@@ -66,9 +65,7 @@ class GitHubReleaseMonitorActivity : AppCompatActivity() {
                 )
             }
             GithubReleaseMonitorTheme {
-                ProvideWindowInsets {
-                    NavGraph(rememberAnimatedNavController())
-                }
+                NavGraph(rememberAnimatedNavController())
             }
         }
         viewModel.startGitHubRepositoryReleaseMonitor()
