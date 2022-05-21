@@ -254,20 +254,25 @@ fun MainScreen(
         },
         floatingActionButtonPosition = FabPosition.End
     ) { innerPadding ->
-        Column {
+        Column(
+            modifier = Modifier.padding(
+                top = innerPadding.calculateTopPadding(),
+                bottom = innerPadding.calculateBottomPadding()
+            )
+        ) {
             AnimatedVisibility(visible = isLoading) {
                 LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
             }
             if (gitHubRepositories == null) {
                 return@Scaffold
             }
-            LazyColumn(
-                modifier = Modifier.padding(
-                    top = innerPadding.calculateTopPadding(),
-                    bottom = innerPadding.calculateBottomPadding()
-                )
-            ) {
-                items(items = gitHubRepositories) { gitHubRepository ->
+            LazyColumn {
+                items(
+                    items = gitHubRepositories,
+                    key = { gitHubRepository ->
+                        gitHubRepository.id
+                    }
+                ) { gitHubRepository ->
                     if (gitHubRepository != null) {
                         GitHubRepositoryItem(
                             gitHubRepository = gitHubRepository,
