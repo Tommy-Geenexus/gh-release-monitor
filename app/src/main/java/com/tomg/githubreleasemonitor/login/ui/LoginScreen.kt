@@ -94,7 +94,7 @@ fun LoginScreen(
     ) {
         Text(
             text = stringResource(id = R.string.app_name),
-            color = MaterialTheme.colorScheme.primary,
+            color = MaterialTheme.colorScheme.onSurface,
             style = MaterialTheme.typography.bodyLarge
         )
         Image(
@@ -103,12 +103,18 @@ fun LoginScreen(
             modifier = Modifier
                 .padding(all = 16.dp)
                 .size(108.dp),
-            colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.primary)
+            colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.onSurface)
         )
     }
+    val insetsPadding = WindowInsets.navigationBars.asPaddingValues()
     Row(
         modifier = Modifier
-            .padding(all = 16.dp)
+            .padding(
+                start = 16.dp,
+                top = 16.dp,
+                end = 16.dp,
+                bottom = 16.dp + insetsPadding.calculateBottomPadding()
+            )
             .fillMaxSize(),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.Bottom
@@ -132,10 +138,9 @@ fun LoginScreen(
                 )
             }
         } else {
-            val insetsPadding = WindowInsets.navigationBars.asPaddingValues()
             CircularProgressIndicator(
                 modifier = Modifier
-                    .padding(bottom = 16.dp + insetsPadding.calculateBottomPadding())
+                    .padding(bottom = 16.dp)
                     .size(24.dp),
                 strokeWidth = 2.dp
             )
