@@ -16,12 +16,12 @@ plugins {
 }
 
 android {
-    compileSdkVersion 32
+    compileSdkVersion 33
 
     defaultConfig {
         applicationId "com.tomg.githubreleasemonitor"
         minSdkVersion 31
-        targetSdkVersion 32
+        targetSdkVersion 33
         versionCode 3
         versionName "1.0.2"
     }
@@ -42,7 +42,6 @@ android {
 
     kotlinOptions {
         jvmTarget = "1.8"
-        useIR = true
     }
 
     buildFeatures {
@@ -50,7 +49,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion "1.2.0-beta02"
+        kotlinCompilerExtensionVersion "1.2.0-rc02"
     }
 }
 
