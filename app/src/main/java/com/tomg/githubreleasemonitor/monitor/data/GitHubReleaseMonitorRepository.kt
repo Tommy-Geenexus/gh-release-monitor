@@ -18,7 +18,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.tomg.githubreleasemonitor
+package com.tomg.githubreleasemonitor.monitor.data
 
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy

@@ -23,10 +23,10 @@ package com.tomg.githubreleasemonitor.settings.business
 import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import com.tomg.githubreleasemonitor.GitHubReleaseMonitorRepository
 import com.tomg.githubreleasemonitor.login.data.GitHubAuthenticationRepository
 import com.tomg.githubreleasemonitor.login.data.UserRepository
 import com.tomg.githubreleasemonitor.main.data.GitHubRepositoryRepository
+import com.tomg.githubreleasemonitor.monitor.data.GitHubReleaseMonitorRepository
 import com.tomg.githubreleasemonitor.settings.data.GitHubRepositoryJsonRepository
 import com.tomg.githubreleasemonitor.settings.data.SettingsRepository
 import com.tomg.githubreleasemonitor.settings.data.SettingsRepositoryContract

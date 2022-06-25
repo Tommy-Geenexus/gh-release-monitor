@@ -21,40 +21,37 @@
 package com.tomg.githubreleasemonitor.main.ui
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Sort
 import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FabPosition
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SmallTopAppBar
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -63,16 +60,18 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
-import coil.annotation.ExperimentalCoilApi
+import com.google.accompanist.systemuicontroller.SystemUiController
 import com.tomg.githubreleasemonitor.R
 import com.tomg.githubreleasemonitor.main.SortOrder
 import com.tomg.githubreleasemonitor.main.business.AddRepositoryViewModel
@@ -84,13 +83,11 @@ import com.tomg.githubreleasemonitor.main.toViewIntentOrNull
 import kotlinx.coroutines.launch
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
+import kotlin.math.ln
 
-@ExperimentalMaterialApi
-@ExperimentalMaterial3Api
-@ExperimentalCoilApi
-@ExperimentalAnimationApi
 @Composable
 fun MainScreen(
+    systemUiController: SystemUiController,
     mainViewModel: MainViewModel,
     addRepositoryViewModel: AddRepositoryViewModel,
     onNavigateToSettings: () -> Unit
@@ -103,49 +100,49 @@ fun MainScreen(
     val repositoryUpdateFailed = stringResource(id = R.string.repository_update_failed)
     val repositoryUpdated = stringResource(id = R.string.repository_updated)
     val repositoryNoUpdate = stringResource(id = R.string.repository_no_update)
-    val snackbarHostState = remember { SnackbarHostState() }
+    val snackBarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
     mainViewModel.collectSideEffect { sideEffect ->
         when (sideEffect) {
             MainSideEffect.GitHubRepository.Add.Failure -> {
                 scope.launch {
-                    snackbarHostState.showSnackbar(message = repositoryAddFailed)
+                    snackBarHostState.showSnackbar(message = repositoryAddFailed)
                 }
             }
             MainSideEffect.GitHubRepository.Add.Success -> {
                 scope.launch {
-                    snackbarHostState.showSnackbar(message = repositoryAdded)
+                    snackBarHostState.showSnackbar(message = repositoryAdded)
                 }
             }
             MainSideEffect.GitHubRepository.Add.NotFound -> {
                 scope.launch {
-                    snackbarHostState.showSnackbar(message = repositoryNotFound)
+                    snackBarHostState.showSnackbar(message = repositoryNotFound)
                 }
             }
             MainSideEffect.GitHubRepository.Delete.Failure -> {
                 scope.launch {
-                    snackbarHostState.showSnackbar(message = repositoryDeleteFailed)
+                    snackBarHostState.showSnackbar(message = repositoryDeleteFailed)
                 }
             }
             MainSideEffect.GitHubRepository.Delete.Success -> {
                 scope.launch {
-                    snackbarHostState.showSnackbar(message = repositoryDeleted)
+                    snackBarHostState.showSnackbar(message = repositoryDeleted)
                 }
             }
             MainSideEffect.GitHubRepository.Update.Failure -> {
                 scope.launch {
-                    snackbarHostState.showSnackbar(message = repositoryUpdateFailed)
+                    snackBarHostState.showSnackbar(message = repositoryUpdateFailed)
                 }
             }
             MainSideEffect.GitHubRepository.Update.Latest -> {
                 scope.launch {
-                    snackbarHostState.showSnackbar(message = repositoryNoUpdate)
+                    snackBarHostState.showSnackbar(message = repositoryNoUpdate)
                 }
             }
             MainSideEffect.GitHubRepository.Update.Success -> {
                 scope.launch {
-                    snackbarHostState.showSnackbar(message = repositoryUpdated)
+                    snackBarHostState.showSnackbar(message = repositoryUpdated)
                 }
             }
             is MainSideEffect.Show -> {
@@ -170,8 +167,12 @@ fun MainScreen(
             }
         )
     }
+    val surfaceColorEl2 = MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp)
+    SideEffect {
+        systemUiController.setNavigationBarColor(surfaceColorEl2)
+    }
     MainScreen(
-        snackbarHostState = snackbarHostState,
+        snackBarHostState = snackBarHostState,
         gitHubRepositories = gitHubRepositories,
         defaultSortOrder = state.sortOrder,
         isLoading = state.isLoading,
@@ -197,13 +198,9 @@ fun MainScreen(
     )
 }
 
-@ExperimentalMaterialApi
-@ExperimentalMaterial3Api
-@ExperimentalCoilApi
-@ExperimentalAnimationApi
 @Composable
 fun MainScreen(
-    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
+    snackBarHostState: SnackbarHostState = remember { SnackbarHostState() },
     gitHubRepositories: LazyPagingItems<GitHubRepository>? = null,
     defaultSortOrder: SortOrder = SortOrder.Asc.RepositoryOwner,
     isLoading: Boolean = false,
@@ -216,10 +213,12 @@ fun MainScreen(
     onDelete: (GitHubRepository) -> Unit = {}
 ) {
     Scaffold(
+        modifier = Modifier
+            .systemBarsPadding()
+            .displayCutoutPadding(),
         topBar = {
-            val insetsPadding = WindowInsets.statusBars.asPaddingValues()
             SmallTopAppBar(
-                modifier = Modifier.padding(top = insetsPadding.calculateTopPadding()),
+                modifier = Modifier.statusBarsPadding(),
                 title = {
                     Text(text = stringResource(id = R.string.app_name))
                 }
@@ -230,29 +229,13 @@ fun MainScreen(
                 defaultSortOrder = defaultSortOrder,
                 onApplySortOrder = onApplySortOrder,
                 onRefresh = onRefresh,
-                onShowSettings = onShowSettings
+                onShowSettings = onShowSettings,
+                onAddGitHubRepository = onAddGitHubRepository
             )
         },
         snackbarHost = {
-            SnackbarHost(snackbarHostState)
-        },
-        floatingActionButton = {
-            val insetsPadding = WindowInsets.navigationBars.asPaddingValues()
-            FloatingActionButton(
-                modifier = Modifier.padding(
-                    end = insetsPadding.calculateEndPadding(LocalLayoutDirection.current)
-                ),
-                onClick = {
-                    onAddGitHubRepository()
-                }
-            ) {
-                Icon(
-                    imageVector = Icons.Outlined.Add,
-                    contentDescription = null
-                )
-            }
-        },
-        floatingActionButtonPosition = FabPosition.End
+            SnackbarHost(snackBarHostState)
+        }
     ) { innerPadding ->
         Column(
             modifier = Modifier.padding(
@@ -326,10 +309,6 @@ fun MainScreen(
     }
 }
 
-@ExperimentalMaterialApi
-@ExperimentalMaterial3Api
-@ExperimentalCoilApi
-@ExperimentalAnimationApi
 @Preview(name = "Main Screen")
 @Composable
 fun MainScreenPreview() {
@@ -369,13 +348,13 @@ fun Refresh(
     }
 }
 
-@ExperimentalMaterial3Api
 @Composable
 fun BottomBar(
     defaultSortOrder: SortOrder,
     onApplySortOrder: (SortOrder) -> Unit,
     onRefresh: () -> Unit,
-    onShowSettings: () -> Unit
+    onShowSettings: () -> Unit,
+    onAddGitHubRepository: () -> Unit,
 ) {
     var showDialog by rememberSaveable { mutableStateOf(false) }
     if (showDialog) {
@@ -390,45 +369,52 @@ fun BottomBar(
             }
         )
     }
-    val insetsPadding = WindowInsets.navigationBars.asPaddingValues()
     BottomAppBar(
-        modifier = Modifier.height(64.dp + insetsPadding.calculateBottomPadding()),
-        contentPadding = insetsPadding,
-    ) {
-        IconButton(
-            onClick = {
-                showDialog = true
-            },
-            modifier = Modifier
-                .padding(start = 16.dp)
-                .size(24.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Outlined.Sort,
-                contentDescription = null
-            )
+        icons = {
+            IconButton(
+                onClick = {
+                    showDialog = true
+                }
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.Sort,
+                    contentDescription = null
+                )
+            }
+            IconButton(onClick = onRefresh) {
+                Icon(
+                    imageVector = Icons.Outlined.Refresh,
+                    contentDescription = null
+                )
+            }
+            IconButton(onClick = onShowSettings) {
+                Icon(
+                    imageVector = Icons.Outlined.Settings,
+                    contentDescription = null
+                )
+            }
+        },
+        modifier = Modifier.navigationBarsPadding(),
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = {
+                    onAddGitHubRepository()
+                },
+                elevation = BottomAppBarDefaults.floatingActionButtonElevation()
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.Add,
+                    contentDescription = null
+                )
+            }
         }
-        IconButton(
-            onClick = onRefresh,
-            modifier = Modifier
-                .padding(start = 24.dp)
-                .size(24.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Outlined.Refresh,
-                contentDescription = null
-            )
-        }
-        IconButton(
-            onClick = onShowSettings,
-            modifier = Modifier
-                .padding(start = 24.dp)
-                .size(24.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Outlined.Settings,
-                contentDescription = null
-            )
-        }
-    }
+    )
+}
+
+private fun ColorScheme.surfaceColorAtElevation(
+    elevation: Dp,
+): Color {
+    if (elevation == 0.dp) return surface
+    val alpha = ((4.5f * ln(elevation.value + 1)) + 2f) / 100f
+    return surfaceTint.copy(alpha = alpha).compositeOver(surface)
 }

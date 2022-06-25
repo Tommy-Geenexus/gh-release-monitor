@@ -22,6 +22,7 @@ package com.tomg.githubreleasemonitor.login.ui
 
 import android.app.Activity
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -40,6 +41,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -50,6 +52,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.google.accompanist.systemuicontroller.SystemUiController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.OAuthProvider
 import com.tomg.githubreleasemonitor.R
@@ -60,6 +63,7 @@ import org.orbitmvi.orbit.compose.collectSideEffect
 
 @Composable
 fun LoginScreen(
+    systemUiController: SystemUiController,
     viewModel: LoginViewModel,
     onNavigateToMain: () -> Unit
 ) {
@@ -72,6 +76,15 @@ fun LoginScreen(
     }
     val state by viewModel.collectAsState()
     val context = LocalContext.current as Activity
+    val useDarkIcons = !isSystemInDarkTheme()
+    val surfaceColor = MaterialTheme.colorScheme.surface
+    SideEffect {
+        systemUiController.setNavigationBarColor(
+            color = surfaceColor,
+            darkIcons = useDarkIcons,
+            navigationBarContrastEnforced = false
+        )
+    }
     LoginScreen(
         signInEnabled = !state.isAuthenticating,
         onLoginRequested = {

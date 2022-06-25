@@ -18,9 +18,8 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.tomg.githubreleasemonitor
+package com.tomg.githubreleasemonitor.navigation
 
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
@@ -29,32 +28,19 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import coil.annotation.ExperimentalCoilApi
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
-import com.tomg.githubreleasemonitor.login.business.LoginViewModel
+import com.google.accompanist.systemuicontroller.SystemUiController
 import com.tomg.githubreleasemonitor.login.ui.LoginScreen
-import com.tomg.githubreleasemonitor.main.business.AddRepositoryViewModel
-import com.tomg.githubreleasemonitor.main.business.MainViewModel
 import com.tomg.githubreleasemonitor.main.ui.MainScreen
-import com.tomg.githubreleasemonitor.settings.business.SettingsViewModel
 import com.tomg.githubreleasemonitor.settings.ui.SettingsScreen
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 
-@ExperimentalMaterialApi
-@ExperimentalMaterial3Api
-@ExperimentalCoilApi
-@ExperimentalComposeUiApi
-@ExperimentalCoroutinesApi
-@ExperimentalAnimationApi
 @Composable
 fun NavGraph(
+    systemUiController: SystemUiController,
     navController: NavHostController,
     startDestination: String = NavDestinations.ROUTE_LOGIN
 ) {
@@ -63,9 +49,9 @@ fun NavGraph(
         startDestination = startDestination
     ) {
         composable(route = NavDestinations.ROUTE_LOGIN) {
-            val loginViewModel = hiltViewModel<LoginViewModel>()
             LoginScreen(
-                viewModel = loginViewModel,
+                systemUiController = systemUiController,
+                viewModel = hiltViewModel(),
                 onNavigateToMain = {
                     navController.navigate(route = NavDestinations.ROUTE_MAIN) {
                         popUpTo(
@@ -93,11 +79,10 @@ fun NavGraph(
                 materialSharedAxisZBackward
             }
         ) {
-            val mainViewModel = hiltViewModel<MainViewModel>()
-            val addRepositoryViewModel = hiltViewModel<AddRepositoryViewModel>()
             MainScreen(
-                mainViewModel = mainViewModel,
-                addRepositoryViewModel = addRepositoryViewModel,
+                systemUiController = systemUiController,
+                mainViewModel = hiltViewModel(),
+                addRepositoryViewModel = hiltViewModel(),
                 onNavigateToSettings = {
                     navController.navigate(route = NavDestinations.ROUTE_SETTINGS)
                 }
@@ -118,9 +103,9 @@ fun NavGraph(
                 materialSharedAxisZBackward
             }
         ) {
-            val settingsViewModel = hiltViewModel<SettingsViewModel>()
             SettingsScreen(
-                viewModel = settingsViewModel,
+                systemUiController = systemUiController,
+                viewModel = hiltViewModel(),
                 onNavigateToLogin = {
                     navController.navigate(route = NavDestinations.ROUTE_LOGIN) {
                         popUpTo(
@@ -139,11 +124,10 @@ fun NavGraph(
     }
 }
 
-@ExperimentalAnimationApi
 private val materialSharedAxisZForward =
     fadeIn(
         animationSpec = tween(
-            durationMillis = 200,
+            durationMillis = 210,
             delayMillis = 90,
             easing = LinearOutSlowInEasing
         )
@@ -152,7 +136,6 @@ private val materialSharedAxisZForward =
         animationSpec = tween()
     )
 
-@ExperimentalAnimationApi
 private val materialSharedAxisZBackward =
     fadeOut(
         animationSpec = tween(

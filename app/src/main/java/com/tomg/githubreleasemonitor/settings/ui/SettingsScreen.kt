@@ -22,17 +22,19 @@ package com.tomg.githubreleasemonitor.settings.ui
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowBack
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SmallTopAppBar
 import androidx.compose.material3.SnackbarHost
@@ -40,18 +42,19 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import com.google.accompanist.systemuicontroller.SystemUiController
 import com.tomg.githubreleasemonitor.Empty
 import com.tomg.githubreleasemonitor.MIME_TYPE_JSON
 import com.tomg.githubreleasemonitor.R
@@ -61,18 +64,14 @@ import com.tomg.githubreleasemonitor.settings.emptyPreferenceRequest
 import com.tomg.githubreleasemonitor.settings.mockDataStore
 import de.schnettler.datastore.compose.material3.PreferenceScreen
 import de.schnettler.datastore.manager.PreferenceRequest
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
 import java.time.LocalDateTime
 
-@ExperimentalMaterial3Api
-@ExperimentalComposeUiApi
-@ExperimentalCoroutinesApi
-@ExperimentalAnimationApi
 @Composable
 fun SettingsScreen(
+    systemUiController: SystemUiController,
     viewModel: SettingsViewModel,
     onNavigateToLogin: () -> Unit,
     onNavigateUp: () -> Unit
@@ -94,33 +93,33 @@ fun SettingsScreen(
     val importFailed = stringResource(id = R.string.import_failed)
     val importSuccessful = stringResource(id = R.string.import_successful)
     val signOutFailed = stringResource(id = R.string.sign_out_failed)
-    val snackbarHostState = remember { SnackbarHostState() }
+    val snackBarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     viewModel.collectSideEffect { sideEffect ->
         when (sideEffect) {
             SettingsSideEffect.Export.Failure -> {
                 scope.launch {
-                    snackbarHostState.showSnackbar(message = exportFailed)
+                    snackBarHostState.showSnackbar(message = exportFailed)
                 }
             }
             SettingsSideEffect.Export.Success -> {
                 scope.launch {
-                    snackbarHostState.showSnackbar(message = exportSuccessful)
+                    snackBarHostState.showSnackbar(message = exportSuccessful)
                 }
             }
             SettingsSideEffect.Import.Failure -> {
                 scope.launch {
-                    snackbarHostState.showSnackbar(message = importFailed)
+                    snackBarHostState.showSnackbar(message = importFailed)
                 }
             }
             SettingsSideEffect.Import.Success -> {
                 scope.launch {
-                    snackbarHostState.showSnackbar(message = importSuccessful)
+                    snackBarHostState.showSnackbar(message = importSuccessful)
                 }
             }
             SettingsSideEffect.UserSignOut.Failure -> {
                 scope.launch {
-                    snackbarHostState.showSnackbar(message = signOutFailed)
+                    snackBarHostState.showSnackbar(message = signOutFailed)
                 }
             }
             SettingsSideEffect.UserSignOut.Success -> {
@@ -151,8 +150,17 @@ fun SettingsScreen(
             }
         )
     }
+    val useDarkIcons = !isSystemInDarkTheme()
+    val surfaceColor = MaterialTheme.colorScheme.surface
+    SideEffect {
+        systemUiController.setNavigationBarColor(
+            color = surfaceColor,
+            darkIcons = useDarkIcons,
+            navigationBarContrastEnforced = false
+        )
+    }
     SettingScreen(
-        snackbarHostState = snackbarHostState,
+        snackBarHostState = snackBarHostState,
         dataStore = viewModel.dataStore,
         monitorIntervalPreferenceRequest = PreferenceRequest(
             key = viewModel.monitorIntervalKey,
@@ -173,13 +181,9 @@ fun SettingsScreen(
     )
 }
 
-@ExperimentalMaterial3Api
-@ExperimentalComposeUiApi
-@ExperimentalCoroutinesApi
-@ExperimentalAnimationApi
 @Composable
 fun SettingScreen(
-    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
+    snackBarHostState: SnackbarHostState = remember { SnackbarHostState() },
     dataStore: DataStore<Preferences> = mockDataStore,
     monitorIntervalPreferenceRequest: PreferenceRequest<String> = emptyPreferenceRequest,
     monitorIntervalEntries: Map<String, String> = mapOf(),
@@ -190,10 +194,12 @@ fun SettingScreen(
     onNavigateUp: () -> Unit = {}
 ) {
     Scaffold(
+        modifier = Modifier
+            .systemBarsPadding()
+            .displayCutoutPadding(),
         topBar = {
-            val insetsPadding = WindowInsets.statusBars.asPaddingValues()
             SmallTopAppBar(
-                modifier = Modifier.padding(top = insetsPadding.calculateTopPadding()),
+                modifier = Modifier.statusBarsPadding(),
                 title = { Text(text = stringResource(id = R.string.settings)) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateUp) {
@@ -208,7 +214,7 @@ fun SettingScreen(
         snackbarHost = {
             val insetsPadding = WindowInsets.navigationBars.asPaddingValues()
             SnackbarHost(
-                hostState = snackbarHostState,
+                hostState = snackBarHostState,
                 modifier = Modifier.padding(bottom = insetsPadding.calculateBottomPadding())
             )
         },
@@ -235,10 +241,6 @@ fun SettingScreen(
     }
 }
 
-@ExperimentalMaterial3Api
-@ExperimentalComposeUiApi
-@ExperimentalCoroutinesApi
-@ExperimentalAnimationApi
 @Preview(name = "Settings Screen")
 @Composable
 fun SettingsScreen() {

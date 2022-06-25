@@ -18,7 +18,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.tomg.githubreleasemonitor
+package com.tomg.githubreleasemonitor.monitor.data
 
 import android.app.Notification
 import android.app.NotificationChannel
@@ -30,6 +30,8 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import com.tomg.githubreleasemonitor.R
+import com.tomg.githubreleasemonitor.TOP_LEVEL_PACKAGE_NAME
 import com.tomg.githubreleasemonitor.di.DispatcherIo
 import com.tomg.githubreleasemonitor.login.data.UserRepository
 import com.tomg.githubreleasemonitor.main.data.GitHubRepositoryReleaseRepository

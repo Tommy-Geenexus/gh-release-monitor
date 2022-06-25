@@ -18,31 +18,11 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.tomg.githubreleasemonitor
+package com.tomg.githubreleasemonitor.navigation
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.tomg.githubreleasemonitor.settings.data.SettingsRepository
-import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.launch
-import javax.inject.Inject
+object NavDestinations {
 
-@HiltViewModel
-class GitHubReleaseMonitorViewModel @Inject constructor(
-    private val gitHubReleaseMonitorRepository: GitHubReleaseMonitorRepository,
-    private val settingsRepository: SettingsRepository
-) : ViewModel() {
-
-    fun startGitHubRepositoryReleaseMonitor() {
-        viewModelScope.launch {
-            val monitorInterval = settingsRepository.getMonitorInterval().firstOrNull()
-            if (monitorInterval != null) {
-                val millis = monitorInterval.first.toLongOrNull()
-                if (millis != null) {
-                    gitHubReleaseMonitorRepository.enqueueGitHubRepositoryReleaseWork(millis)
-                }
-            }
-        }
-    }
+    const val ROUTE_LOGIN = "login"
+    const val ROUTE_MAIN = "main"
+    const val ROUTE_SETTINGS = "settings"
 }
