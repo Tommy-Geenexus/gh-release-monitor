@@ -37,6 +37,8 @@
 
     <string name="monitor_interval">Monitor Interval</string>
 
+    <string name="release_date">Repository release date</string>
+
     <string name="repo_name">Repository name</string>
     <string name="repo_owner">Repository owner</string>
 

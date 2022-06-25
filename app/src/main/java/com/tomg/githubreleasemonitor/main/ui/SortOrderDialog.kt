@@ -77,11 +77,16 @@ fun SortOrderDialog(
         },
         text = {
             Column {
+                val repoOwner = stringResource(id = R.string.repo_owner)
+                val repoName = stringResource(id = R.string.repo_name)
+                val releaseDate = stringResource(id = R.string.release_date)
                 val sortOrders = listOf(
-                    stringResource(id = R.string.repo_owner) to SortOrder.Asc.RepositoryOwner,
-                    stringResource(id = R.string.repo_name) to SortOrder.Asc.RepositoryName,
-                    stringResource(id = R.string.repo_owner) to SortOrder.Desc.RepositoryOwner,
-                    stringResource(id = R.string.repo_name) to SortOrder.Desc.RepositoryName
+                    repoOwner to SortOrder.Asc.RepositoryOwner,
+                    repoName to SortOrder.Asc.RepositoryName,
+                    releaseDate to SortOrder.Asc.RepositoryReleaseDate,
+                    repoOwner to SortOrder.Desc.RepositoryOwner,
+                    repoName to SortOrder.Desc.RepositoryName,
+                    releaseDate to SortOrder.Desc.RepositoryReleaseDate,
                 )
                 val lastSortOrder = sortOrders.last().second
                 for ((text, order) in sortOrders) {

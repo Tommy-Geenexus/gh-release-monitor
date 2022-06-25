@@ -35,10 +35,13 @@ class GitHubRepositoryRepository @Inject constructor(
     fun getRepositories() = repositoryDao.getRepositories()
 
     fun getRepositories(sortOrder: SortOrder): PagingSource<Int, GitHubRepository> {
-        val sqlSortColumn = if (
-            sortOrder == SortOrder.Asc.RepositoryOwner ||
-            sortOrder == SortOrder.Desc.RepositoryOwner
-        ) "owner" else "name"
+        val sqlSortColumn = when (sortOrder) {
+            SortOrder.Asc.RepositoryReleaseDate,
+            SortOrder.Desc.RepositoryReleaseDate -> "latest_release_timestamp"
+            SortOrder.Asc.RepositoryOwner,
+            SortOrder.Desc.RepositoryOwner -> "owner"
+            else -> "name"
+        }
         val sqlSortOrder = if (sortOrder is SortOrder.Asc) "ASC" else "DESC"
         val statement = "SELECT * FROM GitHubRepository ORDER BY $sqlSortColumn $sqlSortOrder"
         return repositoryDao.getRepositories(SimpleSQLiteQuery(statement))

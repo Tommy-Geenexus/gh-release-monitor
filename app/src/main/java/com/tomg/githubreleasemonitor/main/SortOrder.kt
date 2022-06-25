@@ -32,6 +32,9 @@ sealed class SortOrder : Parcelable {
 
         @Parcelize
         object RepositoryName : Asc()
+
+        @Parcelize
+        object RepositoryReleaseDate : Asc()
     }
 
     sealed class Desc : SortOrder() {
@@ -41,5 +44,8 @@ sealed class SortOrder : Parcelable {
 
         @Parcelize
         object RepositoryName : Desc()
+
+        @Parcelize
+        object RepositoryReleaseDate : Desc()
     }
 }
