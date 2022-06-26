@@ -9,7 +9,6 @@ compose = "1.2.0-rc02"
 compose-material3 = "1.0.0-alpha13"
 compose-preferences = "0.1.4"
 core-ktx = "1.8.0"
-core-splashscreen = "1.0.0-rc01"
 coroutines = "1.6.3"
 dagger-hilt = "2.42"
 dagger-hilt-extensions = "1.0.0"
@@ -53,7 +52,6 @@ compose-preferences = { module = "com.github.Sh4dowSoul:ComposePreferences", ver
 compose-ui = { module = "androidx.compose.ui:ui", version.ref = "compose" }
 compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "compose" }
 core-ktx = { module = "androidx.core:core-ktx", version.ref = "core-ktx" }
-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "core-splashscreen" }
 coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
 coroutines-play-services = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-play-services", version.ref = "coroutines" }
 dagger-hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "dagger-hilt" }
@@ -102,7 +100,6 @@ implementation = [
     "compose-ui",
     "compose-ui-tooling",
     "core-ktx",
-    "core-splashscreen",
     "coroutines-android",
     "coroutines-play-services",
     "dagger-hilt-android",

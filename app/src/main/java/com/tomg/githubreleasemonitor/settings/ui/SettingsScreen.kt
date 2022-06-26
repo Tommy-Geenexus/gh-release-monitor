@@ -25,7 +25,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -194,9 +193,7 @@ fun SettingScreen(
     onNavigateUp: () -> Unit = {}
 ) {
     Scaffold(
-        modifier = Modifier
-            .systemBarsPadding()
-            .displayCutoutPadding(),
+        modifier = Modifier.systemBarsPadding(),
         topBar = {
             SmallTopAppBar(
                 modifier = Modifier.statusBarsPadding(),

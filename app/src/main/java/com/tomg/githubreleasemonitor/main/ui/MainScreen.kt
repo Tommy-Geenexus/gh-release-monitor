@@ -23,7 +23,6 @@ package com.tomg.githubreleasemonitor.main.ui
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -213,9 +212,7 @@ fun MainScreen(
     onDelete: (GitHubRepository) -> Unit = {}
 ) {
     Scaffold(
-        modifier = Modifier
-            .systemBarsPadding()
-            .displayCutoutPadding(),
+        modifier = Modifier.systemBarsPadding(),
         topBar = {
             SmallTopAppBar(
                 modifier = Modifier.statusBarsPadding(),

@@ -1,6 +1,0 @@
-<resources>
-    <style name="Theme.GithubReleaseMonitor.Launcher" parent="Theme.SplashScreen.IconBackground">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-    </style>
-</resources>

@@ -42,7 +42,6 @@ class GitHubReleaseMonitorActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setTheme(R.style.Theme_MaterialComponents_DayNight_NoActionBar)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent {
             GithubReleaseMonitorTheme {
