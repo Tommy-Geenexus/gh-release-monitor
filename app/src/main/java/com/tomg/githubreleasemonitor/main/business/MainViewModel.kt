@@ -45,13 +45,13 @@ class MainViewModel @Inject constructor(
     pagingConfig: PagingConfig,
     private val gitHubRepositoryReleaseRepository: GitHubRepositoryReleaseRepository,
     private val gitHubRepositoryRepository: GitHubRepositoryRepository,
-    private val userRepository: UserRepository,
+    private val userRepository: UserRepository
 ) : ViewModel(),
     ContainerHost<MainState, MainSideEffect> {
 
     override val container = container<MainState, MainSideEffect>(
         initialState = MainState(),
-        savedStateHandle = savedStateHandle,
+        savedStateHandle = savedStateHandle
     )
 
     private val pagingSourceFactory by pagingSourceFactory {

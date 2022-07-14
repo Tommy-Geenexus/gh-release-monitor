@@ -214,7 +214,7 @@ fun SettingScreen(
                 hostState = snackBarHostState,
                 modifier = Modifier.padding(bottom = insetsPadding.calculateBottomPadding())
             )
-        },
+        }
     ) { innerPadding ->
         PreferenceScreen(
             items = listOf(

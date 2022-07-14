@@ -27,6 +27,7 @@ class RateLimit @Inject constructor() {
 
     @Volatile
     private var remaining = 5000
+
     @Volatile
     private var reset: ZonedDateTime = ZonedDateTime.now()
 

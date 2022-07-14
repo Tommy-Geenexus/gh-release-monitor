@@ -177,7 +177,7 @@ fun GitHubRepositoryItem(
                         )
                         .clickable {
                             onGitHubUserAvatarSelected(gitHubRepository.authorAvatarUrl)
-                        },
+                        }
                 )
                 Column(
                     modifier = Modifier.padding(

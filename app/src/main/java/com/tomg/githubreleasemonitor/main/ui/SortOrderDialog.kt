@@ -86,7 +86,7 @@ fun SortOrderDialog(
                     releaseDate to SortOrder.Asc.RepositoryReleaseDate,
                     repoOwner to SortOrder.Desc.RepositoryOwner,
                     repoName to SortOrder.Desc.RepositoryName,
-                    releaseDate to SortOrder.Desc.RepositoryReleaseDate,
+                    releaseDate to SortOrder.Desc.RepositoryReleaseDate
                 )
                 val lastSortOrder = sortOrders.last().second
                 for ((text, order) in sortOrders) {

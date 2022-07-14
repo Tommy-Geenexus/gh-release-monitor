@@ -38,8 +38,6 @@ import androidx.compose.material.icons.outlined.Sort
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ColorScheme
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
@@ -49,6 +47,7 @@ import androidx.compose.material3.SmallTopAppBar
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
@@ -59,12 +58,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
@@ -82,7 +78,6 @@ import com.tomg.githubreleasemonitor.main.toViewIntentOrNull
 import kotlinx.coroutines.launch
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
-import kotlin.math.ln
 
 @Composable
 fun MainScreen(
@@ -351,7 +346,7 @@ fun BottomBar(
     onApplySortOrder: (SortOrder) -> Unit,
     onRefresh: () -> Unit,
     onShowSettings: () -> Unit,
-    onAddGitHubRepository: () -> Unit,
+    onAddGitHubRepository: () -> Unit
 ) {
     var showDialog by rememberSaveable { mutableStateOf(false) }
     if (showDialog) {
@@ -393,11 +388,10 @@ fun BottomBar(
         },
         modifier = Modifier.navigationBarsPadding(),
         floatingActionButton = {
-            FloatingActionButton(
+            BottomAppBarDefaults.FloatingActionButton(
                 onClick = {
                     onAddGitHubRepository()
-                },
-                elevation = BottomAppBarDefaults.floatingActionButtonElevation()
+                }
             ) {
                 Icon(
                     imageVector = Icons.Outlined.Add,
@@ -406,12 +400,4 @@ fun BottomBar(
             }
         }
     )
-}
-
-private fun ColorScheme.surfaceColorAtElevation(
-    elevation: Dp,
-): Color {
-    if (elevation == 0.dp) return surface
-    val alpha = ((4.5f * ln(elevation.value + 1)) + 2f) / 100f
-    return surfaceTint.copy(alpha = alpha).compositeOver(surface)
 }

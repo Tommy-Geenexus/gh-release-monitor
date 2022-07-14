@@ -32,7 +32,7 @@ import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.tomg.githubreleasemonitor.monitor.business.GitHubReleaseMonitorViewModel
 import com.tomg.githubreleasemonitor.navigation.NavGraph
-import com.tomg.githubreleasemonitor.theme.GithubReleaseMonitorTheme
+import com.tomg.githubreleasemonitor.theme.GitHubReleaseMonitorTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -44,7 +44,7 @@ class GitHubReleaseMonitorActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent {
-            GithubReleaseMonitorTheme {
+            GitHubReleaseMonitorTheme {
                 val systemUiController = rememberSystemUiController()
                 val useDarkIcons = !isSystemInDarkTheme()
                 val surfaceColor = MaterialTheme.colorScheme.surface

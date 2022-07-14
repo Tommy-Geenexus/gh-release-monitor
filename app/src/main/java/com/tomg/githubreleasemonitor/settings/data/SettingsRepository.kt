@@ -51,7 +51,7 @@ class SettingsRepository @Inject constructor(
         4L.hoursToMillisString() to context.getString(R.string.hours, 4),
         8L.hoursToMillisString() to context.getString(R.string.hours, 8),
         16L.hoursToMillisString() to context.getString(R.string.hours, 16),
-        1L.daysToMillisString() to context.getString(R.string.day, 1),
+        1L.daysToMillisString() to context.getString(R.string.day, 1)
     )
 
     override val monitorIntervalDefaultValue = monitorIntervalEntries.entries.last().toPair()

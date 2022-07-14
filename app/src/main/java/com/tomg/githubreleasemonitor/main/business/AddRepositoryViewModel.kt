@@ -69,7 +69,7 @@ class AddRepositoryViewModel @Inject constructor(
         reduce {
             state.copy(
                 repositoryOwner = String.Empty,
-                repositoryName = String.Empty,
+                repositoryName = String.Empty
             )
         }
     }
