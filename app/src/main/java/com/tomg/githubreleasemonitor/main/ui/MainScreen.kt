@@ -38,6 +38,7 @@ import androidx.compose.material.icons.outlined.Sort
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
@@ -388,10 +389,12 @@ fun BottomBar(
         },
         modifier = Modifier.navigationBarsPadding(),
         floatingActionButton = {
-            BottomAppBarDefaults.FloatingActionButton(
+            FloatingActionButton(
                 onClick = {
                     onAddGitHubRepository()
-                }
+                },
+                containerColor = BottomAppBarDefaults.bottomAppBarFabColor,
+                elevation = BottomAppBarDefaults.BottomAppBarFabElevation
             ) {
                 Icon(
                     imageVector = Icons.Outlined.Add,
