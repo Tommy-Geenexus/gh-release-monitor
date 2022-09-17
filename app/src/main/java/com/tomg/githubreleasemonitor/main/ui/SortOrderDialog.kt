@@ -49,7 +49,8 @@ import com.tomg.githubreleasemonitor.main.SortOrder
 fun SortOrderDialog(
     defaultSortOrder: SortOrder,
     onDismiss: () -> Unit,
-    onConfirm: (SortOrder) -> Unit
+    onConfirm: (SortOrder) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     var sortOrder by rememberSaveable { mutableStateOf(defaultSortOrder) }
     AlertDialog(
@@ -63,6 +64,7 @@ fun SortOrderDialog(
                 Text(text = stringResource(id = android.R.string.ok))
             }
         },
+        modifier = modifier,
         dismissButton = {
             TextButton(
                 onClick = {

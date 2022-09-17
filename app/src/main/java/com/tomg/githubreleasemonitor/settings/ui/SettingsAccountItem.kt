@@ -31,8 +31,10 @@ import androidx.compose.ui.unit.dp
 import com.tomg.githubreleasemonitor.R
 import de.schnettler.datastore.compose.material3.model.Preference
 
+@Suppress("UNUSED_PARAMETER")
 @Composable
 fun settingsAccountItem(
+    modifier: Modifier = Modifier,
     onUserSignOutRequested: () -> Unit = {}
 ) = Preference.PreferenceGroup(
     title = stringResource(id = R.string.account),

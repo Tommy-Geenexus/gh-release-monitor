@@ -196,6 +196,7 @@ fun MainScreen(
 
 @Composable
 fun MainScreen(
+    modifier: Modifier = Modifier,
     snackBarHostState: SnackbarHostState = remember { SnackbarHostState() },
     gitHubRepositories: LazyPagingItems<GitHubRepository>? = null,
     defaultSortOrder: SortOrder = SortOrder.Asc.RepositoryOwner,
@@ -209,7 +210,7 @@ fun MainScreen(
     onDelete: (GitHubRepository) -> Unit = {}
 ) {
     Scaffold(
-        modifier = Modifier.systemBarsPadding(),
+        modifier = modifier.systemBarsPadding(),
         topBar = {
             TopAppBar(
                 modifier = Modifier.statusBarsPadding(),
@@ -348,7 +349,8 @@ fun BottomBar(
     onApplySortOrder: (SortOrder) -> Unit,
     onRefresh: () -> Unit,
     onShowSettings: () -> Unit,
-    onAddGitHubRepository: () -> Unit
+    onAddGitHubRepository: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     var showDialog by rememberSaveable { mutableStateOf(false) }
     if (showDialog) {
@@ -388,7 +390,7 @@ fun BottomBar(
                 )
             }
         },
-        modifier = Modifier.navigationBarsPadding(),
+        modifier = modifier.navigationBarsPadding(),
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {

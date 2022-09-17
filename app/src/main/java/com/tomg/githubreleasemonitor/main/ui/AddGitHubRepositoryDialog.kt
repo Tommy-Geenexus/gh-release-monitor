@@ -46,7 +46,8 @@ import org.orbitmvi.orbit.compose.collectAsState
 fun AddGitHubRepositoryDialog(
     viewModel: AddRepositoryViewModel,
     onDismiss: () -> Unit,
-    onConfirm: (repositoryOwner: String, repositoryName: String) -> Unit
+    onConfirm: (repositoryOwner: String, repositoryName: String) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val state by viewModel.collectAsState()
     AlertDialog(
@@ -65,6 +66,7 @@ fun AddGitHubRepositoryDialog(
                 Text(text = stringResource(id = R.string.add))
             }
         },
+        modifier = modifier,
         dismissButton = {
             TextButton(
                 onClick = {
@@ -130,6 +132,7 @@ fun AddGitHubRepositoryDialog(
 fun TextFieldBottomIndicator(
     helperText: String,
     errorText: String,
+    modifier: Modifier = Modifier,
     textColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
     errorTextColor: Color = MaterialTheme.colorScheme.error,
     isError: Boolean = false,
@@ -137,7 +140,7 @@ fun TextFieldBottomIndicator(
     maxCharCnt: Int = Integer.MAX_VALUE
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Row(

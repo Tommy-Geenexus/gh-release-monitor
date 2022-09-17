@@ -182,6 +182,7 @@ fun SettingsScreen(
 
 @Composable
 fun SettingScreen(
+    modifier: Modifier = Modifier,
     snackBarHostState: SnackbarHostState = remember { SnackbarHostState() },
     dataStore: DataStore<Preferences> = mockDataStore,
     monitorIntervalPreferenceRequest: PreferenceRequest<String> = emptyPreferenceRequest,
@@ -193,7 +194,7 @@ fun SettingScreen(
     onNavigateUp: () -> Unit = {}
 ) {
     Scaffold(
-        modifier = Modifier.systemBarsPadding(),
+        modifier = modifier.systemBarsPadding(),
         topBar = {
             TopAppBar(
                 modifier = Modifier.statusBarsPadding(),

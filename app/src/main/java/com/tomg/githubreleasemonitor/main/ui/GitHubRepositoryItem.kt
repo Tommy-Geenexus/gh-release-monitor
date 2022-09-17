@@ -84,6 +84,7 @@ import kotlin.math.roundToInt
 
 @Composable
 fun GitHubRepositoryItem(
+    modifier: Modifier = Modifier,
     swipeableState: SwipeableState<Float> = rememberSwipeableState(initialValue = 0f),
     gitHubRepository: GitHubRepository = GitHubRepository(),
     onGitHubUserAvatarSelected: (String) -> Unit = {},
@@ -102,7 +103,7 @@ fun GitHubRepositoryItem(
         anchorEnd to 1f
     )
     Box(
-        modifier = Modifier
+        modifier = modifier
             .swipeable(
                 state = swipeableState,
                 anchors = anchors,
