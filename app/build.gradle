@@ -16,6 +16,8 @@ plugins {
 }
 
 android {
+    namespace "com.tomg.githubreleasemonitor"
+
     compileSdkVersion 33
 
     defaultConfig {
@@ -49,7 +51,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion "1.3.0-rc02"
+        kotlinCompilerExtensionVersion "1.3.1"
     }
 }
 

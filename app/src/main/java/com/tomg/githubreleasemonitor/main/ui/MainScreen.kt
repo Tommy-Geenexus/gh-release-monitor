@@ -39,15 +39,16 @@ import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SmallTopAppBar
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
@@ -210,7 +211,7 @@ fun MainScreen(
     Scaffold(
         modifier = Modifier.systemBarsPadding(),
         topBar = {
-            SmallTopAppBar(
+            TopAppBar(
                 modifier = Modifier.statusBarsPadding(),
                 title = {
                     Text(text = stringResource(id = R.string.app_name))
@@ -363,7 +364,7 @@ fun BottomBar(
         )
     }
     BottomAppBar(
-        icons = {
+        actions = {
             IconButton(
                 onClick = {
                     showDialog = true
@@ -394,7 +395,7 @@ fun BottomBar(
                     onAddGitHubRepository()
                 },
                 containerColor = BottomAppBarDefaults.bottomAppBarFabColor,
-                elevation = BottomAppBarDefaults.BottomAppBarFabElevation
+                elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation()
             ) {
                 Icon(
                     imageVector = Icons.Outlined.Add,
