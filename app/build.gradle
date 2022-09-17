@@ -9,7 +9,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.kapt)
     alias(libs.plugins.kotlin.parcelize)
-    alias(libs.plugins.ktlint)
+    alias(libs.plugins.kotlinter)
     alias(libs.plugins.spotless)
     alias(libs.plugins.versions)
     alias(libs.plugins.wire)
@@ -80,13 +80,8 @@ detekt {
     baseline = file("$projectDir/config/baseline.xml")
 }
 
-ktlint {
-    android.set(true)
-    disabledRules.set(["import-ordering"])
-    filter {
-        exclude { element -> element.file.path.contains("generated/") }
-        include("**/*.kt")
-    }
+kotlinter {
+    disabledRules = ["import-ordering"]
 }
 
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
@@ -105,7 +100,6 @@ tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
 spotless {
     kotlin {
         target("**/*.kt")
-        //noinspection GroovyImplicitNullArgumentCall
         ktlint()
         endWithNewline()
         licenseHeaderFile rootProject.file("spotless/copyright.txt")
