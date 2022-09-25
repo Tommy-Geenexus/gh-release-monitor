@@ -25,8 +25,6 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
-import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
@@ -97,21 +95,27 @@ class GitHubRepositoryReleaseWorker @AssistedInject constructor(
                 fromIndex += partitionSize
                 toIndex += partitionSize
             }
-            if (updateCnt > 0) {
-                createNotificationChannel()
-                NotificationManagerCompat.from(context).notify(0, createNotification(updateCnt))
+            val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            if (updateCnt > 0 && nm.areNotificationsEnabled()) {
+                nm.createNotificationChannel(
+                    NotificationChannel(
+                        CHANNEL_ID,
+                        context.getString(R.string.app_name),
+                        NotificationManager.IMPORTANCE_DEFAULT
+                    )
+                )
+                nm.notify(0, createNotification(updateCnt))
             }
             Result.success()
         }
     }
 
     private fun createNotification(updateCnt: Int): Notification {
-        return NotificationCompat
+        return Notification
             .Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_update)
             .setContentTitle(context.getString(R.string.repository_updates_available))
             .setContentText(context.getString(R.string.repository_updates_count, updateCnt))
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setContentIntent(
                 PendingIntent.getActivity(
                     context,
@@ -122,16 +126,5 @@ class GitHubRepositoryReleaseWorker @AssistedInject constructor(
             )
             .setAutoCancel(true)
             .build()
-    }
-
-    private fun createNotificationChannel() {
-        (context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager)
-            .createNotificationChannel(
-                NotificationChannel(
-                    CHANNEL_ID,
-                    context.getString(R.string.app_name),
-                    NotificationManager.IMPORTANCE_DEFAULT
-                )
-            )
     }
 }

@@ -20,6 +20,8 @@
 
 package com.tomg.githubreleasemonitor.main.ui
 
+import android.Manifest
+import android.os.Build
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -51,6 +53,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -61,13 +64,19 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
+import com.google.accompanist.permissions.shouldShowRationale
 import com.google.accompanist.systemuicontroller.SystemUiController
 import com.tomg.githubreleasemonitor.R
 import com.tomg.githubreleasemonitor.main.SortOrder
@@ -149,7 +158,26 @@ fun MainScreen(
         }
     }
     val state by mainViewModel.collectAsState()
-    val gitHubRepositories = mainViewModel.repositoryFlow.collectAsLazyPagingItems()
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        val permissionState = rememberPermissionState(
+            permission = Manifest.permission.POST_NOTIFICATIONS
+        )
+        val lifecycleOwner = LocalLifecycleOwner.current
+        DisposableEffect(lifecycleOwner) {
+            val observer = LifecycleEventObserver { _, event ->
+                if (event == Lifecycle.Event.ON_RESUME &&
+                    !permissionState.status.isGranted &&
+                    !permissionState.status.shouldShowRationale
+                ) {
+                    permissionState.launchPermissionRequest()
+                }
+            }
+            lifecycleOwner.lifecycle.addObserver(observer)
+            onDispose {
+                lifecycleOwner.lifecycle.removeObserver(observer)
+            }
+        }
+    }
     var showDialog by rememberSaveable { mutableStateOf(false) }
     if (showDialog) {
         AddGitHubRepositoryDialog(
@@ -167,6 +195,7 @@ fun MainScreen(
     SideEffect {
         systemUiController.setNavigationBarColor(surfaceColorEl2)
     }
+    val gitHubRepositories = mainViewModel.repositoryFlow.collectAsLazyPagingItems()
     MainScreen(
         snackBarHostState = snackBarHostState,
         gitHubRepositories = gitHubRepositories,
