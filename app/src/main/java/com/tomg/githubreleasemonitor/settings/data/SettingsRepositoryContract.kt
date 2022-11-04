@@ -22,6 +22,7 @@ package com.tomg.githubreleasemonitor.settings.data
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import com.tomg.githubreleasemonitor.settings.MonitorIntervalEntries
 import kotlinx.coroutines.flow.Flow
 
 interface SettingsRepositoryContract {
@@ -29,7 +30,7 @@ interface SettingsRepositoryContract {
     val dataStore: DataStore<Preferences>
     val monitorIntervalKey: Preferences.Key<String>
     val monitorIntervalDefaultValue: Pair<String, String>
-    val monitorIntervalEntries: Map<String, String>
+    val monitorIntervalEntries: MonitorIntervalEntries
 
     fun getMonitorInterval(): Flow<Pair<String, String>>
 }

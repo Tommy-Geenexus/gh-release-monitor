@@ -29,13 +29,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.tomg.githubreleasemonitor.R
+import com.tomg.githubreleasemonitor.settings.MonitorIntervalEntries
 import de.schnettler.datastore.compose.material3.model.Preference
 import de.schnettler.datastore.manager.PreferenceRequest
 
 @Composable
 fun settingsServiceItem(
     monitorIntervalPreferenceRequest: PreferenceRequest<String>,
-    monitorIntervalEntries: Map<String, String>,
+    monitorIntervalEntries: MonitorIntervalEntries,
     monitorIntervalDisplayName: String
 ): Preference.PreferenceGroup {
     return Preference.PreferenceGroup(
@@ -53,7 +54,7 @@ fun settingsServiceItem(
                         modifier = Modifier.padding(8.dp)
                     )
                 },
-                entries = monitorIntervalEntries
+                entries = monitorIntervalEntries.monitorIntervals
             )
         )
     )

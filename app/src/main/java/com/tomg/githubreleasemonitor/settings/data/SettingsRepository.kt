@@ -26,6 +26,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.tomg.githubreleasemonitor.R
+import com.tomg.githubreleasemonitor.settings.MonitorIntervalEntries
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -43,18 +44,21 @@ class SettingsRepository @Inject constructor(
 
     override val monitorIntervalKey = stringPreferencesKey("monitor_interval")
 
-    override val monitorIntervalEntries = mapOf(
-        15L.minutesToMillisString() to context.getString(R.string.minutes, 15),
-        30L.minutesToMillisString() to context.getString(R.string.minutes, 30),
-        1L.hoursToMillisString() to context.getString(R.string.hour, 1),
-        2L.hoursToMillisString() to context.getString(R.string.hours, 2),
-        4L.hoursToMillisString() to context.getString(R.string.hours, 4),
-        8L.hoursToMillisString() to context.getString(R.string.hours, 8),
-        16L.hoursToMillisString() to context.getString(R.string.hours, 16),
-        1L.daysToMillisString() to context.getString(R.string.day, 1)
+    override val monitorIntervalEntries = MonitorIntervalEntries(
+        monitorIntervals = mapOf(
+            15L.minutesToMillisString() to context.getString(R.string.minutes, 15),
+            30L.minutesToMillisString() to context.getString(R.string.minutes, 30),
+            1L.hoursToMillisString() to context.getString(R.string.hour, 1),
+            2L.hoursToMillisString() to context.getString(R.string.hours, 2),
+            4L.hoursToMillisString() to context.getString(R.string.hours, 4),
+            8L.hoursToMillisString() to context.getString(R.string.hours, 8),
+            16L.hoursToMillisString() to context.getString(R.string.hours, 16),
+            1L.daysToMillisString() to context.getString(R.string.day, 1)
+        )
     )
 
-    override val monitorIntervalDefaultValue = monitorIntervalEntries.entries.last().toPair()
+    override val monitorIntervalDefaultValue =
+        monitorIntervalEntries.monitorIntervals.entries.last().toPair()
 
     private fun Long.minutesToMillisString() = Duration.ofMinutes(this).toMillis().toString()
 
@@ -70,6 +74,7 @@ class SettingsRepository @Inject constructor(
         }
         .map { preferences ->
             monitorIntervalEntries
+                .monitorIntervals
                 .entries
                 .find { entry ->
                     entry.key == preferences[monitorIntervalKey]

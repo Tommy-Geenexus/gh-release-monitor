@@ -18,14 +18,14 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.tomg.githubreleasemonitor.settings.business
+package com.tomg.githubreleasemonitor.settings
 
 import android.os.Parcelable
-import com.tomg.githubreleasemonitor.settings.MonitorIntervalEntries
+import androidx.compose.runtime.Immutable
 import kotlinx.parcelize.Parcelize
 
+@Immutable
 @Parcelize
-data class SettingsState(
-    val monitorInterval: Pair<String, String>,
-    val monitorIntervalEntries: MonitorIntervalEntries
+data class MonitorIntervalEntries(
+    val monitorIntervals: Map<String, String> = mapOf()
 ) : Parcelable

@@ -57,6 +57,7 @@ import com.google.accompanist.systemuicontroller.SystemUiController
 import com.tomg.githubreleasemonitor.Empty
 import com.tomg.githubreleasemonitor.MIME_TYPE_JSON
 import com.tomg.githubreleasemonitor.R
+import com.tomg.githubreleasemonitor.settings.MonitorIntervalEntries
 import com.tomg.githubreleasemonitor.settings.business.SettingsSideEffect
 import com.tomg.githubreleasemonitor.settings.business.SettingsViewModel
 import com.tomg.githubreleasemonitor.settings.emptyPreferenceRequest
@@ -186,7 +187,7 @@ fun SettingScreen(
     snackBarHostState: SnackbarHostState = remember { SnackbarHostState() },
     dataStore: DataStore<Preferences> = mockDataStore,
     monitorIntervalPreferenceRequest: PreferenceRequest<String> = emptyPreferenceRequest,
-    monitorIntervalEntries: Map<String, String> = mapOf(),
+    monitorIntervalEntries: MonitorIntervalEntries = MonitorIntervalEntries(),
     monitorIntervalDisplayName: String = String.Empty,
     onGitHubRepositoriesImport: () -> Unit = {},
     onGitHubRepositoriesExport: () -> Unit = {},
