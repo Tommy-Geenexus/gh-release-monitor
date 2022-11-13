@@ -20,66 +20,53 @@
 
 package com.tomg.githubreleasemonitor.settings.data
 
-import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.stringPreferencesKey
-import com.tomg.githubreleasemonitor.R
-import com.tomg.githubreleasemonitor.settings.MonitorIntervalEntries
-import dagger.hilt.android.qualifiers.ApplicationContext
+import com.tomg.githubreleasemonitor.di.DispatcherIo
+import com.tomg.githubreleasemonitor.settings.monitorIntervalDefaultValue
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 import timber.log.Timber
-import java.time.Duration
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class SettingsRepository @Inject constructor(
-    @ApplicationContext context: Context,
-    override val dataStore: DataStore<Preferences>
-) : SettingsRepositoryContract {
+    val dataStore: DataStore<Preferences>,
+    @DispatcherIo private val dispatcher: CoroutineDispatcher
+) {
 
-    override val monitorIntervalKey = stringPreferencesKey("monitor_interval")
+    private val keyMonitorInterval = stringPreferencesKey("monitor_interval")
 
-    override val monitorIntervalEntries = MonitorIntervalEntries(
-        monitorIntervals = mapOf(
-            15L.minutesToMillisString() to context.getString(R.string.minutes, 15),
-            30L.minutesToMillisString() to context.getString(R.string.minutes, 30),
-            1L.hoursToMillisString() to context.getString(R.string.hour, 1),
-            2L.hoursToMillisString() to context.getString(R.string.hours, 2),
-            4L.hoursToMillisString() to context.getString(R.string.hours, 4),
-            8L.hoursToMillisString() to context.getString(R.string.hours, 8),
-            16L.hoursToMillisString() to context.getString(R.string.hours, 16),
-            1L.daysToMillisString() to context.getString(R.string.day, 1)
-        )
-    )
-
-    override val monitorIntervalDefaultValue =
-        monitorIntervalEntries.monitorIntervals.entries.last().toPair()
-
-    private fun Long.minutesToMillisString() = Duration.ofMinutes(this).toMillis().toString()
-
-    private fun Long.hoursToMillisString() = Duration.ofHours(this).toMillis().toString()
-
-    private fun Long.daysToMillisString() = Duration.ofDays(this).toMillis().toString()
-
-    override fun getMonitorInterval(): Flow<Pair<String, String>> = dataStore
+    suspend fun getMonitorInterval(): Flow<String> = dataStore
         .data
         .catch { exception ->
             Timber.e(exception)
             emit(emptyPreferences())
         }
         .map { preferences ->
-            monitorIntervalEntries
-                .monitorIntervals
-                .entries
-                .find { entry ->
-                    entry.key == preferences[monitorIntervalKey]
-                }
-                ?.toPair()
-                ?: monitorIntervalDefaultValue
+            preferences[keyMonitorInterval] ?: monitorIntervalDefaultValue
         }
+        .flowOn(dispatcher)
+
+    suspend fun putMonitorInterval(monitorInterval: String): Boolean {
+        return withContext(dispatcher) {
+            runCatching {
+                dataStore.edit { preferences ->
+                    preferences[keyMonitorInterval] = monitorInterval
+                }
+                true
+            }.getOrElse { exception ->
+                Timber.e(exception)
+                false
+            }
+        }
+    }
 }

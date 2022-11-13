@@ -21,11 +21,11 @@
 package com.tomg.githubreleasemonitor.settings.business
 
 import android.os.Parcelable
-import com.tomg.githubreleasemonitor.settings.MonitorIntervalEntries
+import com.tomg.githubreleasemonitor.settings.monitorIntervalDefaultValue
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class SettingsState(
-    val monitorInterval: Pair<String, String>,
-    val monitorIntervalEntries: MonitorIntervalEntries
+    val monitorInterval: String = monitorIntervalDefaultValue,
+    val loading: Boolean = false
 ) : Parcelable

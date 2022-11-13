@@ -20,42 +20,77 @@
 
 package com.tomg.githubreleasemonitor.settings.ui
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.tomg.githubreleasemonitor.R
-import com.tomg.githubreleasemonitor.settings.MonitorIntervalEntries
-import de.schnettler.datastore.compose.material3.model.Preference
-import de.schnettler.datastore.manager.PreferenceRequest
+import com.tomg.githubreleasemonitor.settings.monitorIntervalEntries
 
 @Composable
-fun settingsServiceItem(
-    monitorIntervalPreferenceRequest: PreferenceRequest<String>,
-    monitorIntervalEntries: MonitorIntervalEntries,
-    monitorIntervalDisplayName: String
-): Preference.PreferenceGroup {
-    return Preference.PreferenceGroup(
-        title = stringResource(id = R.string.service),
-        preferenceItems = listOf(
-            Preference.PreferenceItem.ListPreference(
-                request = monitorIntervalPreferenceRequest,
-                title = stringResource(id = R.string.monitor_interval),
-                summary = monitorIntervalDisplayName,
-                singleLineTitle = true,
-                icon = {
-                    Icon(
-                        imageVector = Icons.Outlined.Schedule,
-                        contentDescription = null,
-                        modifier = Modifier.padding(8.dp)
-                    )
-                },
-                entries = monitorIntervalEntries.monitorIntervals
-            )
+fun SettingsServiceItem(
+    monitorInterval: String,
+    modifier: Modifier = Modifier,
+    onMonitorIntervalUpdateRequested: () -> Unit = {}
+) {
+    Column(modifier = modifier) {
+        Text(
+            text = stringResource(id = R.string.service),
+            modifier = Modifier.padding(
+                start = 56.dp,
+                top = 24.dp,
+                end = 16.dp,
+                bottom = 8.dp
+            ),
+            color = MaterialTheme.colorScheme.secondary,
+            style = MaterialTheme.typography.titleSmall
         )
-    )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable {
+                    onMonitorIntervalUpdateRequested()
+                },
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.Schedule,
+                contentDescription = null,
+                modifier = Modifier.padding(start = 16.dp)
+            )
+            Column {
+                Text(
+                    text = stringResource(id = R.string.monitor_interval),
+                    modifier = Modifier.padding(
+                        start = 16.dp,
+                        top = 16.dp
+                    ),
+                    style = MaterialTheme.typography.bodyLarge
+                )
+                Text(
+                    text = LocalContext.current.monitorIntervalEntries[monitorInterval].orEmpty(),
+                    modifier = Modifier.padding(
+                        start = 16.dp,
+                        top = 4.dp,
+                        bottom = 24.dp
+                    ),
+                    color = MaterialTheme.colorScheme.secondary,
+                    maxLines = 1,
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+        }
+    }
 }

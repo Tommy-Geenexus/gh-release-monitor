@@ -20,52 +20,111 @@
 
 package com.tomg.githubreleasemonitor.settings.ui
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.VerticalAlignBottom
 import androidx.compose.material.icons.outlined.VerticalAlignTop
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.tomg.githubreleasemonitor.R
-import de.schnettler.datastore.compose.material3.model.Preference
 
 @Composable
-fun settingsManageItem(
-    onGitHubRepositoriesImport: () -> Unit,
-    onGitHubRepositoriesExport: () -> Unit
-): Preference.PreferenceGroup {
-    return Preference.PreferenceGroup(
-        title = stringResource(id = R.string.manage),
-        preferenceItems = listOf(
-            Preference.PreferenceItem.TextPreference(
-                title = stringResource(id = R.string._import),
-                summary = stringResource(id = R.string.import_repos),
-                singleLineTitle = true,
-                icon = {
-                    Icon(
-                        imageVector = Icons.Outlined.VerticalAlignBottom,
-                        contentDescription = null,
-                        modifier = Modifier.padding(8.dp)
-                    )
-                },
-                onClick = onGitHubRepositoriesImport
+fun SettingsManageItem(
+    modifier: Modifier = Modifier,
+    onGitHubRepositoriesImport: () -> Unit = {},
+    onGitHubRepositoriesExport: () -> Unit = {}
+) {
+    Column(modifier = modifier) {
+        Text(
+            text = stringResource(id = R.string.manage),
+            modifier = Modifier.padding(
+                start = 56.dp,
+                top = 24.dp,
+                end = 16.dp,
+                bottom = 8.dp
             ),
-            Preference.PreferenceItem.TextPreference(
-                title = stringResource(id = R.string.export),
-                summary = stringResource(id = R.string.export_repos),
-                singleLineTitle = true,
-                icon = {
-                    Icon(
-                        imageVector = Icons.Outlined.VerticalAlignTop,
-                        contentDescription = null,
-                        modifier = Modifier.padding(8.dp)
-                    )
-                },
-                onClick = onGitHubRepositoriesExport
-            )
+            color = MaterialTheme.colorScheme.secondary,
+            style = MaterialTheme.typography.titleSmall
         )
-    )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable {
+                    onGitHubRepositoriesImport()
+                },
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.VerticalAlignBottom,
+                contentDescription = null,
+                modifier = Modifier.padding(start = 16.dp)
+            )
+            Column {
+                Text(
+                    text = stringResource(id = R.string._import),
+                    modifier = Modifier.padding(
+                        start = 16.dp,
+                        top = 16.dp
+                    ),
+                    style = MaterialTheme.typography.bodyLarge
+                )
+                Text(
+                    text = stringResource(id = R.string.import_repos),
+                    modifier = Modifier.padding(
+                        start = 16.dp,
+                        top = 4.dp,
+                        bottom = 24.dp
+                    ),
+                    color = MaterialTheme.colorScheme.secondary,
+                    maxLines = 1,
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable {
+                    onGitHubRepositoriesExport()
+                },
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.VerticalAlignTop,
+                contentDescription = null,
+                modifier = Modifier.padding(start = 16.dp)
+            )
+            Column {
+                Text(
+                    text = stringResource(id = R.string.export),
+                    modifier = Modifier.padding(
+                        start = 16.dp,
+                        top = 16.dp
+                    ),
+                    style = MaterialTheme.typography.bodyLarge
+                )
+                Text(
+                    text = stringResource(id = R.string.export_repos),
+                    modifier = Modifier.padding(
+                        start = 16.dp,
+                        top = 4.dp,
+                        bottom = 24.dp
+                    ),
+                    color = MaterialTheme.colorScheme.secondary,
+                    maxLines = 1,
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+        }
+    }
 }

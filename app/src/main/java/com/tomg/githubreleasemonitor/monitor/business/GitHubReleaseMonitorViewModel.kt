@@ -39,7 +39,7 @@ class GitHubReleaseMonitorViewModel @Inject constructor(
         viewModelScope.launch {
             val monitorInterval = settingsRepository.getMonitorInterval().firstOrNull()
             if (monitorInterval != null) {
-                val millis = monitorInterval.first.toLongOrNull()
+                val millis = monitorInterval.toLongOrNull()
                 if (millis != null) {
                     gitHubReleaseMonitorRepository.enqueueGitHubRepositoryReleaseWork(millis)
                 }

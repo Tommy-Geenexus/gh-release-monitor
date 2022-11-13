@@ -22,17 +22,23 @@ package com.tomg.githubreleasemonitor.settings.ui
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowBack
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -40,7 +46,6 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -51,19 +56,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
 import com.google.accompanist.systemuicontroller.SystemUiController
-import com.tomg.githubreleasemonitor.Empty
 import com.tomg.githubreleasemonitor.MIME_TYPE_JSON
 import com.tomg.githubreleasemonitor.R
-import com.tomg.githubreleasemonitor.settings.MonitorIntervalEntries
 import com.tomg.githubreleasemonitor.settings.business.SettingsSideEffect
 import com.tomg.githubreleasemonitor.settings.business.SettingsViewModel
-import com.tomg.githubreleasemonitor.settings.emptyPreferenceRequest
-import com.tomg.githubreleasemonitor.settings.mockDataStore
-import de.schnettler.datastore.compose.material3.PreferenceScreen
-import de.schnettler.datastore.manager.PreferenceRequest
+import com.tomg.githubreleasemonitor.settings.monitorIntervalDefaultValue
 import kotlinx.coroutines.launch
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
@@ -88,6 +86,15 @@ fun SettingsScreen(
             viewModel.exportGitHubRepositories(uri)
         }
     )
+    val useDarkIcons = !isSystemInDarkTheme()
+    val surfaceColor = MaterialTheme.colorScheme.surface
+    SideEffect {
+        systemUiController.setNavigationBarColor(
+            color = surfaceColor,
+            darkIcons = useDarkIcons,
+            navigationBarContrastEnforced = false
+        )
+    }
     val exportFailed = stringResource(id = R.string.export_failed)
     val exportSuccessful = stringResource(id = R.string.export_successful)
     val importFailed = stringResource(id = R.string.import_failed)
@@ -127,47 +134,43 @@ fun SettingsScreen(
             }
         }
     }
-    val monitorIntervalFlow = viewModel.getMonitorInterval()
-    LaunchedEffect(monitorIntervalFlow) {
-        monitorIntervalFlow.collect { monitorInterval ->
-            viewModel.updateMonitorInterval(monitorInterval)
-        }
-    }
     val state by viewModel.collectAsState()
-    val displayName = stringResource(R.string.app_name) +
-        "_" +
-        LocalDateTime.now().toString() +
-        ".json"
-    var showDialog by rememberSaveable { mutableStateOf(false) }
-    if (showDialog) {
+    var showSignOutDialog by rememberSaveable { mutableStateOf(false) }
+    if (showSignOutDialog) {
         SignOutDialog(
             onDismiss = {
-                showDialog = false
+                showSignOutDialog = false
             },
             onConfirm = {
-                showDialog = false
+                showSignOutDialog = false
                 viewModel.performSignOut()
             }
         )
     }
-    val useDarkIcons = !isSystemInDarkTheme()
-    val surfaceColor = MaterialTheme.colorScheme.surface
-    SideEffect {
-        systemUiController.setNavigationBarColor(
-            color = surfaceColor,
-            darkIcons = useDarkIcons,
-            navigationBarContrastEnforced = false
+    var showMonitorIntervalDialog by rememberSaveable { mutableStateOf(false) }
+    if (showMonitorIntervalDialog) {
+        MonitorIntervalDialog(
+            defaultMonitorInterval = state.monitorInterval,
+            onDismiss = {
+                showMonitorIntervalDialog = false
+            },
+            onConfirm = { monitorInterval ->
+                showMonitorIntervalDialog = false
+                viewModel.storeMonitorInterval(monitorInterval)
+            }
         )
     }
+    val displayName = stringResource(R.string.app_name) +
+        "_" +
+        LocalDateTime.now().toString() +
+        ".json"
     SettingScreen(
         snackBarHostState = snackBarHostState,
-        dataStore = viewModel.dataStore,
-        monitorIntervalPreferenceRequest = PreferenceRequest(
-            key = viewModel.monitorIntervalKey,
-            defaultValue = viewModel.monitorIntervalDefaultValue.first
-        ),
-        monitorIntervalEntries = state.monitorIntervalEntries,
-        monitorIntervalDisplayName = state.monitorInterval.second,
+        monitorInterval = state.monitorInterval,
+        isLoading = state.loading,
+        onMonitorIntervalUpdateRequested = {
+            showMonitorIntervalDialog = true
+        },
         onGitHubRepositoriesImport = {
             importGitHubRepositories.launch(arrayOf(MIME_TYPE_JSON))
         },
@@ -175,7 +178,7 @@ fun SettingsScreen(
             exportGitHubRepositories.launch(displayName)
         },
         onUserSignOutRequested = {
-            showDialog = true
+            showSignOutDialog = true
         },
         onNavigateUp = onNavigateUp
     )
@@ -185,10 +188,9 @@ fun SettingsScreen(
 fun SettingScreen(
     modifier: Modifier = Modifier,
     snackBarHostState: SnackbarHostState = remember { SnackbarHostState() },
-    dataStore: DataStore<Preferences> = mockDataStore,
-    monitorIntervalPreferenceRequest: PreferenceRequest<String> = emptyPreferenceRequest,
-    monitorIntervalEntries: MonitorIntervalEntries = MonitorIntervalEntries(),
-    monitorIntervalDisplayName: String = String.Empty,
+    monitorInterval: String = monitorIntervalDefaultValue,
+    isLoading: Boolean = false,
+    onMonitorIntervalUpdateRequested: () -> Unit = {},
     onGitHubRepositoriesImport: () -> Unit = {},
     onGitHubRepositoriesExport: () -> Unit = {},
     onUserSignOutRequested: () -> Unit = {},
@@ -218,25 +220,35 @@ fun SettingScreen(
             )
         }
     ) { innerPadding ->
-        PreferenceScreen(
-            items = listOf(
-                settingsServiceItem(
-                    monitorIntervalPreferenceRequest = monitorIntervalPreferenceRequest,
-                    monitorIntervalEntries = monitorIntervalEntries,
-                    monitorIntervalDisplayName = monitorIntervalDisplayName
-                ),
-                settingsManageItem(
-                    onGitHubRepositoriesImport = onGitHubRepositoriesImport,
-                    onGitHubRepositoriesExport = onGitHubRepositoriesExport
-                ),
-                settingsAccountItem(onUserSignOutRequested = onUserSignOutRequested)
-            ),
-            dataStore = dataStore,
+        Column(
             modifier = Modifier.padding(
                 top = innerPadding.calculateTopPadding(),
                 bottom = innerPadding.calculateBottomPadding()
             )
-        )
+        ) {
+            AnimatedVisibility(visible = isLoading) {
+                LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+            }
+            LazyColumn {
+                item {
+                    SettingsServiceItem(
+                        monitorInterval = monitorInterval,
+                        onMonitorIntervalUpdateRequested = onMonitorIntervalUpdateRequested
+                    )
+                    Divider()
+                }
+                item {
+                    SettingsManageItem(
+                        onGitHubRepositoriesImport = onGitHubRepositoriesImport,
+                        onGitHubRepositoriesExport = onGitHubRepositoriesExport
+                    )
+                    Divider()
+                }
+                item {
+                    SettingsAccountItem(onUserSignOutRequested = onUserSignOutRequested)
+                }
+            }
+        }
     }
 }
 

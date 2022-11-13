@@ -29,8 +29,8 @@ import com.tomg.githubreleasemonitor.main.data.GitHubRepositoryRepository
 import com.tomg.githubreleasemonitor.monitor.data.GitHubReleaseMonitorRepository
 import com.tomg.githubreleasemonitor.settings.data.GitHubRepositoryJsonRepository
 import com.tomg.githubreleasemonitor.settings.data.SettingsRepository
-import com.tomg.githubreleasemonitor.settings.data.SettingsRepositoryContract
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.firstOrNull
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.syntax.simple.intent
 import org.orbitmvi.orbit.syntax.simple.postSideEffect
@@ -48,88 +48,119 @@ class SettingsViewModel @Inject constructor(
     private val settingsRepository: SettingsRepository,
     private val userRepository: UserRepository
 ) : ViewModel(),
-    ContainerHost<SettingsState, SettingsSideEffect>,
-    SettingsRepositoryContract by settingsRepository {
+    ContainerHost<SettingsState, SettingsSideEffect> {
 
     override val container = container<SettingsState, SettingsSideEffect>(
-        initialState = SettingsState(
-            monitorInterval = monitorIntervalDefaultValue,
-            monitorIntervalEntries = monitorIntervalEntries
-        ),
-        savedStateHandle = savedStateHandle
+        initialState = SettingsState(),
+        savedStateHandle = savedStateHandle,
+        onCreate = {
+            readDefaultValues()
+        }
     )
 
-    fun updateMonitorInterval(monitorInterval: Pair<String, String>) = intent {
-        val newInterval = container.stateFlow.value.monitorInterval != monitorInterval
+    private fun readDefaultValues() = intent {
+        val monitorInterval = settingsRepository.getMonitorInterval().firstOrNull()
+        if (monitorInterval != null) {
+            reduce {
+                state.copy(monitorInterval = monitorInterval)
+            }
+        }
+    }
+
+    fun storeMonitorInterval(monitorInterval: String) = intent {
+        val newInterval = state.monitorInterval != monitorInterval
         if (!newInterval) {
             return@intent
         }
-        reduce {
-            state.copy(monitorInterval = monitorInterval)
-        }
-        val millis = monitorInterval.first.toLongOrNull()
-        if (millis != null) {
-            gitHubReleaseMonitorRepository.run {
-                cancelGitHubRepositoryReleaseWork()
-                enqueueGitHubRepositoryReleaseWork(millis)
+        val success = settingsRepository.putMonitorInterval(monitorInterval)
+        if (success) {
+            reduce {
+                state.copy(monitorInterval = monitorInterval)
+            }
+            val millis = monitorInterval.toLongOrNull()
+            if (millis != null) {
+                gitHubReleaseMonitorRepository.run {
+                    cancelGitHubRepositoryReleaseWork()
+                    enqueueGitHubRepositoryReleaseWork(millis)
+                }
             }
         }
     }
 
     fun importGitHubRepositories(uri: Uri?) = intent {
-        if (uri != null && uri != Uri.EMPTY) {
-            val json = gitHubRepositoryJsonRepository.importFrom(uri)
-            val success = if (!json.isNullOrEmpty()) {
-                val gitHubRepositories = gitHubRepositoryJsonRepository.fromJson(json)
-                if (!gitHubRepositories.isNullOrEmpty()) {
-                    gitHubRepositoryRepository.insertRepositories(*gitHubRepositories)
+        if (uri == null || uri == Uri.EMPTY) {
+            return@intent
+        }
+        reduce {
+            state.copy(loading = true)
+        }
+        val json = gitHubRepositoryJsonRepository.importFrom(uri)
+        val success = if (!json.isNullOrEmpty()) {
+            val gitHubRepositories = gitHubRepositoryJsonRepository.fromJson(json)
+            if (!gitHubRepositories.isNullOrEmpty()) {
+                gitHubRepositoryRepository.insertRepositories(*gitHubRepositories)
+            } else {
+                false
+            }
+        } else {
+            false
+        }
+        reduce {
+            state.copy(loading = false)
+        }
+        postSideEffect(
+            if (success) {
+                SettingsSideEffect.Import.Success
+            } else {
+                SettingsSideEffect.Import.Failure
+            }
+        )
+    }
+
+    fun exportGitHubRepositories(uri: Uri?) = intent {
+        if (uri == null || uri == Uri.EMPTY) {
+            return@intent
+        }
+        reduce {
+            state.copy(loading = true)
+        }
+        gitHubRepositoryRepository.getRepositories().collect { gitHubRepositories ->
+            val success = if (gitHubRepositories.isNotEmpty()) {
+                val json = gitHubRepositoryJsonRepository.toJson(gitHubRepositories)
+                if (!json.isNullOrEmpty()) {
+                    gitHubRepositoryJsonRepository.exportTo(uri, json)
                 } else {
                     false
                 }
             } else {
                 false
             }
+            if (!success) {
+                gitHubRepositoryJsonRepository.deleteDocument(uri)
+            }
+            reduce {
+                state.copy(loading = false)
+            }
             postSideEffect(
                 if (success) {
-                    SettingsSideEffect.Import.Success
+                    SettingsSideEffect.Export.Success
                 } else {
-                    SettingsSideEffect.Import.Failure
+                    SettingsSideEffect.Export.Failure
                 }
             )
         }
     }
 
-    fun exportGitHubRepositories(uri: Uri?) = intent {
-        if (uri != null && uri != Uri.EMPTY) {
-            gitHubRepositoryRepository.getRepositories().collect { gitHubRepositories ->
-                val success = if (gitHubRepositories.isNotEmpty()) {
-                    val json = gitHubRepositoryJsonRepository.toJson(gitHubRepositories)
-                    if (!json.isNullOrEmpty()) {
-                        gitHubRepositoryJsonRepository.exportTo(uri, json)
-                    } else {
-                        false
-                    }
-                } else {
-                    false
-                }
-                if (!success) {
-                    gitHubRepositoryJsonRepository.deleteDocument(uri)
-                }
-                postSideEffect(
-                    if (success) {
-                        SettingsSideEffect.Export.Success
-                    } else {
-                        SettingsSideEffect.Export.Failure
-                    }
-                )
-            }
-        }
-    }
-
     fun performSignOut() = intent {
+        reduce {
+            state.copy(loading = true)
+        }
         var success = gitHubAuthenticationRepository.performSignOut()
         if (success) {
             success = userRepository.deleteUser()
+        }
+        reduce {
+            state.copy(loading = false)
         }
         postSideEffect(
             if (success) {
