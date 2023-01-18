@@ -51,7 +51,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion "1.4.0-alpha02"
+        kotlinCompilerExtensionVersion "1.4.0"
     }
 }
 
@@ -73,7 +73,9 @@ tasks.withType(Detekt).configureEach {
 }
 
 apollo {
-    packageNamesFromFilePaths()
+    service("service") {
+        packageNamesFromFilePaths()
+    }
 }
 
 detekt {
@@ -100,8 +102,10 @@ tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
 
 spotless {
     kotlin {
+        ratchetFrom("origin/main")
         target("**/*.kt")
-        ktlint()
+        ktlint("0.47.1")
+        trimTrailingWhitespace()
         endWithNewline()
         licenseHeaderFile rootProject.file("spotless/copyright.txt")
     }
@@ -119,6 +123,7 @@ wire {
 dependencies {
     api libs.wire.runtime
     debugImplementation libs.leakcanary
+    implementation platform(libs.compose.bom)
     implementation libs.bundles.implementation
     kapt libs.bundles.kapt
     runtimeOnly libs.kotlin.reflect

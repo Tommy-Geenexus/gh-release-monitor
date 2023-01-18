@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2022, Tom Geiselmann (tomgapplicationsdevelopment@gmail.com)
+ * Copyright (c) 2020-2023, Tom Geiselmann (tomgapplicationsdevelopment@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
  * and associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -37,9 +37,11 @@ class GitHubRepositoryRepository @Inject constructor(
     fun getRepositories(sortOrder: SortOrder): PagingSource<Int, GitHubRepository> {
         val sqlSortColumn = when (sortOrder) {
             SortOrder.Asc.RepositoryReleaseDate,
-            SortOrder.Desc.RepositoryReleaseDate -> "latest_release_timestamp"
+            SortOrder.Desc.RepositoryReleaseDate
+            -> "latest_release_timestamp"
             SortOrder.Asc.RepositoryOwner,
-            SortOrder.Desc.RepositoryOwner -> "owner"
+            SortOrder.Desc.RepositoryOwner
+            -> "owner"
             else -> "name"
         }
         val sqlSortOrder = if (sortOrder is SortOrder.Asc) "ASC" else "DESC"
