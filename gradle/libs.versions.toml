@@ -47,7 +47,6 @@ apollo-runtime = { module = "com.apollographql.apollo3:apollo-runtime", version.
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil-compose" }
 compose-animation = { module = "androidx.compose.animation:animation" }
 compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
-compose-material = { module = "androidx.compose.material:material" }
 compose-material3 = { module = "androidx.compose.material3:material3", version.ref = "compose-material3" }
 compose-ui = { module = "androidx.compose.ui:ui" }
 compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
@@ -95,7 +94,6 @@ implementation = [
     "apollo-runtime",
     "coil-compose",
     "compose-animation",
-    "compose-material",
     "compose-material3",
     "compose-ui",
     "compose-ui-tooling",
