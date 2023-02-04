@@ -94,7 +94,8 @@ tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
                 "-opt-in=androidx.compose.ui.ExperimentalComposeUiApi",
                 "-opt-in=coil.annotation.ExperimentalCoilApi",
                 "-opt-in=com.google.accompanist.permissions.ExperimentalPermissionsApi",
-                "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi"
+                "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
+                "-opt-in=org.orbitmvi.orbit.annotation.OrbitExperimental"
         ]
     }
 }

@@ -27,23 +27,23 @@ import com.tomg.githubreleasemonitor.main.MAX_CHAR_OWNER
 import com.tomg.githubreleasemonitor.main.MAX_CHAR_REPO
 import dagger.hilt.android.lifecycle.HiltViewModel
 import org.orbitmvi.orbit.ContainerHost
-import org.orbitmvi.orbit.syntax.simple.intent
+import org.orbitmvi.orbit.syntax.simple.blockingIntent
 import org.orbitmvi.orbit.syntax.simple.reduce
 import org.orbitmvi.orbit.viewmodel.container
 import javax.inject.Inject
 
 @HiltViewModel
-class AddRepositoryViewModel @Inject constructor(
+class AddGitHubRepositoryViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ViewModel(),
-    ContainerHost<AddRepositoryState, Nothing> {
+    ContainerHost<AddGitHubRepositoryState, Nothing> {
 
-    override val container = container<AddRepositoryState, Nothing>(
-        initialState = AddRepositoryState(),
+    override val container = container<AddGitHubRepositoryState, Nothing>(
+        initialState = AddGitHubRepositoryState(),
         savedStateHandle = savedStateHandle
     )
 
-    fun updateRepositoryOwner(owner: String) = intent {
+    fun updateRepositoryOwner(owner: String) = blockingIntent {
         if (owner.length <= MAX_CHAR_OWNER) {
             reduce {
                 state.copy(
@@ -54,7 +54,7 @@ class AddRepositoryViewModel @Inject constructor(
         }
     }
 
-    fun updateRepositoryName(name: String) = intent {
+    fun updateRepositoryName(name: String) = blockingIntent {
         if (name.length <= MAX_CHAR_REPO) {
             reduce {
                 state.copy(
@@ -65,7 +65,7 @@ class AddRepositoryViewModel @Inject constructor(
         }
     }
 
-    fun clearRepositoryOwnerAndName() = intent {
+    fun clearRepositoryOwnerAndName() = blockingIntent {
         reduce {
             state.copy(
                 repositoryOwner = String.Empty,

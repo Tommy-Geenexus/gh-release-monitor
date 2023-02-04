@@ -55,6 +55,8 @@
 
     <string name="required">*Required</string>
 
+    <string name="search_releases">Search in releases</string>
+
     <string name="service">Service</string>
 
     <string name="settings">Settings</string>

@@ -21,11 +21,14 @@
 package com.tomg.githubreleasemonitor.main.business
 
 import android.os.Parcelable
+import com.tomg.githubreleasemonitor.Empty
 import com.tomg.githubreleasemonitor.main.SortOrder
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class MainState(
     val sortOrder: SortOrder = SortOrder.Asc.RepositoryOwner,
-    val isLoading: Boolean = false
+    val isLoading: Boolean = false,
+    val searchActive: Boolean = false,
+    val searchQuery: String = String.Empty
 ) : Parcelable

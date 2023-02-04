@@ -34,7 +34,10 @@ class GitHubRepositoryRepository @Inject constructor(
 
     fun getRepositories() = repositoryDao.getRepositories()
 
-    fun getRepositories(sortOrder: SortOrder): PagingSource<Int, GitHubRepository> {
+    fun getRepositories(
+        sortOrder: SortOrder,
+        query: String
+    ): PagingSource<Int, GitHubRepository> {
         val sqlSortColumn = when (sortOrder) {
             SortOrder.Asc.RepositoryReleaseDate,
             SortOrder.Desc.RepositoryReleaseDate
@@ -45,7 +48,15 @@ class GitHubRepositoryRepository @Inject constructor(
             else -> "name"
         }
         val sqlSortOrder = if (sortOrder is SortOrder.Asc) "ASC" else "DESC"
-        val statement = "SELECT * FROM GitHubRepository ORDER BY $sqlSortColumn $sqlSortOrder"
+        val statement = if (query.isEmpty()) {
+            "SELECT * FROM GitHubRepository ORDER BY $sqlSortColumn $sqlSortOrder"
+        } else {
+            "SELECT * FROM GitHubRepository " +
+                "WHERE owner LIKE \"%$query%\" " +
+                "OR name LIKE \"%$query%\" " +
+                "OR latest_release_name LIKE \"%$query%\" " +
+                "ORDER BY $sqlSortColumn $sqlSortOrder"
+        }
         return repositoryDao.getRepositories(SimpleSQLiteQuery(statement))
     }
 

@@ -39,7 +39,7 @@ import javax.inject.Singleton
 
 @Singleton
 class SettingsRepository @Inject constructor(
-    val dataStore: DataStore<Preferences>,
+    private val dataStore: DataStore<Preferences>,
     @DispatcherIo private val dispatcher: CoroutineDispatcher
 ) {
 

@@ -25,7 +25,7 @@ import com.tomg.githubreleasemonitor.Empty
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class AddRepositoryState(
+data class AddGitHubRepositoryState(
     val repositoryOwner: String = String.Empty,
     val repositoryName: String = String.Empty,
     val isValidOwner: Boolean = false,

@@ -39,12 +39,12 @@ import androidx.compose.ui.unit.dp
 import com.tomg.githubreleasemonitor.R
 import com.tomg.githubreleasemonitor.main.MAX_CHAR_OWNER
 import com.tomg.githubreleasemonitor.main.MAX_CHAR_REPO
-import com.tomg.githubreleasemonitor.main.business.AddRepositoryViewModel
+import com.tomg.githubreleasemonitor.main.business.AddGitHubRepositoryViewModel
 import org.orbitmvi.orbit.compose.collectAsState
 
 @Composable
 fun AddGitHubRepositoryDialog(
-    viewModel: AddRepositoryViewModel,
+    viewModel: AddGitHubRepositoryViewModel,
     onDismiss: () -> Unit,
     onConfirm: (repositoryOwner: String, repositoryName: String) -> Unit,
     modifier: Modifier = Modifier

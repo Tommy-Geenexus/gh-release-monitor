@@ -38,7 +38,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class GitHubReleaseMonitorActivity : AppCompatActivity() {
 
-    val viewModel: GitHubReleaseMonitorViewModel by viewModels()
+    private val viewModel: GitHubReleaseMonitorViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

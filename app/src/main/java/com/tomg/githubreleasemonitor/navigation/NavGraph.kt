@@ -82,7 +82,7 @@ fun NavGraph(
             MainScreen(
                 systemUiController = systemUiController,
                 mainViewModel = hiltViewModel(),
-                addRepositoryViewModel = hiltViewModel(),
+                addGitHubRepositoryViewModel = hiltViewModel(),
                 onNavigateToSettings = {
                     navController.navigate(route = NavDestinations.ROUTE_SETTINGS)
                 }

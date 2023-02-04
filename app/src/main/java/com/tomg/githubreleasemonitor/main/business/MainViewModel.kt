@@ -33,6 +33,7 @@ import com.tomg.githubreleasemonitor.main.pagingSourceFactory
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.firstOrNull
 import org.orbitmvi.orbit.ContainerHost
+import org.orbitmvi.orbit.syntax.simple.blockingIntent
 import org.orbitmvi.orbit.syntax.simple.intent
 import org.orbitmvi.orbit.syntax.simple.postSideEffect
 import org.orbitmvi.orbit.syntax.simple.reduce
@@ -55,7 +56,8 @@ class MainViewModel @Inject constructor(
     )
 
     private val pagingSourceFactory by pagingSourceFactory {
-        gitHubRepositoryRepository.getRepositories(container.stateFlow.value.sortOrder)
+        val state = container.stateFlow.value
+        gitHubRepositoryRepository.getRepositories(state.sortOrder, state.searchQuery)
     }
     val repositoryFlow = Pager(
         config = pagingConfig,
@@ -68,6 +70,18 @@ class MainViewModel @Inject constructor(
 
     fun showGitHubRepositoryRelease(url: String) = intent {
         postSideEffect(MainSideEffect.Show.GitHubRepositoryRelease(url = url))
+    }
+
+    fun toggleSearchActive(searchActive: Boolean) = intent {
+        reduce {
+            state.copy(searchActive = searchActive)
+        }
+    }
+
+    fun updateSearchQuery(searchQuery: String) = blockingIntent {
+        reduce {
+            state.copy(searchQuery = searchQuery)
+        }
     }
 
     fun addRepository(

@@ -23,18 +23,22 @@ package com.tomg.githubreleasemonitor.main.ui
 import android.Manifest
 import android.os.Build
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material.icons.outlined.ArrowBack
+import androidx.compose.material.icons.outlined.Clear
 import androidx.compose.material.icons.outlined.Refresh
+import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Sort
 import androidx.compose.material3.BottomAppBar
@@ -49,10 +53,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDismissState
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
@@ -67,8 +71,12 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -82,9 +90,10 @@ import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
 import com.google.accompanist.systemuicontroller.SystemUiController
+import com.tomg.githubreleasemonitor.Empty
 import com.tomg.githubreleasemonitor.R
 import com.tomg.githubreleasemonitor.main.SortOrder
-import com.tomg.githubreleasemonitor.main.business.AddRepositoryViewModel
+import com.tomg.githubreleasemonitor.main.business.AddGitHubRepositoryViewModel
 import com.tomg.githubreleasemonitor.main.business.MainSideEffect
 import com.tomg.githubreleasemonitor.main.business.MainViewModel
 import com.tomg.githubreleasemonitor.main.data.GitHubRepository
@@ -98,7 +107,7 @@ import org.orbitmvi.orbit.compose.collectSideEffect
 fun MainScreen(
     systemUiController: SystemUiController,
     mainViewModel: MainViewModel,
-    addRepositoryViewModel: AddRepositoryViewModel,
+    addGitHubRepositoryViewModel: AddGitHubRepositoryViewModel,
     onNavigateToSettings: () -> Unit
 ) {
     val repositoryAddFailed = stringResource(id = R.string.repository_add_failed)
@@ -185,7 +194,7 @@ fun MainScreen(
     var showDialog by rememberSaveable { mutableStateOf(false) }
     if (showDialog) {
         AddGitHubRepositoryDialog(
-            viewModel = addRepositoryViewModel,
+            viewModel = addGitHubRepositoryViewModel,
             onDismiss = {
                 showDialog = false
             },
@@ -195,16 +204,45 @@ fun MainScreen(
             }
         )
     }
+    val surfaceColor = MaterialTheme.colorScheme.surface
     val surfaceColorEl2 = MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp)
+    val surfaceColorEl3 = MaterialTheme.colorScheme.surfaceColorAtElevation(6.dp)
     SideEffect {
-        systemUiController.setNavigationBarColor(surfaceColorEl2)
+        if (state.searchActive) {
+            systemUiController.setSystemBarsColor(surfaceColorEl3)
+        } else {
+            systemUiController.setStatusBarColor(surfaceColor)
+            systemUiController.setNavigationBarColor(surfaceColorEl2)
+        }
     }
     val gitHubRepositories = mainViewModel.repositoryFlow.collectAsLazyPagingItems()
+    val focusRequester = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
     MainScreen(
         snackBarHostState = snackBarHostState,
         gitHubRepositories = gitHubRepositories,
         defaultSortOrder = state.sortOrder,
         isLoading = state.isLoading,
+        focusRequester = focusRequester,
+        searchActive = state.searchActive,
+        searchQuery = state.searchQuery,
+        onSearchQueryChange = { query ->
+            mainViewModel.updateSearchQuery(query)
+        },
+        onSearchRequested = {
+            focusManager.clearFocus()
+            mainViewModel.toggleSearchActive(false)
+            gitHubRepositories.refresh()
+        },
+        onSearchActiveChange = { active ->
+            mainViewModel.toggleSearchActive(active)
+            if (active) {
+                focusRequester.requestFocus()
+            } else {
+                focusManager.clearFocus()
+            }
+            gitHubRepositories.refresh()
+        },
         onAddGitHubRepository = {
             showDialog = true
         },
@@ -234,6 +272,12 @@ fun MainScreen(
     gitHubRepositories: LazyPagingItems<GitHubRepository>? = null,
     defaultSortOrder: SortOrder = SortOrder.Asc.RepositoryOwner,
     isLoading: Boolean = false,
+    focusRequester: FocusRequester = remember { FocusRequester() },
+    searchActive: Boolean = false,
+    searchQuery: String = String.Empty,
+    onSearchQueryChange: (String) -> Unit = {},
+    onSearchRequested: (String) -> Unit = {},
+    onSearchActiveChange: (Boolean) -> Unit = {},
     onAddGitHubRepository: () -> Unit = {},
     onApplySortOrder: (SortOrder) -> Unit = {},
     onShowSettings: () -> Unit = {},
@@ -245,21 +289,69 @@ fun MainScreen(
     Scaffold(
         modifier = modifier.systemBarsPadding(),
         topBar = {
-            TopAppBar(
-                modifier = Modifier.statusBarsPadding(),
-                title = {
-                    Text(text = stringResource(id = R.string.app_name))
+            Box(modifier = Modifier.fillMaxWidth()) {
+                SearchBar(
+                    query = searchQuery,
+                    onQueryChange = onSearchQueryChange,
+                    onSearch = onSearchRequested,
+                    active = searchActive,
+                    onActiveChange = onSearchActiveChange,
+                    modifier = Modifier
+                        .align(Alignment.TopCenter)
+                        .focusRequester(focusRequester),
+                    placeholder = {
+                        Text(text = stringResource(id = R.string.search_releases))
+                    },
+                    leadingIcon = {
+                        if (searchActive) {
+                            IconButton(onClick = { onSearchActiveChange(false) }) {
+                                Icon(
+                                    imageVector = Icons.Outlined.ArrowBack,
+                                    contentDescription = null
+                                )
+                            }
+                        } else {
+                            Icon(
+                                imageVector = Icons.Outlined.Search,
+                                contentDescription = null
+                            )
+                        }
+                    },
+                    trailingIcon = {
+                        if (searchQuery.isNotEmpty()) {
+                            IconButton(onClick = { onSearchQueryChange(String.Empty) }) {
+                                Icon(
+                                    imageVector = Icons.Outlined.Clear,
+                                    contentDescription = null
+                                )
+                            }
+                        } else if (!searchActive) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_logo),
+                                contentDescription = null
+                            )
+                        }
+                    }
+                ) {
                 }
-            )
+            }
         },
         bottomBar = {
-            BottomBar(
-                defaultSortOrder = defaultSortOrder,
-                onApplySortOrder = onApplySortOrder,
-                onRefresh = onRefresh,
-                onShowSettings = onShowSettings,
-                onAddGitHubRepository = onAddGitHubRepository
-            )
+            AnimatedVisibility(
+                visible = !searchActive,
+                enter = slideInVertically(initialOffsetY = { fullHeight -> fullHeight / 2 }),
+                exit = slideOutVertically(targetOffsetY = { fullHeight -> fullHeight / 2 })
+            ) {
+                BottomBar(
+                    isLoading = isLoading,
+                    defaultSortOrder = defaultSortOrder,
+                    onApplySortOrder = onApplySortOrder,
+                    onRefresh = onRefresh,
+                    onFocusSearch = { onSearchActiveChange(true) },
+                    onShowSettings = onShowSettings,
+                    onAddGitHubRepository = onAddGitHubRepository
+                )
+            }
         },
         snackbarHost = {
             SnackbarHost(snackBarHostState)
@@ -271,9 +363,6 @@ fun MainScreen(
                 bottom = innerPadding.calculateBottomPadding()
             )
         ) {
-            AnimatedVisibility(visible = isLoading) {
-                LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
-            }
             if (gitHubRepositories == null) {
                 return@Scaffold
             }
@@ -395,9 +484,11 @@ fun Refresh(
 
 @Composable
 fun BottomBar(
+    isLoading: Boolean,
     defaultSortOrder: SortOrder,
     onApplySortOrder: (SortOrder) -> Unit,
     onRefresh: () -> Unit,
+    onFocusSearch: () -> Unit,
     onShowSettings: () -> Unit,
     onAddGitHubRepository: () -> Unit,
     modifier: Modifier = Modifier
@@ -415,45 +506,56 @@ fun BottomBar(
             }
         )
     }
-    BottomAppBar(
-        actions = {
-            IconButton(
-                onClick = {
-                    showDialog = true
-                }
-            ) {
-                Icon(
-                    imageVector = Icons.Outlined.Sort,
-                    contentDescription = null
-                )
-            }
-            IconButton(onClick = onRefresh) {
-                Icon(
-                    imageVector = Icons.Outlined.Refresh,
-                    contentDescription = null
-                )
-            }
-            IconButton(onClick = onShowSettings) {
-                Icon(
-                    imageVector = Icons.Outlined.Settings,
-                    contentDescription = null
-                )
-            }
-        },
-        modifier = modifier.navigationBarsPadding(),
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = {
-                    onAddGitHubRepository()
-                },
-                containerColor = BottomAppBarDefaults.bottomAppBarFabColor,
-                elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation()
-            ) {
-                Icon(
-                    imageVector = Icons.Outlined.Add,
-                    contentDescription = null
-                )
-            }
+    Column {
+        AnimatedVisibility(visible = isLoading) {
+            LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
         }
-    )
+        BottomAppBar(
+            actions = {
+                IconButton(
+                    onClick = {
+                        showDialog = true
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.Sort,
+                        contentDescription = null
+                    )
+                }
+                IconButton(onClick = onRefresh) {
+                    Icon(
+                        imageVector = Icons.Outlined.Refresh,
+                        contentDescription = null
+                    )
+                }
+                IconButton(onClick = onFocusSearch) {
+                    Icon(
+                        imageVector = Icons.Outlined.Search,
+                        contentDescription = null
+                    )
+                }
+                IconButton(onClick = onShowSettings) {
+                    Icon(
+                        imageVector = Icons.Outlined.Settings,
+                        contentDescription = null
+                    )
+                }
+            },
+            modifier = modifier.navigationBarsPadding(),
+            floatingActionButton = {
+                FloatingActionButton(
+                    onClick = {
+                        onAddGitHubRepository()
+                    },
+                    containerColor = BottomAppBarDefaults.bottomAppBarFabColor,
+                    elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation()
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.Add,
+                        contentDescription = null
+                    )
+                }
+            }
+        )
+    }
 }
