@@ -23,6 +23,8 @@ package com.tomg.githubreleasemonitor.main.ui
 import android.Manifest
 import android.os.Build
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Box
@@ -33,19 +35,24 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.ArrowBack
+import androidx.compose.material.icons.outlined.ArrowUpward
 import androidx.compose.material.icons.outlined.Clear
+import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.icons.outlined.Search
-import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Sort
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DismissDirection
 import androidx.compose.material3.DismissValue
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
@@ -63,6 +70,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -78,7 +86,9 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -218,7 +228,9 @@ fun MainScreen(
     val gitHubRepositories = mainViewModel.repositoryFlow.collectAsLazyPagingItems()
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
+    val lazyListState = rememberLazyListState()
     MainScreen(
+        lazyListState = lazyListState,
         snackBarHostState = snackBarHostState,
         gitHubRepositories = gitHubRepositories,
         defaultSortOrder = state.sortOrder,
@@ -253,6 +265,11 @@ fun MainScreen(
             mainViewModel.applySortOrder(sortOrder)
         },
         onShowSettings = onNavigateToSettings,
+        onScrollToTop = {
+            scope.launch {
+                lazyListState.animateScrollToItem(0)
+            }
+        },
         onReleaseSelected = { releaseUrl ->
             mainViewModel.showGitHubRepositoryRelease(releaseUrl)
         },
@@ -268,6 +285,7 @@ fun MainScreen(
 @Composable
 fun MainScreen(
     modifier: Modifier = Modifier,
+    lazyListState: LazyListState = rememberLazyListState(),
     snackBarHostState: SnackbarHostState = remember { SnackbarHostState() },
     gitHubRepositories: LazyPagingItems<GitHubRepository>? = null,
     defaultSortOrder: SortOrder = SortOrder.Asc.RepositoryOwner,
@@ -281,6 +299,7 @@ fun MainScreen(
     onAddGitHubRepository: () -> Unit = {},
     onApplySortOrder: (SortOrder) -> Unit = {},
     onShowSettings: () -> Unit = {},
+    onScrollToTop: () -> Unit = {},
     onUserAvatarSelected: (String) -> Unit = {},
     onReleaseSelected: (String) -> Unit = {},
     onRefresh: () -> Unit = {},
@@ -342,14 +361,19 @@ fun MainScreen(
                 enter = slideInVertically(initialOffsetY = { fullHeight -> fullHeight / 2 }),
                 exit = slideOutVertically(targetOffsetY = { fullHeight -> fullHeight / 2 })
             ) {
+                val canScrollUp by remember {
+                    derivedStateOf { lazyListState.firstVisibleItemIndex > 0 }
+                }
                 BottomBar(
                     isLoading = isLoading,
+                    canScrollUp = canScrollUp,
                     defaultSortOrder = defaultSortOrder,
                     onApplySortOrder = onApplySortOrder,
                     onRefresh = onRefresh,
                     onFocusSearch = { onSearchActiveChange(true) },
                     onShowSettings = onShowSettings,
-                    onAddGitHubRepository = onAddGitHubRepository
+                    onAddGitHubRepository = onAddGitHubRepository,
+                    onScrollToTop = onScrollToTop
                 )
             }
         },
@@ -366,7 +390,7 @@ fun MainScreen(
             if (gitHubRepositories == null) {
                 return@Scaffold
             }
-            LazyColumn {
+            LazyColumn(state = lazyListState) {
                 items(
                     items = gitHubRepositories,
                     key = { gitHubRepository ->
@@ -485,12 +509,14 @@ fun Refresh(
 @Composable
 fun BottomBar(
     isLoading: Boolean,
+    canScrollUp: Boolean,
     defaultSortOrder: SortOrder,
     onApplySortOrder: (SortOrder) -> Unit,
     onRefresh: () -> Unit,
     onFocusSearch: () -> Unit,
     onShowSettings: () -> Unit,
     onAddGitHubRepository: () -> Unit,
+    onScrollToTop: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var showDialog by rememberSaveable { mutableStateOf(false) }
@@ -507,24 +533,53 @@ fun BottomBar(
         )
     }
     Column {
+        var showMore by rememberSaveable { mutableStateOf(false) }
+        DropdownMenu(
+            expanded = showMore,
+            onDismissRequest = { showMore = false },
+            offset = DpOffset(x = 16.dp, y = 8.dp)
+        ) {
+            DropdownMenuItem(
+                text = {
+                    Text(
+                        text = stringResource(id = R.string.settings),
+                        fontWeight = FontWeight.Normal,
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                },
+                onClick = {
+                    showMore = false
+                    onShowSettings()
+                }
+            )
+            DropdownMenuItem(
+                text = {
+                    Text(
+                        text = stringResource(id = R.string.refresh),
+                        fontWeight = FontWeight.Normal,
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                },
+                onClick = {
+                    showMore = false
+                    onRefresh()
+                }
+            )
+        }
         AnimatedVisibility(visible = isLoading) {
             LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
         }
         BottomAppBar(
             actions = {
-                IconButton(
-                    onClick = {
-                        showDialog = true
-                    }
-                ) {
+                IconButton(onClick = { showMore = true }) {
                     Icon(
-                        imageVector = Icons.Outlined.Sort,
+                        imageVector = Icons.Outlined.MoreVert,
                         contentDescription = null
                     )
                 }
-                IconButton(onClick = onRefresh) {
+                IconButton(onClick = { showDialog = true }) {
                     Icon(
-                        imageVector = Icons.Outlined.Refresh,
+                        imageVector = Icons.Outlined.Sort,
                         contentDescription = null
                     )
                 }
@@ -534,11 +589,21 @@ fun BottomBar(
                         contentDescription = null
                     )
                 }
-                IconButton(onClick = onShowSettings) {
-                    Icon(
-                        imageVector = Icons.Outlined.Settings,
-                        contentDescription = null
+                AnimatedVisibility(
+                    visible = canScrollUp,
+                    enter = fadeIn() + slideInVertically(
+                        initialOffsetY = { fullHeight -> fullHeight / 2 }
+                    ),
+                    exit = fadeOut() + slideOutVertically(
+                        targetOffsetY = { fullHeight -> fullHeight / 2 }
                     )
+                ) {
+                    IconButton(onClick = onScrollToTop) {
+                        Icon(
+                            imageVector = Icons.Outlined.ArrowUpward,
+                            contentDescription = null
+                        )
+                    }
                 }
             },
             modifier = modifier.navigationBarsPadding(),
