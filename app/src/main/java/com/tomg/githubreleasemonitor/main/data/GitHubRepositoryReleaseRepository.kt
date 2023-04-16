@@ -23,6 +23,7 @@ package com.tomg.githubreleasemonitor.main.data
 import com.tomg.githubreleasemonitor.GitHubRepositoriesQuery
 import com.tomg.githubreleasemonitor.GitHubRepositoryQuery
 import com.tomg.githubreleasemonitor.di.DispatcherIo
+import com.tomg.githubreleasemonitor.suspendRunCatching
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import timber.log.Timber
@@ -42,10 +43,10 @@ class GitHubRepositoryReleaseRepository @Inject constructor(
         accessToken: String
     ): GitHubRepository? {
         return withContext(dispatcher) {
-            runCatching {
+            coroutineContext.suspendRunCatching {
                 val verified = rateLimit.verifyRateLimit(cost = 1)
                 if (!verified) {
-                    return@runCatching null
+                    return@suspendRunCatching null
                 }
                 val response = apolloClient
                     .query(
@@ -79,7 +80,7 @@ class GitHubRepositoryReleaseRepository @Inject constructor(
                         latestReleaseName.isNotEmpty() &&
                         latestReleaseTimestamp.isNotEmpty()
                     ) {
-                        return@runCatching GitHubRepository(
+                        return@suspendRunCatching GitHubRepository(
                             id = id,
                             owner = repositoryOwner,
                             name = repositoryName,
@@ -104,10 +105,10 @@ class GitHubRepositoryReleaseRepository @Inject constructor(
         accessToken: String
     ): List<GitHubRepository>? {
         return withContext(dispatcher) {
-            runCatching {
+            coroutineContext.suspendRunCatching {
                 val verified = rateLimit.verifyRateLimit(cost = gitHubRepositories.size)
                 if (!verified) {
-                    return@runCatching null
+                    return@suspendRunCatching null
                 }
                 val ids = gitHubRepositories.map { repository ->
                     repository.id
@@ -125,7 +126,7 @@ class GitHubRepositoryReleaseRepository @Inject constructor(
                     )
                 }
                 if (response.hasErrors()) {
-                    return@runCatching null
+                    return@suspendRunCatching null
                 }
                 gitHubRepositories.mapIndexed { index: Int, gitHubRepository: GitHubRepository ->
                     val repository = data?.nodes?.get(index)?.onRepository
@@ -137,7 +138,7 @@ class GitHubRepositoryReleaseRepository @Inject constructor(
                     val latestReleaseHtmlUrl = (release?.url as? String).orEmpty()
                     val latestReleaseName = release?.name.orEmpty()
                     val latestReleaseTimestamp = (release?.publishedAt as? String).orEmpty()
-                    val result = runCatching {
+                    val result = coroutineContext.suspendRunCatching {
                         ZonedDateTime
                             .parse(latestReleaseTimestamp)
                             .compareTo(ZonedDateTime.parse(gitHubRepository.latestReleaseTimestamp))

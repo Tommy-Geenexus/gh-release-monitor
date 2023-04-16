@@ -24,6 +24,7 @@ import androidx.datastore.core.DataStore
 import com.tomg.githubreleasemonitor.Empty
 import com.tomg.githubreleasemonitor.UserProto
 import com.tomg.githubreleasemonitor.di.DispatcherIo
+import com.tomg.githubreleasemonitor.suspendRunCatching
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -40,7 +41,7 @@ class UserRepository @Inject constructor(
 
     suspend fun deleteUser(): Boolean {
         return withContext(dispatcher) {
-            runCatching {
+            coroutineContext.suspendRunCatching {
                 dataStore.updateData { storedUser ->
                     storedUser.copy(
                         uid = String.Empty,
@@ -57,7 +58,7 @@ class UserRepository @Inject constructor(
 
     suspend fun putUser(user: UserProto): Boolean {
         return withContext(dispatcher) {
-            runCatching {
+            coroutineContext.suspendRunCatching {
                 dataStore.updateData { storedUser ->
                     storedUser.copy(
                         uid = user.uid,

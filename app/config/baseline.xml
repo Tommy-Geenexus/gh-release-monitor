@@ -55,5 +55,6 @@
     <ID>SpreadOperator:GitHubRepositoryReleaseWorker.kt$GitHubRepositoryReleaseWorker$(*results.toTypedArray())</ID>
     <ID>SpreadOperator:MainViewModel.kt$MainViewModel$(*repositories.toTypedArray())</ID>
     <ID>SpreadOperator:SettingsViewModel.kt$SettingsViewModel$(*gitHubRepositories)</ID>
+    <ID>TooGenericExceptionCaught:Extensions.kt$exception: Exception</ID>
   </CurrentIssues>
 </SmellBaseline>

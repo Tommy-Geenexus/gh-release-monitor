@@ -22,14 +22,19 @@ package com.tomg.githubreleasemonitor.main.data
 
 import androidx.paging.PagingSource
 import androidx.sqlite.db.SimpleSQLiteQuery
+import com.tomg.githubreleasemonitor.di.DispatcherIo
 import com.tomg.githubreleasemonitor.main.SortOrder
+import com.tomg.githubreleasemonitor.suspendRunCatching
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class GitHubRepositoryRepository @Inject constructor(
-    private val repositoryDao: GitHubRepositoryDao
+    private val repositoryDao: GitHubRepositoryDao,
+    @DispatcherIo private val dispatcher: CoroutineDispatcher
 ) {
 
     fun getRepositories() = repositoryDao.getRepositories()
@@ -61,32 +66,38 @@ class GitHubRepositoryRepository @Inject constructor(
     }
 
     suspend fun insertRepositories(vararg gitHubRepository: GitHubRepository): Boolean {
-        return runCatching {
-            repositoryDao.insert(*gitHubRepository)
-            true
-        }.getOrElse { exception ->
-            Timber.e(exception)
-            false
+        return withContext(dispatcher) {
+            coroutineContext.suspendRunCatching {
+                repositoryDao.insert(*gitHubRepository)
+                true
+            }.getOrElse { exception ->
+                Timber.e(exception)
+                false
+            }
         }
     }
 
     suspend fun deleteRepository(gitHubRepository: GitHubRepository): Boolean {
-        return runCatching {
-            repositoryDao.delete(gitHubRepository)
-            true
-        }.getOrElse { exception ->
-            Timber.e(exception)
-            false
+        return withContext(dispatcher) {
+            coroutineContext.suspendRunCatching {
+                repositoryDao.delete(gitHubRepository)
+                true
+            }.getOrElse { exception ->
+                Timber.e(exception)
+                false
+            }
         }
     }
 
     suspend fun updateRepositories(vararg gitHubRepositories: GitHubRepository): Boolean {
-        return runCatching {
-            repositoryDao.update(*gitHubRepositories)
-            true
-        }.getOrElse { exception ->
-            Timber.e(exception)
-            false
+        return withContext(dispatcher) {
+            coroutineContext.suspendRunCatching {
+                repositoryDao.update(*gitHubRepositories)
+                true
+            }.getOrElse { exception ->
+                Timber.e(exception)
+                false
+            }
         }
     }
 }

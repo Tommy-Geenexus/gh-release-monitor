@@ -29,6 +29,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.tomg.githubreleasemonitor.UserProto
 import com.tomg.githubreleasemonitor.di.DispatcherIo
+import com.tomg.githubreleasemonitor.suspendRunCatching
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
@@ -43,7 +44,7 @@ class GitHubAuthenticationRepository @Inject constructor(
 
     suspend fun isAuthPending(): Boolean {
         return withContext(dispatcher) {
-            runCatching {
+            coroutineContext.suspendRunCatching {
                 Firebase.auth.pendingAuthResult?.await() != null
             }.getOrElse { exception ->
                 Timber.e(exception)
@@ -56,7 +57,7 @@ class GitHubAuthenticationRepository @Inject constructor(
         startActivityForSignInWithProvider: (FirebaseAuth, OAuthProvider) -> Task<AuthResult?>
     ): UserProto? {
         return withContext(dispatcher) {
-            runCatching {
+            coroutineContext.suspendRunCatching {
                 val provider = OAuthProvider
                     .newBuilder("github.com")
                     .build()
@@ -65,10 +66,10 @@ class GitHubAuthenticationRepository @Inject constructor(
                     val credential = result.credential
                     if (credential is OAuthCredential) {
                         val accessToken = credential.accessToken
-                        if (accessToken != null && accessToken.isNotEmpty()) {
+                        if (!accessToken.isNullOrEmpty()) {
                             val user = Firebase.auth.currentUser
                             if (user != null) {
-                                return@runCatching UserProto(
+                                return@suspendRunCatching UserProto(
                                     uid = user.uid,
                                     access_token = accessToken
                                 )
@@ -86,7 +87,7 @@ class GitHubAuthenticationRepository @Inject constructor(
 
     suspend fun performSignOut(): Boolean {
         return withContext(dispatcher) {
-            runCatching {
+            coroutineContext.suspendRunCatching {
                 Firebase.auth.signOut()
                 true
             }.getOrElse { exception ->
@@ -98,7 +99,7 @@ class GitHubAuthenticationRepository @Inject constructor(
 
     suspend fun getCurrentUserUid(): String? {
         return withContext(dispatcher) {
-            runCatching {
+            coroutineContext.suspendRunCatching {
                 Firebase.auth.currentUser?.uid
             }.getOrElse { exception ->
                 Timber.e(exception)

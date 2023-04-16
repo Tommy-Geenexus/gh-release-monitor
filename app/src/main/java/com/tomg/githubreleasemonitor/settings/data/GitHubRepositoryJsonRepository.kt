@@ -26,6 +26,7 @@ import android.provider.DocumentsContract
 import com.squareup.moshi.JsonAdapter
 import com.tomg.githubreleasemonitor.di.DispatcherIo
 import com.tomg.githubreleasemonitor.main.data.GitHubRepository
+import com.tomg.githubreleasemonitor.suspendRunCatching
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
@@ -45,7 +46,7 @@ class GitHubRepositoryJsonRepository @Inject constructor(
 
     suspend fun fromJson(json: String): Array<GitHubRepository>? {
         return withContext(dispatcher) {
-            runCatching {
+            coroutineContext.suspendRunCatching {
                 adapter.fromJson(json)?.gitHubRepositories?.toTypedArray()
             }.getOrElse { exception ->
                 Timber.e(exception)
@@ -56,7 +57,7 @@ class GitHubRepositoryJsonRepository @Inject constructor(
 
     suspend fun toJson(gitHubRepositories: List<GitHubRepository>): String? {
         return withContext(dispatcher) {
-            runCatching {
+            coroutineContext.suspendRunCatching {
                 adapter.toJson(GitHubRepositoryJson(gitHubRepositories))
             }.getOrElse { exception ->
                 Timber.e(exception)
@@ -67,7 +68,7 @@ class GitHubRepositoryJsonRepository @Inject constructor(
 
     suspend fun importFrom(uri: Uri): String? {
         return withContext(dispatcher) {
-            runCatching {
+            coroutineContext.suspendRunCatching {
                 context.contentResolver.openInputStream(uri)?.source()?.buffer()?.use { source ->
                     source.readUtf8()
                 }
@@ -83,7 +84,7 @@ class GitHubRepositoryJsonRepository @Inject constructor(
         payload: String
     ): Boolean {
         return withContext(dispatcher) {
-            runCatching {
+            coroutineContext.suspendRunCatching {
                 context.contentResolver.openOutputStream(uri)?.sink()?.buffer()?.use { sink ->
                     sink.writeUtf8(payload)
                 }
@@ -97,7 +98,7 @@ class GitHubRepositoryJsonRepository @Inject constructor(
 
     suspend fun deleteDocument(uri: Uri) {
         return withContext(dispatcher) {
-            runCatching {
+            coroutineContext.suspendRunCatching {
                 DocumentsContract.deleteDocument(context.contentResolver, uri)
             }.getOrElse { exception ->
                 Timber.e(exception)

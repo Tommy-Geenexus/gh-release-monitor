@@ -18,32 +18,14 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.tomg.githubreleasemonitor.login.data
+package com.tomg.githubreleasemonitor
 
-import android.content.Context
-import androidx.datastore.core.Serializer
-import com.tomg.githubreleasemonitor.UserProto
-import com.tomg.githubreleasemonitor.login.lazyAead
-import java.io.InputStream
-import java.io.OutputStream
+import kotlinx.coroutines.ensureActive
+import kotlin.coroutines.CoroutineContext
 
-class UserSerializer(
-    val context: Context
-) : Serializer<UserProto> {
-
-    private val aead by context.lazyAead()
-
-    override val defaultValue = UserProto()
-
-    override suspend fun readFrom(input: InputStream): UserProto {
-        return UserProto.ADAPTER.decode(aead.decrypt(input.readBytes(), null))
-    }
-
-    @Suppress("BlockingMethodInNonBlockingContext")
-    override suspend fun writeTo(
-        t: UserProto,
-        output: OutputStream
-    ) {
-        output.write(aead.encrypt(t.adapter.encode(t), null))
-    }
+suspend fun <T> CoroutineContext.suspendRunCatching(block: suspend () -> T): Result<T> = try {
+    Result.success(block())
+} catch (exception: Exception) {
+    ensureActive()
+    Result.failure(exception)
 }

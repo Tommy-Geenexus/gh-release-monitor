@@ -27,6 +27,7 @@ import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.tomg.githubreleasemonitor.di.DispatcherIo
 import com.tomg.githubreleasemonitor.settings.monitorIntervalDefaultValue
+import com.tomg.githubreleasemonitor.suspendRunCatching
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -58,7 +59,7 @@ class SettingsRepository @Inject constructor(
 
     suspend fun putMonitorInterval(monitorInterval: String): Boolean {
         return withContext(dispatcher) {
-            runCatching {
+            coroutineContext.suspendRunCatching {
                 dataStore.edit { preferences ->
                     preferences[keyMonitorInterval] = monitorInterval
                 }
