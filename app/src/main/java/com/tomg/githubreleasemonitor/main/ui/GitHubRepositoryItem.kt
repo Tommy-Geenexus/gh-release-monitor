@@ -82,7 +82,7 @@ fun GitHubRepositoryItem(
         state = dismissState,
         background = {
             Box(
-                modifier = modifier
+                modifier = Modifier
                     .fillMaxSize()
                     .background(MaterialTheme.colorScheme.error),
                 contentAlignment = Alignment.CenterStart
