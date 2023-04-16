@@ -21,7 +21,11 @@
 package com.tomg.githubreleasemonitor.main.ui
 
 import android.Manifest
+import android.content.Intent
+import android.net.Uri
 import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -81,7 +85,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
@@ -107,8 +110,6 @@ import com.tomg.githubreleasemonitor.main.business.AddGitHubRepositoryViewModel
 import com.tomg.githubreleasemonitor.main.business.MainSideEffect
 import com.tomg.githubreleasemonitor.main.business.MainViewModel
 import com.tomg.githubreleasemonitor.main.data.GitHubRepository
-import com.tomg.githubreleasemonitor.main.startActivitySafe
-import com.tomg.githubreleasemonitor.main.toViewIntentOrNull
 import kotlinx.coroutines.launch
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
@@ -130,7 +131,10 @@ fun MainScreen(
     val repositoryNoUpdate = stringResource(id = R.string.repository_no_update)
     val snackBarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
-    val context = LocalContext.current
+    val startActivity = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = {}
+    )
     mainViewModel.collectSideEffect { sideEffect ->
         when (sideEffect) {
             MainSideEffect.GitHubRepository.Add.Failure -> {
@@ -174,8 +178,8 @@ fun MainScreen(
                 }
             }
             is MainSideEffect.Show -> {
-                sideEffect.url.toViewIntentOrNull()?.let { intent ->
-                    context.startActivitySafe(intent)
+                runCatching {
+                    startActivity.launch(Intent(Intent.ACTION_VIEW, Uri.parse(sideEffect.url)))
                 }
             }
         }

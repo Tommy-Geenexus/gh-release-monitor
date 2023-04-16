@@ -92,7 +92,7 @@ class MainViewModel @Inject constructor(
             state.copy(isLoading = true)
         }
         val accessToken = userRepository.getUser().firstOrNull()?.access_token
-        val repository = if (accessToken != null && accessToken.isNotEmpty()) {
+        val repository = if (!accessToken.isNullOrEmpty()) {
             gitHubRepositoryReleaseRepository.getGitHubRepositoryOrNull(
                 repositoryOwner = repositoryOwner,
                 repositoryName = repositoryName,
@@ -144,7 +144,7 @@ class MainViewModel @Inject constructor(
             state.copy(isLoading = true)
         }
         val accessToken = userRepository.getUser().firstOrNull()?.access_token
-        val repositories = if (accessToken != null && accessToken.isNotEmpty()) {
+        val repositories = if (!accessToken.isNullOrEmpty()) {
             gitHubRepositoryReleaseRepository.getGitHubRepositoriesOrNull(
                 gitHubRepositories = gitHubRepositories,
                 accessToken = accessToken

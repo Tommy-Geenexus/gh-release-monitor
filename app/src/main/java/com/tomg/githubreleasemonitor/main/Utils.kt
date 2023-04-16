@@ -20,29 +20,5 @@
 
 package com.tomg.githubreleasemonitor.main
 
-import android.content.Context
-import android.content.Intent
-import android.net.Uri
-import timber.log.Timber
-
 const val MAX_CHAR_OWNER = 39
 const val MAX_CHAR_REPO = 100
-
-internal fun Context.startActivitySafe(intent: Intent): Boolean {
-    return runCatching {
-        startActivity(intent)
-        true
-    }.getOrElse { exception ->
-        Timber.e(exception)
-        false
-    }
-}
-
-internal fun String.toViewIntentOrNull(): Intent? {
-    return runCatching {
-        Intent(Intent.ACTION_VIEW, Uri.parse(this))
-    }.getOrElse { exception ->
-        Timber.e(exception)
-        null
-    }
-}
