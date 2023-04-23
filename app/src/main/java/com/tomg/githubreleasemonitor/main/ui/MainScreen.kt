@@ -91,7 +91,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -312,52 +311,14 @@ fun MainScreen(
     Scaffold(
         modifier = modifier.systemBarsPadding(),
         topBar = {
-            Box(modifier = Modifier.fillMaxWidth()) {
-                SearchBar(
-                    query = searchQuery,
-                    onQueryChange = onSearchQueryChange,
-                    onSearch = onSearchRequested,
-                    active = searchActive,
-                    onActiveChange = onSearchActiveChange,
-                    modifier = Modifier
-                        .align(Alignment.TopCenter)
-                        .focusRequester(focusRequester),
-                    placeholder = {
-                        Text(text = stringResource(id = R.string.search_releases))
-                    },
-                    leadingIcon = {
-                        if (searchActive) {
-                            IconButton(onClick = { onSearchActiveChange(false) }) {
-                                Icon(
-                                    imageVector = Icons.Outlined.ArrowBack,
-                                    contentDescription = null
-                                )
-                            }
-                        } else {
-                            Icon(
-                                imageVector = Icons.Outlined.Search,
-                                contentDescription = null
-                            )
-                        }
-                    },
-                    trailingIcon = {
-                        if (searchQuery.isNotEmpty()) {
-                            IconButton(onClick = { onSearchQueryChange(String.Empty) }) {
-                                Icon(
-                                    imageVector = Icons.Outlined.Clear,
-                                    contentDescription = null
-                                )
-                            }
-                        } else if (!searchActive) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_logo),
-                                contentDescription = null
-                            )
-                        }
-                    }
-                ) {
-                }
-            }
+            SearchBar(
+                focusRequester = focusRequester,
+                searchActive = searchActive,
+                searchQuery = searchQuery,
+                onSearchQueryChange = onSearchQueryChange,
+                onSearchRequested = onSearchRequested,
+                onSearchActiveChange = onSearchActiveChange
+            )
         },
         bottomBar = {
             AnimatedVisibility(
@@ -540,8 +501,7 @@ fun BottomBar(
         var showMore by rememberSaveable { mutableStateOf(false) }
         DropdownMenu(
             expanded = showMore,
-            onDismissRequest = { showMore = false },
-            offset = DpOffset(x = 16.dp, y = 8.dp)
+            onDismissRequest = { showMore = false }
         ) {
             DropdownMenuItem(
                 text = {
@@ -626,5 +586,62 @@ fun BottomBar(
                 }
             }
         )
+    }
+}
+
+@Composable
+fun SearchBar(
+    modifier: Modifier = Modifier,
+    focusRequester: FocusRequester = remember { FocusRequester() },
+    searchActive: Boolean = false,
+    searchQuery: String = String.Empty,
+    onSearchQueryChange: (String) -> Unit = {},
+    onSearchRequested: (String) -> Unit = {},
+    onSearchActiveChange: (Boolean) -> Unit = {}
+) {
+    Box(modifier = modifier.fillMaxWidth()) {
+        SearchBar(
+            query = searchQuery,
+            onQueryChange = onSearchQueryChange,
+            onSearch = onSearchRequested,
+            active = searchActive,
+            onActiveChange = onSearchActiveChange,
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .focusRequester(focusRequester),
+            placeholder = {
+                Text(text = stringResource(id = R.string.search_releases))
+            },
+            leadingIcon = {
+                if (searchActive) {
+                    IconButton(onClick = { onSearchActiveChange(false) }) {
+                        Icon(
+                            imageVector = Icons.Outlined.ArrowBack,
+                            contentDescription = null
+                        )
+                    }
+                } else {
+                    Icon(
+                        imageVector = Icons.Outlined.Search,
+                        contentDescription = null
+                    )
+                }
+            },
+            trailingIcon = {
+                if (searchQuery.isNotEmpty()) {
+                    IconButton(onClick = { onSearchQueryChange(String.Empty) }) {
+                        Icon(
+                            imageVector = Icons.Outlined.Clear,
+                            contentDescription = null
+                        )
+                    }
+                } else if (!searchActive) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_logo),
+                        contentDescription = null
+                    )
+                }
+            }
+        ) {}
     }
 }

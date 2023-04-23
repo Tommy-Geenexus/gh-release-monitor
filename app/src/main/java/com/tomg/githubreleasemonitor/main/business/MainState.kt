@@ -21,10 +21,12 @@
 package com.tomg.githubreleasemonitor.main.business
 
 import android.os.Parcelable
+import androidx.compose.runtime.Immutable
 import com.tomg.githubreleasemonitor.Empty
 import com.tomg.githubreleasemonitor.main.SortOrder
 import kotlinx.parcelize.Parcelize
 
+@Immutable
 @Parcelize
 data class MainState(
     val sortOrder: SortOrder = SortOrder.Asc.RepositoryOwner,

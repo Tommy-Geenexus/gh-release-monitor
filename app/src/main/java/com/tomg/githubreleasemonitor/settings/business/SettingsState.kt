@@ -21,9 +21,11 @@
 package com.tomg.githubreleasemonitor.settings.business
 
 import android.os.Parcelable
+import androidx.compose.runtime.Immutable
 import com.tomg.githubreleasemonitor.settings.monitorIntervalDefaultValue
 import kotlinx.parcelize.Parcelize
 
+@Immutable
 @Parcelize
 data class SettingsState(
     val monitorInterval: String = monitorIntervalDefaultValue,

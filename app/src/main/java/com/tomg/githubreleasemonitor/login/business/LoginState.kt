@@ -21,8 +21,10 @@
 package com.tomg.githubreleasemonitor.login.business
 
 import android.os.Parcelable
+import androidx.compose.runtime.Immutable
 import kotlinx.parcelize.Parcelize
 
+@Immutable
 @Parcelize
 data class LoginState(
     val isAuthenticating: Boolean = true
