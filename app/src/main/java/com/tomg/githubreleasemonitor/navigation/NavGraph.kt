@@ -31,8 +31,8 @@ import androidx.compose.animation.scaleOut
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.google.accompanist.navigation.animation.AnimatedNavHost
-import com.google.accompanist.navigation.animation.composable
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import com.google.accompanist.systemuicontroller.SystemUiController
 import com.tomg.githubreleasemonitor.login.ui.LoginScreen
 import com.tomg.githubreleasemonitor.main.ui.MainScreen
@@ -44,7 +44,7 @@ fun NavGraph(
     navController: NavHostController,
     startDestination: String = NavDestinations.ROUTE_LOGIN
 ) {
-    AnimatedNavHost(
+    NavHost(
         navController = navController,
         startDestination = startDestination
     ) {

@@ -19,12 +19,12 @@ plugins {
 android {
     namespace "com.tomg.githubreleasemonitor"
 
-    compileSdkVersion 33
+    compileSdk 34
 
     defaultConfig {
         applicationId "com.tomg.githubreleasemonitor"
         minSdkVersion 31
-        targetSdkVersion 33
+        targetSdkVersion 34
         versionCode 7
         versionName "1.1.3"
     }
@@ -52,7 +52,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion "1.4.6"
+        kotlinCompilerExtensionVersion "1.5.1"
     }
 }
 
@@ -75,27 +75,21 @@ tasks.withType(Detekt).configureEach {
 
 apollo {
     service("service") {
-        packageNamesFromFilePaths()
+        packageNamesFromFilePaths(null)
     }
 }
 
 detekt {
     baseline = file("$projectDir/config/detekt/baseline.xml")
-    config = files("$projectDir/config/detekt/detekt.yml")
+    config.setFrom("$projectDir/config/detekt/detekt.yml")
     buildUponDefaultConfig = true
 }
 
-tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
-    kotlinOptions {
-        freeCompilerArgs += [
-                "-opt-in=androidx.compose.animation.ExperimentalAnimationApi",
-                "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api",
-                "-opt-in=androidx.compose.ui.ExperimentalComposeUiApi",
-                "-opt-in=coil.annotation.ExperimentalCoilApi",
-                "-opt-in=com.google.accompanist.permissions.ExperimentalPermissionsApi",
-                "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
-                "-opt-in=org.orbitmvi.orbit.annotation.OrbitExperimental"
-        ]
+kotlin {
+    compilerOptions {
+        freeCompilerArgs.add("-opt-in=androidx.compose.material3.ExperimentalMaterial3Api")
+        freeCompilerArgs.add("-opt-in=com.google.accompanist.permissions.ExperimentalPermissionsApi")
+        freeCompilerArgs.add("-opt-in=org.orbitmvi.orbit.annotation.OrbitExperimental")
     }
 }
 

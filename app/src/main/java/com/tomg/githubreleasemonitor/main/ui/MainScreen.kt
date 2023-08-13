@@ -97,7 +97,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
-import androidx.paging.compose.items
+import androidx.paging.compose.itemKey
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
@@ -357,11 +357,10 @@ fun MainScreen(
             }
             LazyColumn(state = lazyListState) {
                 items(
-                    items = gitHubRepositories,
-                    key = { gitHubRepository ->
-                        gitHubRepository.id
-                    }
-                ) { gitHubRepository ->
+                    count = gitHubRepositories.itemCount,
+                    key = gitHubRepositories.itemKey { gitHubRepository -> gitHubRepository.id }
+                ) { index ->
+                    val gitHubRepository = gitHubRepositories[index]
                     if (gitHubRepository != null) {
                         var deleteGitHubRepository by remember { mutableStateOf(false) }
                         LaunchedEffect(deleteGitHubRepository) {
@@ -392,9 +391,11 @@ fun MainScreen(
                     is LoadState.NotLoading -> {
                         // Ignore
                     }
+
                     LoadState.Loading -> item {
                         Spinner(modifier = Modifier.fillMaxSize())
                     }
+
                     is LoadState.Error -> item {
                         Refresh {
                             gitHubRepositories.retry()
@@ -405,9 +406,11 @@ fun MainScreen(
                     is LoadState.NotLoading -> {
                         // Ignore
                     }
+
                     LoadState.Loading -> item {
                         Spinner(modifier = Modifier.fillMaxSize())
                     }
+
                     is LoadState.Error -> item {
                         Refresh {
                             gitHubRepositories.retry()
@@ -418,9 +421,11 @@ fun MainScreen(
                     is LoadState.NotLoading -> {
                         // Ignore
                     }
+
                     LoadState.Loading -> item {
                         Spinner(modifier = Modifier.fillMaxSize())
                     }
+
                     is LoadState.Error -> item {
                         Refresh {
                             gitHubRepositories.refresh()

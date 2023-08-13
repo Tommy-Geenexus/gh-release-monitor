@@ -28,7 +28,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.SideEffect
 import androidx.core.view.WindowCompat
-import com.google.accompanist.navigation.animation.rememberAnimatedNavController
+import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.tomg.githubreleasemonitor.monitor.business.GitHubReleaseMonitorViewModel
 import com.tomg.githubreleasemonitor.navigation.NavGraph
@@ -57,7 +57,7 @@ class GitHubReleaseMonitorActivity : AppCompatActivity() {
                 }
                 NavGraph(
                     systemUiController = rememberSystemUiController(),
-                    navController = rememberAnimatedNavController()
+                    navController = rememberNavController()
                 )
             }
         }
