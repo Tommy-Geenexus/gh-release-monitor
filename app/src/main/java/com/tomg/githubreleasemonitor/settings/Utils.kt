@@ -24,22 +24,16 @@ import android.content.Context
 import com.tomg.githubreleasemonitor.R
 import java.time.Duration
 
-internal val monitorIntervalDefaultValue = 1L.daysToMillisString()
+internal val monitorIntervalDefaultValue = Duration.ofDays(1).toMillis().toString()
 
 internal val Context.monitorIntervalEntries: Map<String, String>
     get() = mapOf(
-        15L.minutesToMillisString() to getString(R.string.minutes, 15),
-        30L.minutesToMillisString() to getString(R.string.minutes, 30),
-        1L.hoursToMillisString() to getString(R.string.hour, 1),
-        2L.hoursToMillisString() to getString(R.string.hours, 2),
-        4L.hoursToMillisString() to getString(R.string.hours, 4),
-        8L.hoursToMillisString() to getString(R.string.hours, 8),
-        16L.hoursToMillisString() to getString(R.string.hours, 16),
-        1L.daysToMillisString() to getString(R.string.day, 1)
+        Duration.ofMinutes(15).toMillis().toString() to getString(R.string.minute, 15),
+        Duration.ofMinutes(30).toMillis().toString() to getString(R.string.minute, 30),
+        Duration.ofHours(1).toMillis().toString() to getString(R.string.hour, 1),
+        Duration.ofHours(2).toMillis().toString() to getString(R.string.hour, 2),
+        Duration.ofHours(4).toMillis().toString() to getString(R.string.hour, 4),
+        Duration.ofHours(8).toMillis().toString() to getString(R.string.hour, 8),
+        Duration.ofHours(16).toMillis().toString() to getString(R.string.hour, 16),
+        Duration.ofDays(1).toMillis().toString() to getString(R.string.day, 1)
     )
-
-internal fun Long.minutesToMillisString() = Duration.ofMinutes(this).toMillis().toString()
-
-internal fun Long.hoursToMillisString() = Duration.ofHours(this).toMillis().toString()
-
-internal fun Long.daysToMillisString() = Duration.ofDays(this).toMillis().toString()

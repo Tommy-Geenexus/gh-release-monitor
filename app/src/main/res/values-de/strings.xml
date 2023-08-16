@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<resources>
+    <string name="_import">Importieren</string>
+
+    <string name="account">Account</string>
+
+    <string name="add">Hinzufügen</string>
+    <string name="add_repo">GitHub-Repo hinzufügen</string>
+
+    <string name="asc">Aufsteigend</string>
+
+    <string name="avatar">Avatar</string>
+
+    <string name="back">Zurück</string>
+
+    <string name="clear_search">Suchergebnisse löschen</string>
+
+    <string name="day">%d Tag(e)</string>
+
+    <string name="desc">Absteigend</string>
+
+    <string name="export">Exportieren</string>
+    <string name="export_failed">GitHub-Repos nicht exportiert</string>
+    <string name="export_repos">GitHub-Repos exportieren</string>
+    <string name="export_successful">GitHub-Repos exportiert</string>
+
+    <string name="git_owner">Besitzer*</string>
+    <string name="git_repo">Name*</string>
+
+    <string name="hour">%d Stunde(n)</string>
+
+    <string name="import_failed">GitHub-Repos nicht importiert</string>
+    <string name="import_repos">GitHub-Repos importieren</string>
+    <string name="import_successful">GitHub-Repos importiert</string>
+
+    <string name="invalid">Ungültig</string>
+
+    <string name="latest">Aktuelles Release: %s</string>
+
+    <string name="login">Einloggen</string>
+
+    <string name="manage">Verwalten</string>
+
+    <string name="minute">%d Minute(n)</string>
+
+    <string name="monitor_interval">Überwachungsintervall</string>
+
+    <string name="more">Mehr</string>
+
+    <string name="refresh">Auffrischen</string>
+
+    <string name="release_date">Repository-Release-Datum</string>
+
+    <string name="repo_name">Repository-Name</string>
+    <string name="repo_owner">Repository-Besitzer</string>
+
+    <string name="repository_add_failed">GitHub-Repo nicht hinzugefügt</string>
+    <string name="repository_added">GitHub-Repo hinzugefügt</string>
+    <string name="repository_delete">GitHub-Repo löschen</string>
+    <string name="repository_delete_failed">GitHub-Repo nicht gelöscht</string>
+    <string name="repository_deleted">GitHub-Repo gelöscht</string>
+    <string name="repository_no_update">Keine neuen Releases für GitHub-Repos gefunden</string>
+    <string name="repository_not_found">GitHub-Repo nicht gefunden</string>
+    <string name="repository_update_failed">GitHub-Repos nicht aktualisiert</string>
+    <string name="repository_updated">GitHub-Repos aktualisiert</string>
+    <string name="repository_updates_available">GitHub-Repo-Updates verfügbar</string>
+    <string name="repository_updates_count">Es sind %d GitHub-Repo-Updates verfügbar</string>
+
+    <string name="required">*Erforderlich</string>
+
+    <string name="scroll_top">Zum Anfang scrollen</string>
+
+    <string name="search_releases">In Releases suchen</string>
+
+    <string name="service">Service</string>
+
+    <string name="settings">Einstellungen</string>
+
+    <string name="sign_in">Mit GitHub einloggen</string>
+    <string name="sign_out">Ausloggen</string>
+    <string name="sign_out_failed">Ausloggen fehlgeschlagen</string>
+    <string name="sign_out_github">Aus GitHub ausloggen</string>
+
+    <string name="sort_order">Sortierung</string>
+</resources>
