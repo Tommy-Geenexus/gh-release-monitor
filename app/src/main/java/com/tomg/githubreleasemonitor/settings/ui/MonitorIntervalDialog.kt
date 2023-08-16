@@ -23,6 +23,7 @@ package com.tomg.githubreleasemonitor.settings.ui
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.AlertDialog
@@ -76,9 +77,9 @@ fun MonitorIntervalDialog(
                 for (monitorIntervalEntry in monitorIntervalEntries) {
                     item {
                         Row(
-                            modifier = Modifier.clickable {
-                                onConfirm(monitorInterval)
-                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable { monitorInterval = monitorIntervalEntry.key },
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             RadioButton(
