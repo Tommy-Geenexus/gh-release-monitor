@@ -56,8 +56,9 @@ class MainViewModel @Inject constructor(
     )
 
     private val pagingSourceFactory by pagingSourceFactory {
-        val state = container.stateFlow.value
-        gitHubRepositoryRepository.getRepositories(state.sortOrder, state.searchQuery)
+        with(container.stateFlow.value) {
+            gitHubRepositoryRepository.getRepositories(sortOrder, searchQuery)
+        }
     }
     val repositoryFlow = Pager(
         config = pagingConfig,
@@ -89,7 +90,7 @@ class MainViewModel @Inject constructor(
         repositoryName: String
     ) = intent {
         reduce {
-            state.copy(isLoading = true)
+            state.copy(isAddingRepository = true)
         }
         val accessToken = userRepository.getUser().firstOrNull()?.access_token
         val repository = if (!accessToken.isNullOrEmpty()) {
@@ -107,7 +108,7 @@ class MainViewModel @Inject constructor(
             false
         }
         reduce {
-            state.copy(isLoading = false)
+            state.copy(isAddingRepository = false)
         }
         postSideEffect(
             if (repository != null) {
@@ -124,11 +125,11 @@ class MainViewModel @Inject constructor(
 
     fun deleteRepository(gitHubRepository: GitHubRepository) = intent {
         reduce {
-            state.copy(isLoading = true)
+            state.copy(isDeletingRepository = true)
         }
         val success = gitHubRepositoryRepository.deleteRepository(gitHubRepository)
         reduce {
-            state.copy(isLoading = false)
+            state.copy(isDeletingRepository = false)
         }
         postSideEffect(
             if (success) {
@@ -141,7 +142,7 @@ class MainViewModel @Inject constructor(
 
     fun updateRepositories(gitHubRepositories: List<GitHubRepository>) = intent {
         reduce {
-            state.copy(isLoading = true)
+            state.copy(isUpdatingRepositories = true)
         }
         val accessToken = userRepository.getUser().firstOrNull()?.access_token
         val repositories = if (!accessToken.isNullOrEmpty()) {
@@ -158,7 +159,7 @@ class MainViewModel @Inject constructor(
             success = gitHubRepositoryRepository.updateRepositories(*repositories.toTypedArray())
         }
         reduce {
-            state.copy(isLoading = false)
+            state.copy(isUpdatingRepositories = false)
         }
         postSideEffect(
             if (update) {

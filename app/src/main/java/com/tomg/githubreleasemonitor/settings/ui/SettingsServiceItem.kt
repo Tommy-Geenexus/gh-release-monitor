@@ -67,7 +67,7 @@ fun SettingsServiceItem(
         ) {
             Icon(
                 imageVector = Icons.Outlined.Schedule,
-                contentDescription = null,
+                contentDescription = stringResource(id = R.string.monitor_interval),
                 modifier = Modifier.padding(start = 16.dp)
             )
             Column {

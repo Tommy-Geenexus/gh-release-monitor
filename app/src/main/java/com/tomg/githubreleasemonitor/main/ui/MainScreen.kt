@@ -33,6 +33,8 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -65,6 +67,7 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBar
+import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -86,6 +89,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -95,6 +99,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.paging.LoadState
+import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
@@ -109,6 +114,8 @@ import com.tomg.githubreleasemonitor.main.business.AddGitHubRepositoryViewModel
 import com.tomg.githubreleasemonitor.main.business.MainSideEffect
 import com.tomg.githubreleasemonitor.main.business.MainViewModel
 import com.tomg.githubreleasemonitor.main.data.GitHubRepository
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
@@ -137,41 +144,49 @@ fun MainScreen(
     mainViewModel.collectSideEffect { sideEffect ->
         when (sideEffect) {
             MainSideEffect.GitHubRepository.Add.Failure -> {
+                snackBarHostState.currentSnackbarData?.dismiss()
                 scope.launch {
                     snackBarHostState.showSnackbar(message = repositoryAddFailed)
                 }
             }
             MainSideEffect.GitHubRepository.Add.Success -> {
+                snackBarHostState.currentSnackbarData?.dismiss()
                 scope.launch {
                     snackBarHostState.showSnackbar(message = repositoryAdded)
                 }
             }
             MainSideEffect.GitHubRepository.Add.NotFound -> {
+                snackBarHostState.currentSnackbarData?.dismiss()
                 scope.launch {
                     snackBarHostState.showSnackbar(message = repositoryNotFound)
                 }
             }
             MainSideEffect.GitHubRepository.Delete.Failure -> {
+                snackBarHostState.currentSnackbarData?.dismiss()
                 scope.launch {
                     snackBarHostState.showSnackbar(message = repositoryDeleteFailed)
                 }
             }
             MainSideEffect.GitHubRepository.Delete.Success -> {
+                snackBarHostState.currentSnackbarData?.dismiss()
                 scope.launch {
                     snackBarHostState.showSnackbar(message = repositoryDeleted)
                 }
             }
             MainSideEffect.GitHubRepository.Update.Failure -> {
+                snackBarHostState.currentSnackbarData?.dismiss()
                 scope.launch {
                     snackBarHostState.showSnackbar(message = repositoryUpdateFailed)
                 }
             }
             MainSideEffect.GitHubRepository.Update.Latest -> {
+                snackBarHostState.currentSnackbarData?.dismiss()
                 scope.launch {
                     snackBarHostState.showSnackbar(message = repositoryNoUpdate)
                 }
             }
             MainSideEffect.GitHubRepository.Update.Success -> {
+                snackBarHostState.currentSnackbarData?.dismiss()
                 scope.launch {
                     snackBarHostState.showSnackbar(message = repositoryUpdated)
                 }
@@ -218,8 +233,10 @@ fun MainScreen(
         )
     }
     val surfaceColor = MaterialTheme.colorScheme.surface
-    val surfaceColorEl2 = MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp)
-    val surfaceColorEl3 = MaterialTheme.colorScheme.surfaceColorAtElevation(6.dp)
+    val surfaceColorEl2 =
+        MaterialTheme.colorScheme.surfaceColorAtElevation(BottomAppBarDefaults.ContainerElevation)
+    val surfaceColorEl3 =
+        MaterialTheme.colorScheme.surfaceColorAtElevation(SearchBarDefaults.Elevation)
     SideEffect {
         if (state.searchActive) {
             systemUiController.setSystemBarsColor(surfaceColorEl3)
@@ -228,7 +245,7 @@ fun MainScreen(
             systemUiController.setNavigationBarColor(surfaceColorEl2)
         }
     }
-    val gitHubRepositories = mainViewModel.repositoryFlow.collectAsLazyPagingItems()
+    val gitHubRepositories = mainViewModel.repositoryFlow
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
     val lazyListState = rememberLazyListState()
@@ -237,7 +254,9 @@ fun MainScreen(
         snackBarHostState = snackBarHostState,
         gitHubRepositories = gitHubRepositories,
         defaultSortOrder = state.sortOrder,
-        isLoading = state.isLoading,
+        isLoading = with(state) {
+            isAddingRepository || isDeletingRepository || isUpdatingRepositories
+        },
         focusRequester = focusRequester,
         searchActive = state.searchActive,
         searchQuery = state.searchQuery,
@@ -247,7 +266,6 @@ fun MainScreen(
         onSearchRequested = {
             focusManager.clearFocus()
             mainViewModel.toggleSearchActive(false)
-            gitHubRepositories.refresh()
         },
         onSearchActiveChange = { active ->
             mainViewModel.toggleSearchActive(active)
@@ -256,7 +274,6 @@ fun MainScreen(
             } else {
                 focusManager.clearFocus()
             }
-            gitHubRepositories.refresh()
         },
         onAddGitHubRepository = {
             showDialog = true
@@ -276,8 +293,8 @@ fun MainScreen(
         onReleaseSelected = { releaseUrl ->
             mainViewModel.showGitHubRepositoryRelease(releaseUrl)
         },
-        onRefresh = {
-            mainViewModel.updateRepositories(gitHubRepositories.itemSnapshotList.items)
+        onRefresh = { items ->
+            mainViewModel.updateRepositories(items)
         },
         onDelete = { gitHubRepository ->
             mainViewModel.deleteRepository(gitHubRepository)
@@ -290,7 +307,8 @@ fun MainScreen(
     modifier: Modifier = Modifier,
     lazyListState: LazyListState = rememberLazyListState(),
     snackBarHostState: SnackbarHostState = remember { SnackbarHostState() },
-    gitHubRepositories: LazyPagingItems<GitHubRepository>? = null,
+    gitHubRepositories: Flow<PagingData<GitHubRepository>> =
+        MutableStateFlow(PagingData.from(emptyList())),
     defaultSortOrder: SortOrder = SortOrder.Asc.RepositoryOwner,
     isLoading: Boolean = false,
     focusRequester: FocusRequester = remember { FocusRequester() },
@@ -305,9 +323,10 @@ fun MainScreen(
     onScrollToTop: () -> Unit = {},
     onUserAvatarSelected: (String) -> Unit = {},
     onReleaseSelected: (String) -> Unit = {},
-    onRefresh: () -> Unit = {},
+    onRefresh: (List<GitHubRepository>) -> Unit = {},
     onDelete: (GitHubRepository) -> Unit = {}
 ) {
+    val items = gitHubRepositories.collectAsLazyPagingItems()
     Scaffold(
         modifier = modifier.systemBarsPadding(),
         topBar = {
@@ -315,9 +334,20 @@ fun MainScreen(
                 focusRequester = focusRequester,
                 searchActive = searchActive,
                 searchQuery = searchQuery,
-                onSearchQueryChange = onSearchQueryChange,
-                onSearchRequested = onSearchRequested,
-                onSearchActiveChange = onSearchActiveChange
+                onSearchQueryChange = { query ->
+                    if (!searchActive && query.isEmpty()) {
+                        items.refresh()
+                    }
+                    onSearchQueryChange(query)
+                },
+                onSearchRequested = { query ->
+                    items.refresh()
+                    onSearchRequested(query)
+                },
+                onSearchActiveChange = { isActive ->
+                    items.refresh()
+                    onSearchActiveChange(isActive)
+                }
             )
         },
         bottomBar = {
@@ -330,11 +360,10 @@ fun MainScreen(
                     derivedStateOf { lazyListState.firstVisibleItemIndex > 0 }
                 }
                 BottomBar(
-                    isLoading = isLoading,
                     canScrollUp = canScrollUp,
                     defaultSortOrder = defaultSortOrder,
                     onApplySortOrder = onApplySortOrder,
-                    onRefresh = onRefresh,
+                    onRefresh = { onRefresh(items.itemSnapshotList.items) },
                     onFocusSearch = { onSearchActiveChange(true) },
                     onShowSettings = onShowSettings,
                     onAddGitHubRepository = onAddGitHubRepository,
@@ -342,105 +371,114 @@ fun MainScreen(
                 )
             }
         },
-        snackbarHost = {
-            SnackbarHost(snackBarHostState)
-        }
-    ) { innerPadding ->
+        snackbarHost = { SnackbarHost(snackBarHostState) }
+    ) { padding ->
         Column(
             modifier = Modifier.padding(
-                top = innerPadding.calculateTopPadding(),
-                bottom = innerPadding.calculateBottomPadding()
+                start = padding.calculateStartPadding(LocalLayoutDirection.current),
+                top = padding.calculateTopPadding(),
+                end = padding.calculateEndPadding(LocalLayoutDirection.current),
+                bottom = padding.calculateBottomPadding()
             )
         ) {
-            if (gitHubRepositories == null) {
-                return@Scaffold
+            AnimatedVisibility(visible = isLoading) {
+                LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
             }
-            LazyColumn(state = lazyListState) {
-                items(
-                    count = gitHubRepositories.itemCount,
-                    key = gitHubRepositories.itemKey { gitHubRepository -> gitHubRepository.id }
-                ) { index ->
-                    val gitHubRepository = gitHubRepositories[index]
-                    if (gitHubRepository != null) {
-                        var deleteGitHubRepository by remember { mutableStateOf(false) }
-                        LaunchedEffect(deleteGitHubRepository) {
-                            if (deleteGitHubRepository) {
-                                onDelete(gitHubRepository)
-                            }
-                        }
-                        val dismissState = rememberDismissState(
-                            confirmValueChange = { value ->
-                                if (value == DismissValue.DismissedToEnd) {
-                                    deleteGitHubRepository = !deleteGitHubRepository
-                                }
-                                value != DismissValue.DismissedToEnd
-                            }
-                        )
-                        val isDismissed = dismissState.isDismissed(DismissDirection.StartToEnd)
-                        AnimatedVisibility(visible = !isDismissed) {
-                            GitHubRepositoryItem(
-                                dismissState = dismissState,
-                                gitHubRepository = gitHubRepository,
-                                onGitHubUserAvatarSelected = onUserAvatarSelected,
-                                onGitHubRepositoryReleaseSelected = onReleaseSelected
-                            )
-                        }
-                    }
-                }
-                when (gitHubRepositories.loadState.prepend) {
-                    is LoadState.NotLoading -> {
-                        // Ignore
-                    }
-
-                    LoadState.Loading -> item {
-                        Spinner(modifier = Modifier.fillMaxSize())
-                    }
-
-                    is LoadState.Error -> item {
-                        Refresh {
-                            gitHubRepositories.retry()
-                        }
-                    }
-                }
-                when (gitHubRepositories.loadState.append) {
-                    is LoadState.NotLoading -> {
-                        // Ignore
-                    }
-
-                    LoadState.Loading -> item {
-                        Spinner(modifier = Modifier.fillMaxSize())
-                    }
-
-                    is LoadState.Error -> item {
-                        Refresh {
-                            gitHubRepositories.retry()
-                        }
-                    }
-                }
-                when (gitHubRepositories.loadState.refresh) {
-                    is LoadState.NotLoading -> {
-                        // Ignore
-                    }
-
-                    LoadState.Loading -> item {
-                        Spinner(modifier = Modifier.fillMaxSize())
-                    }
-
-                    is LoadState.Error -> item {
-                        Refresh {
-                            gitHubRepositories.refresh()
-                        }
-                    }
-                }
-            }
+            GitHubRepositoryItems(
+                lazyListState = lazyListState,
+                items = items,
+                onUserAvatarSelected = onUserAvatarSelected,
+                onReleaseSelected = onReleaseSelected,
+                onDelete = onDelete
+            )
         }
     }
 }
 
-@Preview(name = "Main Screen")
 @Composable
-fun MainScreenPreview() {
-    MainScreen()
+fun GitHubRepositoryItems(
+    lazyListState: LazyListState,
+    items: LazyPagingItems<GitHubRepository>,
+    onUserAvatarSelected: (String) -> Unit,
+    onReleaseSelected: (String) -> Unit,
+    onDelete: (GitHubRepository) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    LazyColumn(
+        modifier = modifier,
+        state = lazyListState
+    ) {
+        items(
+            count = items.itemCount,
+            key = items.itemKey { gitHubRepository -> gitHubRepository.id }
+        ) { index ->
+            val gitHubRepository = items[index]
+            if (gitHubRepository != null) {
+                var deleteGitHubRepository by remember { mutableStateOf(false) }
+                LaunchedEffect(deleteGitHubRepository) {
+                    if (deleteGitHubRepository) {
+                        onDelete(gitHubRepository)
+                    }
+                }
+                val dismissState = rememberDismissState(
+                    confirmValueChange = { value ->
+                        if (value == DismissValue.DismissedToEnd) {
+                            deleteGitHubRepository = !deleteGitHubRepository
+                        }
+                        value != DismissValue.DismissedToEnd
+                    }
+                )
+                val isDismissed = dismissState.isDismissed(DismissDirection.StartToEnd)
+                AnimatedVisibility(visible = !isDismissed) {
+                    GitHubRepositoryItem(
+                        dismissState = dismissState,
+                        gitHubRepository = gitHubRepository,
+                        onGitHubUserAvatarSelected = onUserAvatarSelected,
+                        onGitHubRepositoryReleaseSelected = onReleaseSelected
+                    )
+                }
+            }
+        }
+        when (items.loadState.prepend) {
+            is LoadState.NotLoading -> {
+                // Ignore
+            }
+            LoadState.Loading -> item {
+                Spinner(modifier = Modifier.fillMaxSize())
+            }
+            is LoadState.Error -> item {
+                Refresh {
+                    items.retry()
+                }
+            }
+        }
+        when (items.loadState.append) {
+            is LoadState.NotLoading -> {
+                // Ignore
+            }
+            LoadState.Loading -> item {
+                Spinner(modifier = Modifier.fillMaxSize())
+            }
+            is LoadState.Error -> item {
+                Refresh {
+                    items.retry()
+                }
+            }
+        }
+        when (items.loadState.refresh) {
+            is LoadState.NotLoading -> {
+                // Ignore
+            }
+            LoadState.Loading -> item {
+                Spinner(modifier = Modifier.fillMaxSize())
+            }
+            is LoadState.Error -> item {
+                Refresh {
+                    items.refresh()
+                }
+            }
+        }
+    }
 }
 
 @Composable
@@ -470,15 +508,69 @@ fun Refresh(
         IconButton(onClick = { onRefresh() }) {
             Icon(
                 imageVector = Icons.Outlined.Refresh,
-                contentDescription = null
+                contentDescription = stringResource(id = R.string.refresh)
             )
         }
     }
 }
 
 @Composable
+fun DropdownMenu(
+    defaultSortOrder: SortOrder,
+    onApplySortOrder: (SortOrder) -> Unit,
+    onRefresh: () -> Unit,
+    onShowSettings: () -> Unit,
+    onShouldShowDialog: () -> Boolean,
+    onShouldShowMore: () -> Boolean,
+    onDismissRequest: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    if (onShouldShowDialog()) {
+        SortOrderDialog(
+            defaultSortOrder = defaultSortOrder,
+            onDismiss = onDismissRequest,
+            onConfirm = { sortOrder ->
+                onDismissRequest()
+                onApplySortOrder(sortOrder)
+            }
+        )
+    }
+    DropdownMenu(
+        expanded = onShouldShowMore(),
+        onDismissRequest = onDismissRequest,
+        modifier = modifier
+    ) {
+        DropdownMenuItem(
+            text = {
+                Text(
+                    text = stringResource(id = R.string.settings),
+                    fontWeight = FontWeight.Normal,
+                    style = MaterialTheme.typography.titleMedium
+                )
+            },
+            onClick = {
+                onDismissRequest()
+                onShowSettings()
+            }
+        )
+        DropdownMenuItem(
+            text = {
+                Text(
+                    text = stringResource(id = R.string.refresh),
+                    fontWeight = FontWeight.Normal,
+                    style = MaterialTheme.typography.titleMedium
+                )
+            },
+            onClick = {
+                onDismissRequest()
+                onRefresh()
+            }
+        )
+    }
+}
+
+@Composable
 fun BottomBar(
-    isLoading: Boolean,
     canScrollUp: Boolean,
     defaultSortOrder: SortOrder,
     onApplySortOrder: (SortOrder) -> Unit,
@@ -489,109 +581,73 @@ fun BottomBar(
     onScrollToTop: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var showDialog by rememberSaveable { mutableStateOf(false) }
-    if (showDialog) {
-        SortOrderDialog(
-            defaultSortOrder = defaultSortOrder,
-            onDismiss = {
-                showDialog = false
-            },
-            onConfirm = { sortOrder ->
-                showDialog = false
-                onApplySortOrder(sortOrder)
+    BottomAppBar(
+        actions = {
+            var showMore by rememberSaveable { mutableStateOf(false) }
+            var showDialog by rememberSaveable { mutableStateOf(false) }
+            DropdownMenu(
+                defaultSortOrder = defaultSortOrder,
+                onApplySortOrder = onApplySortOrder,
+                onRefresh = onRefresh,
+                onShowSettings = onShowSettings,
+                onShouldShowDialog = { showDialog },
+                onShouldShowMore = { showMore },
+                onDismissRequest = {
+                    showDialog = false
+                    showMore = false
+                }
+            )
+            IconButton(onClick = { showMore = true }) {
+                Icon(
+                    imageVector = Icons.Outlined.MoreVert,
+                    contentDescription = stringResource(id = R.string.more)
+                )
             }
-        )
-    }
-    Column {
-        var showMore by rememberSaveable { mutableStateOf(false) }
-        DropdownMenu(
-            expanded = showMore,
-            onDismissRequest = { showMore = false }
-        ) {
-            DropdownMenuItem(
-                text = {
-                    Text(
-                        text = stringResource(id = R.string.settings),
-                        fontWeight = FontWeight.Normal,
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                },
-                onClick = {
-                    showMore = false
-                    onShowSettings()
-                }
-            )
-            DropdownMenuItem(
-                text = {
-                    Text(
-                        text = stringResource(id = R.string.refresh),
-                        fontWeight = FontWeight.Normal,
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                },
-                onClick = {
-                    showMore = false
-                    onRefresh()
-                }
-            )
-        }
-        AnimatedVisibility(visible = isLoading) {
-            LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
-        }
-        BottomAppBar(
-            actions = {
-                IconButton(onClick = { showMore = true }) {
+            IconButton(onClick = { showDialog = true }) {
+                Icon(
+                    imageVector = Icons.Outlined.Sort,
+                    contentDescription = stringResource(id = R.string.sort_order)
+                )
+            }
+            IconButton(onClick = onFocusSearch) {
+                Icon(
+                    imageVector = Icons.Outlined.Search,
+                    contentDescription = stringResource(id = R.string.search_releases)
+                )
+            }
+            AnimatedVisibility(
+                visible = canScrollUp,
+                enter = fadeIn() + slideInVertically(
+                    initialOffsetY = { fullHeight -> fullHeight / 2 }
+                ),
+                exit = fadeOut() + slideOutVertically(
+                    targetOffsetY = { fullHeight -> fullHeight / 2 }
+                )
+            ) {
+                IconButton(onClick = onScrollToTop) {
                     Icon(
-                        imageVector = Icons.Outlined.MoreVert,
-                        contentDescription = null
-                    )
-                }
-                IconButton(onClick = { showDialog = true }) {
-                    Icon(
-                        imageVector = Icons.Outlined.Sort,
-                        contentDescription = null
-                    )
-                }
-                IconButton(onClick = onFocusSearch) {
-                    Icon(
-                        imageVector = Icons.Outlined.Search,
-                        contentDescription = null
-                    )
-                }
-                AnimatedVisibility(
-                    visible = canScrollUp,
-                    enter = fadeIn() + slideInVertically(
-                        initialOffsetY = { fullHeight -> fullHeight / 2 }
-                    ),
-                    exit = fadeOut() + slideOutVertically(
-                        targetOffsetY = { fullHeight -> fullHeight / 2 }
-                    )
-                ) {
-                    IconButton(onClick = onScrollToTop) {
-                        Icon(
-                            imageVector = Icons.Outlined.ArrowUpward,
-                            contentDescription = null
-                        )
-                    }
-                }
-            },
-            modifier = modifier.navigationBarsPadding(),
-            floatingActionButton = {
-                FloatingActionButton(
-                    onClick = {
-                        onAddGitHubRepository()
-                    },
-                    containerColor = BottomAppBarDefaults.bottomAppBarFabColor,
-                    elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation()
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.Add,
-                        contentDescription = null
+                        imageVector = Icons.Outlined.ArrowUpward,
+                        contentDescription = stringResource(id = R.string.scroll_top)
                     )
                 }
             }
-        )
-    }
+        },
+        modifier = modifier.navigationBarsPadding(),
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = {
+                    onAddGitHubRepository()
+                },
+                containerColor = BottomAppBarDefaults.bottomAppBarFabColor,
+                elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation()
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.Add,
+                    contentDescription = stringResource(id = R.string.add_repo)
+                )
+            }
+        }
+    )
 }
 
 @Composable
@@ -612,7 +668,7 @@ fun SearchBar(
             active = searchActive,
             onActiveChange = onSearchActiveChange,
             modifier = Modifier
-                .align(Alignment.TopCenter)
+                .align(Alignment.Center)
                 .focusRequester(focusRequester),
             placeholder = {
                 Text(text = stringResource(id = R.string.search_releases))
@@ -622,13 +678,13 @@ fun SearchBar(
                     IconButton(onClick = { onSearchActiveChange(false) }) {
                         Icon(
                             imageVector = Icons.Outlined.ArrowBack,
-                            contentDescription = null
+                            contentDescription = stringResource(id = R.string.back)
                         )
                     }
                 } else {
                     Icon(
                         imageVector = Icons.Outlined.Search,
-                        contentDescription = null
+                        contentDescription = stringResource(id = R.string.search_releases)
                     )
                 }
             },
@@ -637,16 +693,22 @@ fun SearchBar(
                     IconButton(onClick = { onSearchQueryChange(String.Empty) }) {
                         Icon(
                             imageVector = Icons.Outlined.Clear,
-                            contentDescription = null
+                            contentDescription = stringResource(id = R.string.clear_search)
                         )
                     }
                 } else if (!searchActive) {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_logo),
-                        contentDescription = null
+                        contentDescription = stringResource(id = R.string.app_name)
                     )
                 }
             }
         ) {}
     }
+}
+
+@Preview
+@Composable
+fun MainScreenPreview() {
+    MainScreen()
 }

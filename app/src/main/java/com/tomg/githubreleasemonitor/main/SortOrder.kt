@@ -28,24 +28,24 @@ sealed class SortOrder : Parcelable {
     sealed class Asc : SortOrder() {
 
         @Parcelize
-        object RepositoryOwner : Asc()
+        data object RepositoryOwner : Asc()
 
         @Parcelize
-        object RepositoryName : Asc()
+        data object RepositoryName : Asc()
 
         @Parcelize
-        object RepositoryReleaseDate : Asc()
+        data object RepositoryReleaseDate : Asc()
     }
 
     sealed class Desc : SortOrder() {
 
         @Parcelize
-        object RepositoryOwner : Desc()
+        data object RepositoryOwner : Desc()
 
         @Parcelize
-        object RepositoryName : Desc()
+        data object RepositoryName : Desc()
 
         @Parcelize
-        object RepositoryReleaseDate : Desc()
+        data object RepositoryReleaseDate : Desc()
     }
 }

@@ -9,7 +9,17 @@
 
     <string name="app_name">GitHubReleaseMonitor</string>
 
+    <string name="asc">Ascending</string>
+
+    <string name="avatar">Avatar</string>
+
+    <string name="back">Back</string>
+
+    <string name="clear_search">Clear search results</string>
+
     <string name="day" tools:ignore="PluralsCandidate">%d day</string>
+
+    <string name="desc">Descending</string>
 
     <string name="export">Export</string>
     <string name="export_failed">Failed to export GitHub repositories</string>
@@ -29,13 +39,17 @@
 
     <string name="invalid">Invalid</string>
 
-    <string name="latest">Latest</string>
+    <string name="latest">Latest: %s</string>
+
+    <string name="login">Login</string>
 
     <string name="manage">Manage</string>
 
     <string name="minutes" tools:ignore="PluralsCandidate">%d minutes </string>
 
     <string name="monitor_interval">Monitor Interval</string>
+
+    <string name="more">More</string>
 
     <string name="refresh">Refresh</string>
 
@@ -46,6 +60,7 @@
 
     <string name="repository_add_failed">Failed to add GitHub repository</string>
     <string name="repository_added">Successfully added GitHub repository</string>
+    <string name="repository_delete">Delete GitHub repository</string>
     <string name="repository_delete_failed">Failed to delete GitHub repository</string>
     <string name="repository_deleted">Successfully deleted GitHub repository</string>
     <string name="repository_no_update">No new releases for GitHub repositories found</string>
@@ -56,6 +71,8 @@
     <string name="repository_updates_count">There are %d GitHub repository updates available</string>
 
     <string name="required">*Required</string>
+
+    <string name="scroll_top">Scroll to top</string>
 
     <string name="search_releases">Search in releases</string>
 

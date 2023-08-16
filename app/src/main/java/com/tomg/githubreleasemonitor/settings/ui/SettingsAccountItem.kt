@@ -64,7 +64,7 @@ fun SettingsAccountItem(
         ) {
             Icon(
                 imageVector = Icons.Outlined.Logout,
-                contentDescription = null,
+                contentDescription = stringResource(id = R.string.sign_out),
                 modifier = Modifier.padding(start = 16.dp)
             )
             Column {

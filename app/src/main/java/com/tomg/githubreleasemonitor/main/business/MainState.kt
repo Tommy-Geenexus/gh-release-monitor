@@ -30,7 +30,9 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class MainState(
     val sortOrder: SortOrder = SortOrder.Asc.RepositoryOwner,
-    val isLoading: Boolean = false,
+    val isAddingRepository: Boolean = false,
+    val isDeletingRepository: Boolean = false,
+    val isUpdatingRepositories: Boolean = false,
     val searchActive: Boolean = false,
     val searchQuery: String = String.Empty
 ) : Parcelable

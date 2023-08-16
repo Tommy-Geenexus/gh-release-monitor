@@ -26,7 +26,7 @@ import kotlin.reflect.KProperty
 
 class PagingSourceFactory<K : Any, V : Any>(
     private val block: () -> PagingSource<K, V>
-) : ReadOnlyProperty<Any?, PagingSourceFactory<K, V>> {
+) : ReadOnlyProperty<Any, PagingSourceFactory<K, V>> {
 
     lateinit var pagingSource: PagingSource<K, V>
 
@@ -36,7 +36,7 @@ class PagingSourceFactory<K : Any, V : Any>(
     }
 
     override fun getValue(
-        thisRef: Any?,
+        thisRef: Any,
         property: KProperty<*>
     ) = this
 }

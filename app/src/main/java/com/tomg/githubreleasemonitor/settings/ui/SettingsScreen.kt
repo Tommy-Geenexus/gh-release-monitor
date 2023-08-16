@@ -167,7 +167,9 @@ fun SettingsScreen(
     SettingScreen(
         snackBarHostState = snackBarHostState,
         monitorInterval = state.monitorInterval,
-        isLoading = state.loading,
+        isLoading = with(state) {
+            isImportingGitHubRepositories || isExportingGitHubRepositories || isSigningOut
+        },
         onMonitorIntervalUpdateRequested = {
             showMonitorIntervalDialog = true
         },
@@ -206,7 +208,7 @@ fun SettingScreen(
                     IconButton(onClick = onNavigateUp) {
                         Icon(
                             imageVector = Icons.Outlined.ArrowBack,
-                            contentDescription = null
+                            contentDescription = stringResource(id = R.string.back)
                         )
                     }
                 }

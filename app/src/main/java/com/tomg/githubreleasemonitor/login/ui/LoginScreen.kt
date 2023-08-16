@@ -115,7 +115,7 @@ fun LoginScreen(
             )
             Image(
                 painter = painterResource(id = R.drawable.ic_logo),
-                contentDescription = null,
+                contentDescription = stringResource(id = R.string.app_name),
                 modifier = Modifier
                     .padding(all = 16.dp)
                     .size(108.dp),
@@ -144,7 +144,7 @@ fun LoginScreen(
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.Login,
-                        contentDescription = null
+                        contentDescription = stringResource(id = R.string.login)
                     )
                     Text(
                         text = stringResource(id = R.string.sign_in),

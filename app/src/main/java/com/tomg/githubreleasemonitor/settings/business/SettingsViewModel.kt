@@ -92,7 +92,7 @@ class SettingsViewModel @Inject constructor(
             return@intent
         }
         reduce {
-            state.copy(loading = true)
+            state.copy(isImportingGitHubRepositories = true)
         }
         val json = gitHubRepositoryJsonRepository.importFrom(uri)
         val success = if (!json.isNullOrEmpty()) {
@@ -106,7 +106,7 @@ class SettingsViewModel @Inject constructor(
             false
         }
         reduce {
-            state.copy(loading = false)
+            state.copy(isImportingGitHubRepositories = false)
         }
         postSideEffect(
             if (success) {
@@ -122,45 +122,44 @@ class SettingsViewModel @Inject constructor(
             return@intent
         }
         reduce {
-            state.copy(loading = true)
+            state.copy(isExportingGitHubRepositories = true)
         }
-        gitHubRepositoryRepository.getRepositories().collect { gitHubRepositories ->
-            val success = if (gitHubRepositories.isNotEmpty()) {
-                val json = gitHubRepositoryJsonRepository.toJson(gitHubRepositories)
-                if (!json.isNullOrEmpty()) {
-                    gitHubRepositoryJsonRepository.exportTo(uri, json)
-                } else {
-                    false
-                }
+        val gitHubRepositories = gitHubRepositoryRepository.getRepositories().firstOrNull()
+        val success = if (gitHubRepositories?.isNotEmpty() == true) {
+            val json = gitHubRepositoryJsonRepository.toJson(gitHubRepositories)
+            if (!json.isNullOrEmpty()) {
+                gitHubRepositoryJsonRepository.exportTo(uri, json)
             } else {
                 false
             }
-            if (!success) {
-                gitHubRepositoryJsonRepository.deleteDocument(uri)
-            }
-            reduce {
-                state.copy(loading = false)
-            }
-            postSideEffect(
-                if (success) {
-                    SettingsSideEffect.Export.Success
-                } else {
-                    SettingsSideEffect.Export.Failure
-                }
-            )
+        } else {
+            false
         }
+        if (!success) {
+            gitHubRepositoryJsonRepository.deleteDocument(uri)
+        }
+        reduce {
+            state.copy(isExportingGitHubRepositories = false)
+        }
+        postSideEffect(
+            if (success) {
+                SettingsSideEffect.Export.Success
+            } else {
+                SettingsSideEffect.Export.Failure
+            }
+        )
     }
 
     fun performSignOut() = intent {
         reduce {
-            state.copy(loading = true)
+            state.copy(isSigningOut = true)
         }
         var success = gitHubAuthenticationRepository.performSignOut()
         if (success) {
             success = userRepository.deleteUser()
         }
         reduce {
-            state.copy(loading = false)
+            state.copy(isSigningOut = false)
         }
         postSideEffect(
             if (success) {

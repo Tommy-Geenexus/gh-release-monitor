@@ -20,7 +20,6 @@
 
 package com.tomg.githubreleasemonitor.main.ui
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -34,7 +33,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.LocalOffer
@@ -42,8 +40,6 @@ import androidx.compose.material3.DismissDirection
 import androidx.compose.material3.DismissState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedCard
-import androidx.compose.material3.Surface
 import androidx.compose.material3.SwipeToDismiss
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDismissState
@@ -51,11 +47,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -89,111 +83,97 @@ fun GitHubRepositoryItem(
             ) {
                 Icon(
                     imageVector = Icons.Outlined.Delete,
-                    contentDescription = null,
-                    modifier = Modifier.padding(start = 28.dp),
+                    contentDescription = stringResource(id = R.string.repository_delete),
+                    modifier = Modifier.padding(start = 16.dp),
                     tint = MaterialTheme.colorScheme.onSecondary
                 )
             }
         },
         dismissContent = {
-            OutlinedCard(
-                modifier = Modifier.clickable {
-                    onGitHubRepositoryReleaseSelected(gitHubRepository.latestReleaseHtmlUrl)
-                },
-                shape = RoundedCornerShape(0.dp),
-                border = BorderStroke(0.dp, Color.Transparent)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(color = MaterialTheme.colorScheme.surface)
+                    .clickable {
+                        onGitHubRepositoryReleaseSelected(gitHubRepository.latestReleaseHtmlUrl)
+                    }
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    val painter = rememberAsyncImagePainter(
-                        model = gitHubRepository.authorAvatarUrl,
-                        imageLoader = LocalContext.current.imageLoader,
-                        error = painterResource(id = R.drawable.ic_broken_image)
-                    )
-                    Image(
-                        painter = painter,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .padding(16.dp)
-                            .size(48.dp)
-                            .clip(CircleShape)
-                            .placeholder(
-                                visible = painter.state is AsyncImagePainter.State.Loading,
-                                highlight = PlaceholderHighlight.shimmer()
-                            )
-                            .clickable {
-                                onGitHubUserAvatarSelected(gitHubRepository.authorAvatarUrl)
-                            }
-                    )
-                    Column(
-                        modifier = Modifier.padding(
-                            start = 24.dp,
-                            top = 16.dp,
-                            bottom = 16.dp
+                val painter = rememberAsyncImagePainter(
+                    model = gitHubRepository.authorAvatarUrl,
+                    imageLoader = LocalContext.current.imageLoader,
+                    error = painterResource(id = R.drawable.ic_broken_image)
+                )
+                Image(
+                    painter = painter,
+                    contentDescription = stringResource(id = R.string.avatar),
+                    modifier = Modifier
+                        .padding(
+                            horizontal = 16.dp,
+                            vertical = 12.dp
                         )
-                    ) {
-                        Text(
-                            text = gitHubRepository.owner,
-                            overflow = TextOverflow.Ellipsis,
-                            maxLines = 1,
-                            style = MaterialTheme.typography.bodyLarge
+                        .size(40.dp)
+                        .clip(CircleShape)
+                        .placeholder(
+                            visible = painter.state is AsyncImagePainter.State.Loading,
+                            highlight = PlaceholderHighlight.shimmer()
                         )
-                        Text(
-                            text = gitHubRepository.name,
-                            overflow = TextOverflow.Ellipsis,
-                            maxLines = 1,
-                            style = MaterialTheme.typography.bodyLarge
-                        )
-                        Surface(
-                            modifier = Modifier.padding(top = 8.dp),
-                            shape = RoundedCornerShape(8.dp),
-                            border = BorderStroke(
-                                width = 1.dp,
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
-                        ) {
-                            Text(
-                                text = stringResource(id = R.string.latest),
-                                modifier = Modifier.padding(all = 4.dp),
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                textAlign = TextAlign.End,
-                                overflow = TextOverflow.Ellipsis,
-                                maxLines = 1,
-                                style = MaterialTheme.typography.labelMedium
-                            )
+                        .clickable {
+                            onGitHubUserAvatarSelected(gitHubRepository.authorAvatarUrl)
                         }
-                        Row(
-                            modifier = Modifier
-                                .padding(top = 8.dp)
-                                .fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(
-                                imageVector = Icons.Outlined.LocalOffer,
-                                contentDescription = null,
-                                modifier = Modifier.size(18.dp)
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Column {
-                                if (gitHubRepository.latestReleaseName.isNotEmpty()) {
-                                    Text(
-                                        text = gitHubRepository.latestReleaseName,
-                                        overflow = TextOverflow.Ellipsis,
-                                        maxLines = 1,
-                                        style = MaterialTheme.typography.bodyMedium
-                                    )
-                                }
+                )
+                Column(
+                    modifier = Modifier.padding(
+                        top = 12.dp,
+                        end = 24.dp,
+                        bottom = 12.dp
+                    )
+                ) {
+                    Text(
+                        text = gitHubRepository.owner,
+                        overflow = TextOverflow.Ellipsis,
+                        maxLines = 1,
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                    Text(
+                        text = gitHubRepository.name,
+                        overflow = TextOverflow.Ellipsis,
+                        maxLines = 1,
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                    Row(
+                        modifier = Modifier
+                            .padding(top = 4.dp)
+                            .fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.LocalOffer,
+                            contentDescription = stringResource(id = R.string.latest)
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Column {
+                            if (gitHubRepository.latestReleaseName.isNotEmpty()) {
                                 Text(
-                                    text = TimeAgo.using(
-                                        time = ZonedDateTime
-                                            .parse(gitHubRepository.latestReleaseTimestamp)
-                                            .toInstant()
-                                            .toEpochMilli()
+                                    text = stringResource(
+                                        id = R.string.latest,
+                                        gitHubRepository.latestReleaseName
                                     ),
                                     overflow = TextOverflow.Ellipsis,
                                     maxLines = 1,
                                     style = MaterialTheme.typography.bodyMedium
                                 )
                             }
+                            Text(
+                                text = TimeAgo.using(
+                                    time = ZonedDateTime
+                                        .parse(gitHubRepository.latestReleaseTimestamp)
+                                        .toInstant()
+                                        .toEpochMilli()
+                                ),
+                                overflow = TextOverflow.Ellipsis,
+                                maxLines = 1,
+                                style = MaterialTheme.typography.bodyMedium
+                            )
                         }
                     }
                 }

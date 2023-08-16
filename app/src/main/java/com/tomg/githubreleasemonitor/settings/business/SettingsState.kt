@@ -29,5 +29,7 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class SettingsState(
     val monitorInterval: String = monitorIntervalDefaultValue,
-    val loading: Boolean = false
+    val isImportingGitHubRepositories: Boolean = false,
+    val isExportingGitHubRepositories: Boolean = false,
+    val isSigningOut: Boolean = false
 ) : Parcelable

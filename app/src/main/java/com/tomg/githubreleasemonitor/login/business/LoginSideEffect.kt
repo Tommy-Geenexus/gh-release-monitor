@@ -26,5 +26,5 @@ import kotlinx.parcelize.Parcelize
 sealed class LoginSideEffect : Parcelable {
 
     @Parcelize
-    object UserLoggedIn : LoginSideEffect()
+    data object UserLoggedIn : LoginSideEffect()
 }

@@ -31,8 +31,12 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -84,12 +88,15 @@ fun AddGitHubRepositoryDialog(
                     style = MaterialTheme.typography.headlineSmall,
                     color = MaterialTheme.colorScheme.onSurface
                 )
+                val focusRequester = remember { FocusRequester() }
                 OutlinedTextField(
                     value = state.repositoryOwner,
                     onValueChange = { value ->
                         viewModel.updateRepositoryOwner(value.trim())
                     },
-                    modifier = Modifier.padding(top = 24.dp),
+                    modifier = Modifier
+                        .padding(top = 24.dp)
+                        .focusRequester(focusRequester),
                     label = {
                         Text(text = stringResource(id = R.string.git_owner))
                     },
@@ -123,6 +130,9 @@ fun AddGitHubRepositoryDialog(
                     charCnt = state.repositoryName.length,
                     maxCharCnt = MAX_CHAR_REPO
                 )
+                LaunchedEffect(Unit) {
+                    focusRequester.requestFocus()
+                }
             }
         }
     )

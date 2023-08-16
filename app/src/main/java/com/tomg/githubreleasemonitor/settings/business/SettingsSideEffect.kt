@@ -28,27 +28,27 @@ sealed class SettingsSideEffect : Parcelable {
     sealed class Import : SettingsSideEffect() {
 
         @Parcelize
-        object Success : Import()
+        data object Success : Import()
 
         @Parcelize
-        object Failure : Import()
+        data object Failure : Import()
     }
 
     sealed class Export : SettingsSideEffect() {
 
         @Parcelize
-        object Success : Export()
+        data object Success : Export()
 
         @Parcelize
-        object Failure : Export()
+        data object Failure : Export()
     }
 
     sealed class UserSignOut : SettingsSideEffect() {
 
         @Parcelize
-        object Success : UserSignOut()
+        data object Success : UserSignOut()
 
         @Parcelize
-        object Failure : UserSignOut()
+        data object Failure : UserSignOut()
     }
 }

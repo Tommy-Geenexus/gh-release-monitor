@@ -42,34 +42,34 @@ sealed class MainSideEffect : Parcelable {
         sealed class Add : GitHubRepository() {
 
             @Parcelize
-            object Success : Add()
+            data object Success : Add()
 
             @Parcelize
-            object Failure : Add()
+            data object Failure : Add()
 
             @Parcelize
-            object NotFound : Add()
+            data object NotFound : Add()
         }
 
         sealed class Delete : GitHubRepository() {
 
             @Parcelize
-            object Success : Delete()
+            data object Success : Delete()
 
             @Parcelize
-            object Failure : Delete()
+            data object Failure : Delete()
         }
 
         sealed class Update : GitHubRepository() {
 
             @Parcelize
-            object Success : Update()
+            data object Success : Update()
 
             @Parcelize
-            object Failure : Update()
+            data object Failure : Update()
 
             @Parcelize
-            object Latest : Update()
+            data object Latest : Update()
         }
     }
 }

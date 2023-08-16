@@ -102,7 +102,7 @@ fun SortOrderDialog(
                             if (order is SortOrder.Asc) {
                                 Icon(
                                     imageVector = Icons.Outlined.SortByAlpha,
-                                    contentDescription = null,
+                                    contentDescription = stringResource(id = R.string.asc),
                                     modifier = Modifier.padding(start = 24.dp)
                                 )
                             } else {
@@ -110,7 +110,7 @@ fun SortOrderDialog(
                                     painter = painterResource(
                                         id = R.drawable.ic_sort_by_alpha_reverse
                                     ),
-                                    contentDescription = null,
+                                    contentDescription = stringResource(id = R.string.desc),
                                     modifier = Modifier.padding(start = 24.dp)
                                 )
                             }

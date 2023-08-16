@@ -20,14 +20,8 @@
 
 package com.tomg.githubreleasemonitor.navigation
 
-import androidx.compose.animation.core.FastOutLinearInEasing
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -37,6 +31,8 @@ import com.google.accompanist.systemuicontroller.SystemUiController
 import com.tomg.githubreleasemonitor.login.ui.LoginScreen
 import com.tomg.githubreleasemonitor.main.ui.MainScreen
 import com.tomg.githubreleasemonitor.settings.ui.SettingsScreen
+
+private const val TRANSITION_DURATION = 450
 
 @Composable
 fun NavGraph(
@@ -67,16 +63,28 @@ fun NavGraph(
         composable(
             route = NavDestinations.ROUTE_MAIN,
             enterTransition = {
-                materialSharedAxisZForward
+                slideIntoContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Start,
+                    animationSpec = tween(durationMillis = TRANSITION_DURATION)
+                )
             },
             exitTransition = {
-                materialSharedAxisZBackward
+                slideOutOfContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.End,
+                    animationSpec = tween(durationMillis = TRANSITION_DURATION)
+                )
             },
             popEnterTransition = {
-                materialSharedAxisZForward
+                slideIntoContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Start,
+                    animationSpec = tween(durationMillis = TRANSITION_DURATION)
+                )
             },
             popExitTransition = {
-                materialSharedAxisZBackward
+                slideOutOfContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.End,
+                    animationSpec = tween(durationMillis = TRANSITION_DURATION)
+                )
             }
         ) {
             MainScreen(
@@ -91,16 +99,28 @@ fun NavGraph(
         composable(
             route = NavDestinations.ROUTE_SETTINGS,
             enterTransition = {
-                materialSharedAxisZForward
+                slideIntoContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Up,
+                    animationSpec = tween(durationMillis = TRANSITION_DURATION)
+                )
             },
             exitTransition = {
-                materialSharedAxisZBackward
+                slideOutOfContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Down,
+                    animationSpec = tween(durationMillis = TRANSITION_DURATION)
+                )
             },
             popEnterTransition = {
-                materialSharedAxisZForward
+                slideIntoContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Up,
+                    animationSpec = tween(durationMillis = TRANSITION_DURATION)
+                )
             },
             popExitTransition = {
-                materialSharedAxisZBackward
+                slideOutOfContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Down,
+                    animationSpec = tween(durationMillis = TRANSITION_DURATION)
+                )
             }
         ) {
             SettingsScreen(
@@ -123,26 +143,3 @@ fun NavGraph(
         }
     }
 }
-
-private val materialSharedAxisZForward =
-    fadeIn(
-        animationSpec = tween(
-            durationMillis = 210,
-            delayMillis = 90,
-            easing = LinearOutSlowInEasing
-        )
-    ) + scaleIn(
-        initialScale = 0.8f,
-        animationSpec = tween()
-    )
-
-private val materialSharedAxisZBackward =
-    fadeOut(
-        animationSpec = tween(
-            durationMillis = 90,
-            easing = FastOutLinearInEasing
-        )
-    ) + scaleOut(
-        targetScale = 1.1f,
-        animationSpec = tween(easing = FastOutSlowInEasing)
-    )

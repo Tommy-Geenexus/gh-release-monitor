@@ -66,7 +66,7 @@ fun SettingsManageItem(
         ) {
             Icon(
                 imageVector = Icons.Outlined.VerticalAlignBottom,
-                contentDescription = null,
+                contentDescription = stringResource(id = R.string._import),
                 modifier = Modifier.padding(start = 16.dp)
             )
             Column {
@@ -101,7 +101,7 @@ fun SettingsManageItem(
         ) {
             Icon(
                 imageVector = Icons.Outlined.VerticalAlignTop,
-                contentDescription = null,
+                contentDescription = stringResource(id = R.string.export),
                 modifier = Modifier.padding(start = 16.dp)
             )
             Column {
